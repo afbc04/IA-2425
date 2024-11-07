@@ -1,0 +1,28 @@
+{
+    "nos": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O"],
+    "arestas": [
+        {"origem": "A", "destino": "B", "peso": 3},
+        {"origem": "A", "destino": "C", "peso": 4},
+        {"origem": "B", "destino": "D", "peso": 5},
+        {"origem": "B", "destino": "E", "peso": 2},
+        {"origem": "C", "destino": "F", "peso": 6},
+        {"origem": "C", "destino": "G", "peso": 3},
+        {"origem": "D", "destino": "H", "peso": 4},
+        {"origem": "E", "destino": "I", "peso": 5},
+        {"origem": "F", "destino": "J", "peso": 2},
+        {"origem": "G", "destino": "K", "peso": 4},
+        {"origem": "H", "destino": "L", "peso": 3},
+        {"origem": "I", "destino": "M", "peso": 6},
+        {"origem": "J", "destino": "N", "peso": 5},
+        {"origem": "K", "destino": "O", "peso": 7},
+        {"origem": "A", "destino": "D", "peso": 8},
+        {"origem": "A", "destino": "E", "peso": 9},
+        {"origem": "B", "destino": "F", "peso": 3},
+        {"origem": "C", "destino": "H", "peso": 4},
+        {"origem": "G", "destino": "J", "peso": 6},
+        {"origem": "I", "destino": "L", "peso": 5},
+        {"origem": "J", "destino": "M", "peso": 4},
+        {"origem": "H", "destino": "N", "peso": 3},
+        {"origem": "M", "destino": "O", "peso": 8}
+    ]
+}
