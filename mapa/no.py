@@ -6,6 +6,9 @@ class No:
     def __init__(self, name, id=-1):
         self.m_id = id
         self.m_name = str(name)
+        # boolean flag que classifica como nó com recursos infinitos, 0 - seguro, 1 - necessita de ajuda
+        # int num_pessoas_necessitadas
+        # int tempo_critico
 
     # Retorna a representação em string do nó.
     def __str__(self):

@@ -3,6 +3,10 @@ from mapa.no import No
 import networkx as nx  
 import matplotlib.pyplot as plt  
 
+# EM FALTA: aresta deve ser as seguintes variáveis
+# veículos que podem lá passar (se for inacessível, a lista está vazia)
+# objeto metereologia (que deve ter int para vento, chuva, inundação)
+
 class Grafo:
     def __init__(self, directed=False):
         self.m_nodes = []  
@@ -65,17 +69,27 @@ class Grafo:
     def getNeighbours(self, nodo):
         return self.m_graph.get(nodo, [])
 
-    # Desenha o grafo graficamente usando networkx e matplotlib
-    def desenha(self):
-        g = nx.Graph()
-        for node in self.m_nodes:
-            n = node.getName()
-            g.add_node(n)
-            for (adjacente, peso) in self.m_graph[n]:
-                g.add_edge(n, adjacente, weight=peso)
+    def desenha(self):  # Certifique-se de que está corretamente indentado
+            g = nx.Graph()
+            for node in self.m_nodes:
+                n = node.getName()
+                g.add_node(n)
+                for (adjacente, peso) in self.m_graph[n]:
+                    g.add_edge(n, adjacente, weight=peso)
 
-        pos = nx.spring_layout(g, seed=42) # sed 42 para o mapa não se alterar
-        nx.draw_networkx(g, pos, with_labels=True, font_weight='bold')
-        labels = nx.get_edge_attributes(g, 'weight')
-        nx.draw_networkx_edge_labels(g, pos, edge_labels=labels)
-        plt.show()
+            pos = nx.spring_layout(g, seed=9, k=0.8)
+
+            # Ajustar manualmente a posição de "Caramoan"
+            if "Caramoan" in pos:
+                pos["Caramoan"][0] -= 0.2  # Move para a esquerda no eixo X
+                pos["Caramoan"][1] += 0.1  # Ajuste no eixo Y
+
+            plt.figure(figsize=(20, 16))
+            nx.draw_networkx_nodes(g, pos, node_size=6000, node_color='skyblue', edgecolors='black')
+            nx.draw_networkx_labels(g, pos, font_size=10, font_weight='bold', verticalalignment='center')
+            nx.draw_networkx_edges(g, pos, width=2, edge_color='gray')
+            labels = nx.get_edge_attributes(g, 'weight')
+            nx.draw_networkx_edge_labels(g, pos, edge_labels=labels, font_size=8)
+            plt.title("<3 Filipinas <3", fontsize=16)
+            plt.axis('off')
+            plt.show()
