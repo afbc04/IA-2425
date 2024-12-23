@@ -1,58 +1,85 @@
 import math
-from mapa.no import No  
-import networkx as nx  
-import matplotlib.pyplot as plt  
-
-# EM FALTA: aresta deve ser as seguintes variáveis
-# veículos que podem lá passar (se for inacessível, a lista está vazia)
-# objeto metereologia (que deve ter int para vento, chuva, inundação)
+from mapa.no import No  # Certifique-se de que a classe No está corretamente implementada
+import networkx as nx
+import matplotlib.pyplot as plt
 
 class Grafo:
     def __init__(self, directed=False):
-        self.m_nodes = []  
-        self.m_directed = directed
-        self.m_graph = {}
-        self.m_h = {}  # Dicionário para armazenar as heurísticas de cada nó
+        self.m_nodes = []  # Lista de nós
+        self.m_directed = directed  # Se o grafo é direcionado
+        self.m_graph = {}  # Representação do grafo: {nó: [(adjacente, peso)]}
+        self.m_h = {}  # Heurísticas: {nó: valor}
 
     # Método para adicionar uma aresta entre dois nós
     def add_edge(self, node1, node2, weight):
-        n1 = No(node1)
-        n2 = No(node2)
-        
-        # Adiciona o nó n1 se não estiver na lista de nós
-        if n1 not in self.m_nodes:
-            n1.setId(len(self.m_nodes))
-            self.m_nodes.append(n1)
-            self.m_graph[node1] = []
-        
-        # Adiciona o nó n2 se não estiver na lista de nós
-        if n2 not in self.m_nodes:
-            n2.setId(len(self.m_nodes))
-            self.m_nodes.append(n2)
-            self.m_graph[node2] = []
+        """
+        Adiciona uma aresta entre dois nós com um peso.
+        :param node1: Nome do nó de origem.
+        :param node2: Nome do nó de destino.
+        :param weight: Peso da aresta (distância ou custo).
+        """
+        n1 = self._get_or_create_node(node1)
+        n2 = self._get_or_create_node(node2)
 
-        # Adiciona a aresta de n1 para n2 com o peso especificado
+        # Adiciona a aresta com peso
         self.m_graph[node1].append((node2, weight))
-        
-        # Se o grafo não for direcionado, adiciona também a aresta de n2 para n1
         if not self.m_directed:
             self.m_graph[node2].append((node1, weight))
 
+    def _get_or_create_node(self, node_name):
+        """
+        Obtém um nó existente ou cria um novo nó se ele não existir.
+        :param node_name: Nome do nó.
+        :return: Objeto No correspondente.
+        """
+        for node in self.m_nodes:
+            if node.getName() == node_name:
+                return node
+
+        # Cria um novo nó se não existir
+        new_node = No(node_name)
+        new_node.setId(len(self.m_nodes))
+        self.m_nodes.append(new_node)
+        self.m_graph[node_name] = []
+        return new_node
+
     # Adiciona uma heurística para um nó específico
     def add_heuristica(self, n, estima):
-        n1 = No(n)
-        if n1 in self.m_nodes:
-            self.m_h[n] = estima
+        """
+        Adiciona uma heurística a um nó.
+        :param n: Nome do nó.
+        :param estima: Valor da heurística.
+        """
+        self.m_h[n] = estima
 
     # Devolve a heurística do nó, ou um valor alto se não estiver definida
     def getH(self, nodo):
-        if nodo not in self.m_h.keys():
-            return 1000
-        else:
-            return self.m_h[nodo]
+        """
+        Retorna o valor da heurística associada a um nó.
+        :param nodo: Nome do nó.
+        :return: Valor da heurística.
+        """
+        return self.m_h.get(nodo, float('inf'))
+
+    # Calcula a heurística de prioridade
+    @staticmethod
+    def calcula_heuristica_prioridade(no):
+        """
+        Calcula a prioridade heurística de um nó com base em população e tempo.
+        :param no: Objeto do tipo No.
+        :return: Heurística de prioridade.
+        """
+        if no.janela_tempo <= 0:
+            return float('inf')
+        return no.populacao / no.janela_tempo
 
     # Função para calcular o custo total de um caminho
     def calcula_custo(self, caminho):
+        """
+        Calcula o custo total de um caminho no grafo.
+        :param caminho: Lista de nós representando o caminho.
+        :return: Custo total do caminho.
+        """
         custo = 0
         for i in range(len(caminho) - 1):
             custo += self.get_arc_cost(caminho[i], caminho[i + 1])
@@ -60,36 +87,60 @@ class Grafo:
 
     # Devolve o custo de uma aresta entre dois nós, se existir
     def get_arc_cost(self, node1, node2):
-        for nodo, custo in self.m_graph[node1]:
-            if nodo == node2:
+        """
+        Retorna o custo de uma aresta entre dois nós.
+        :param node1: Nó de origem.
+        :param node2: Nó de destino.
+        :return: Peso da aresta ou infinito se não existir.
+        """
+        for adjacente, custo in self.m_graph.get(node1, []):
+            if adjacente == node2:
                 return custo
-        return math.inf
+        return float('inf')
 
     # Devolve os vizinhos de um nó específico no grafo
     def getNeighbours(self, nodo):
+        """
+        Retorna os vizinhos de um nó no grafo.
+        :param nodo: Nome do nó.
+        :return: Lista de tuplos (vizinho, peso).
+        """
         return self.m_graph.get(nodo, [])
 
-    def desenha(self):  # Certifique-se de que está corretamente indentado
-            g = nx.Graph()
-            for node in self.m_nodes:
-                n = node.getName()
-                g.add_node(n)
-                for (adjacente, peso) in self.m_graph[n]:
-                    g.add_edge(n, adjacente, weight=peso)
+    # Retorna o nó com a maior prioridade no grafo
+    def get_no_maior_prioridade(self):
+        """
+        Retorna o nó com a maior prioridade (menor valor da função calcula_prioridade).
+        """
+        menor_prioridade = float('inf')  # Prioridade menor significa maior urgência
+        no_maior_prioridade = None
 
-            pos = nx.spring_layout(g, seed=9, k=0.8)
+        for no in self.m_nodes:
+            prioridade = no.calcula_prioridade()
+            if prioridade < menor_prioridade:
+                menor_prioridade = prioridade
+                no_maior_prioridade = no
 
-            # Ajustar manualmente a posição de "Caramoan"
-            if "Caramoan" in pos:
-                pos["Caramoan"][0] -= 0.2  # Move para a esquerda no eixo X
-                pos["Caramoan"][1] += 0.1  # Ajuste no eixo Y
+        return no_maior_prioridade
 
-            plt.figure(figsize=(20, 16))
-            nx.draw_networkx_nodes(g, pos, node_size=6000, node_color='skyblue', edgecolors='black')
-            nx.draw_networkx_labels(g, pos, font_size=10, font_weight='bold', verticalalignment='center')
-            nx.draw_networkx_edges(g, pos, width=2, edge_color='gray')
-            labels = nx.get_edge_attributes(g, 'weight')
-            nx.draw_networkx_edge_labels(g, pos, edge_labels=labels, font_size=8)
-            plt.title("<3 Filipinas <3", fontsize=16)
-            plt.axis('off')
-            plt.show()
+    def desenha(self):
+        """
+        Gera uma visualização do grafo usando NetworkX e Matplotlib.
+        """
+        g = nx.Graph()
+        for node in self.m_nodes:
+            n = node.getName()
+            g.add_node(n)
+            for (adjacente, peso) in self.m_graph[n]:
+                g.add_edge(n, adjacente, weight=peso)
+
+        pos = nx.spring_layout(g, seed=42, k=0.8)
+        plt.figure(figsize=(15, 10))
+        nx.draw_networkx_nodes(g, pos, node_size=6000, node_color="skyblue", edgecolors="black")
+        nx.draw_networkx_labels(g, pos, font_size=10, font_weight="bold")
+        nx.draw_networkx_edges(g, pos, width=2, edge_color="gray")
+        labels = nx.get_edge_attributes(g, "weight")
+        nx.draw_networkx_edge_labels(g, pos, edge_labels=labels, font_size=8)
+        plt.title("Mapa de Zonas e Conexões", fontsize=16)
+        plt.axis("off")
+        plt.show()

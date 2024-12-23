@@ -1,16 +1,25 @@
 import json
 from mapa.grafo import Grafo
+from mapa.no import No  # Certifique-se de que a classe No está corretamente implementada e importada
 from algoritmos_procura import procura_DFS, procura_BFS, procura_aStar, greedy
 
 # Função para carregar o grafo a partir de um ficheiro JSON na pasta mapa
-def carregar_grafo(ficheiro_json="mapa/grafos.json"):
+def carregar_grafo(ficheiro_json="mapa/grafo2.json"):
     with open(ficheiro_json, 'r') as f:
         dados = json.load(f)
 
     grafo = Grafo(directed=False)
-    for no in dados["nos"]:
-        grafo.m_graph[no] = []  # Inicializa cada nó no grafo sem arestas
 
+    # Adicionar nós ao grafo com população e tempo
+    for no_data in dados["nos"]:
+        nome = no_data["nome"]
+        populacao = no_data["populacao"]
+        tempo = no_data["tempo"]
+        no = No(nome, populacao=populacao, janela_tempo=tempo)
+        grafo.m_nodes.append(no)
+        grafo.m_graph[nome] = []  # Inicializa a lista de adjacências do nó
+
+    # Adicionar arestas ao grafo
     for aresta in dados["arestas"]:
         origem = aresta["origem"]
         destino = aresta["destino"]
@@ -21,12 +30,12 @@ def carregar_grafo(ficheiro_json="mapa/grafos.json"):
 
 # Função para mostrar o menu e executar o algoritmo escolhido
 def mostrar_menu():
-    print("Escolha uma opção:")
+    print("\nEscolha uma opção:")
     print("1. DFS (Depth-First Search)")
     print("2. BFS (Breadth-First Search)")
     print("3. A*")
     print("4. Greedy")
-    print("5. Imprimir Grafo")  
+    print("5. Imprimir Grafo")
     print("0. Sair")
     escolha = input("Opção: ")
     return escolha
@@ -34,49 +43,56 @@ def mostrar_menu():
 # Função principal do menu
 def iniciar_menu():
     grafo = carregar_grafo()
+
     while True:
+        # Encontrar o nó de maior prioridade
+        destino = grafo.get_no_maior_prioridade()
+        if destino is None:
+            print("Não existem nós válidos no grafo.")
+            break
+
+        print(f"\nDestino automaticamente escolhido: {destino.getName()} (prioridade: {destino.calcula_prioridade()})")
+
         opcao = mostrar_menu()
+
         if opcao == "1":
             inicio = input("Nó inicial: ")
-            fim = input("Nó final: ")
-            resultado = procura_DFS(grafo, inicio.upper(), fim.upper())
+            resultado = procura_DFS(grafo, inicio.upper(), destino.getName().upper())
             if resultado:
                 print("Caminho DFS:", resultado[0], "Custo:", resultado[1])
             else:
-                print("Caminho não encontrado com DFS")
+                print("Caminho não encontrado com DFS.")
 
         elif opcao == "2":
             inicio = input("Nó inicial: ")
-            fim = input("Nó final: ")
-            resultado = procura_BFS(grafo, inicio.upper(), fim.upper())
+            resultado = procura_BFS(grafo, inicio.upper(), destino.getName().upper())
             if resultado:
                 print("Caminho BFS:", resultado[0], "Custo:", resultado[1])
             else:
-                print("Caminho não encontrado com BFS")
+                print("Caminho não encontrado com BFS.")
 
         elif opcao == "3":
             inicio = input("Nó inicial: ")
-            fim = input("Nó final: ")
-            resultado = procura_aStar(grafo, inicio.upper(), fim.upper())
+            resultado = procura_aStar(grafo, inicio.upper(), destino.getName().upper())
             if resultado:
                 print("Caminho A*:", resultado[0], "Custo:", resultado[1])
             else:
-                print("Caminho não encontrado com A*")
+                print("Caminho não encontrado com A*.")
 
         elif opcao == "4":
             inicio = input("Nó inicial: ")
-            fim = input("Nó final: ")
-            resultado = greedy(grafo, inicio.upper(), fim.upper())
+            resultado = greedy(grafo, inicio.upper(), destino.getName().upper())
             if resultado:
                 print("Caminho Greedy:", resultado[0], "Custo:", resultado[1])
             else:
-                print("Caminho não encontrado com Greedy")
+                print("Caminho não encontrado com Greedy.")
 
         elif opcao == "5":
-            grafo.desenha()  
+            grafo.desenha()
 
         elif opcao == "0":
             print("A sair...")
             break
+
         else:
             print("Opção inválida. Tente novamente.")

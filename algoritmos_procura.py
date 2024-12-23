@@ -3,19 +3,45 @@ from queue import Queue
 from mapa.grafo import Grafo  
 
 # Algoritmo de procura em profundidade (DFS)
-def procura_DFS(grafo, start, end, path=[], visited=set()):
+def procura_DFS(grafo, start, end, path=None, visited=None):
+    """
+    Algoritmo de procura em profundidade (Depth-First Search).
+    :param grafo: Objeto do tipo Grafo.
+    :param start: Nó inicial.
+    :param end: Nó final.
+    :param path: Caminho atual (lista).
+    :param visited: Conjunto de nós visitados.
+    :return: Tuplo com o caminho e custo total, ou None.
+    """
+    if path is None:
+        path = []
+    if visited is None:
+        visited = set()
+
+    # Adiciona o nó atual ao caminho e marca como visitado
     path = path + [start]
     visited.add(start)
 
+    # Imprime o progresso para depuração
+    print(f"Visitando: {start}, Caminho atual: {path}")
+
+    # Caso base: destino encontrado
     if start == end:
+        print(f"Destino encontrado: {end}")
         return path, grafo.calcula_custo(path)
 
+    # Explora os vizinhos do nó atual
     for adjacente, peso in grafo.getNeighbours(start):
         if adjacente not in visited:
             resultado = procura_DFS(grafo, adjacente, end, path, visited)
-            if resultado is not None:
+            if resultado[0] is not None:  # Caminho encontrado
                 return resultado
-    return None
+
+    # Se não encontrar o caminho, retorna None
+    print(f"Retornando sem sucesso de: {start}")
+    return None, math.inf
+
+
 
 # Algoritmo de procura em largura (BFS)
 def procura_BFS(grafo, start, end):
@@ -25,10 +51,9 @@ def procura_BFS(grafo, start, end):
 
     while not fila.empty():
         nodo_atual, path = fila.get()
-        
         if nodo_atual == end:
             return path, grafo.calcula_custo(path)
-        
+
         for adjacente, peso in grafo.getNeighbours(nodo_atual):
             if adjacente not in visited:
                 visited.add(adjacente)
@@ -36,7 +61,7 @@ def procura_BFS(grafo, start, end):
 
     return None, math.inf
 
-# Algoritmo A* usando a heurística definida no grafo
+# Algoritmo A*
 def procura_aStar(grafo, start, end):
     open_list = {start}
     closed_list = set()
@@ -45,15 +70,13 @@ def procura_aStar(grafo, start, end):
 
     while open_list:
         n = min(open_list, key=lambda v: g[v] + grafo.getH(v))
-
         if n == end:
-            reconst_path = []
+            caminho = []
             while parents[n] != n:
-                reconst_path.append(n)
+                caminho.append(n)
                 n = parents[n]
-            reconst_path.append(start)
-            reconst_path.reverse()
-            return reconst_path, grafo.calcula_custo(reconst_path)
+            caminho.append(start)
+            return caminho[::-1], grafo.calcula_custo(caminho[::-1])
 
         open_list.remove(n)
         closed_list.add(n)
@@ -70,7 +93,7 @@ def procura_aStar(grafo, start, end):
                     closed_list.remove(m)
                     open_list.add(m)
 
-    return None
+    return None, math.inf
 
 # Algoritmo Greedy usando a heurística definida no grafo
 def greedy(grafo, start, end):
@@ -82,13 +105,13 @@ def greedy(grafo, start, end):
         n = min(open_list, key=lambda v: grafo.getH(v))
 
         if n == end:
-            reconst_path = []
+            caminho = []
             while parents[n] != n:
-                reconst_path.append(n)
+                caminho.append(n)
                 n = parents[n]
-            reconst_path.append(start)
-            reconst_path.reverse()
-            return reconst_path, grafo.calcula_custo(reconst_path)
+            caminho.append(start)
+            caminho.reverse()
+            return caminho, grafo.calcula_custo(caminho)
 
         open_list.remove(n)
         closed_list.add(n)
@@ -98,4 +121,4 @@ def greedy(grafo, start, end):
                 open_list.add(m)
                 parents[m] = n
 
-    return None
+    return None, math.inf  

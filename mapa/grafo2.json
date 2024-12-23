@@ -1,0 +1,17 @@
+{
+    "nos": [
+        {"nome": "A", "populacao": 1000, "tempo": 15},
+        {"nome": "B", "populacao": 800, "tempo": 12},
+        {"nome": "C", "populacao": 1200, "tempo": 10},
+        {"nome": "D", "populacao": 600, "tempo": 8},
+        {"nome": "E", "populacao": 700, "tempo": 20},
+        {"nome": "F", "populacao": 500, "tempo": 18}
+    ],
+    "arestas": [
+        {"origem": "A", "destino": "B", "peso": 10},
+        {"origem": "B", "destino": "C", "peso": 15},
+        {"origem": "C", "destino": "D", "peso": 20},
+        {"origem": "A", "destino": "E", "peso": 12},
+        {"origem": "E", "destino": "F", "peso": 18}
+    ]
+}
