@@ -32,7 +32,7 @@ from condicoesDinamicas import CondicoesDinamicas
 
 
 # Função para carregar o grafo a partir de um ficheiro JSON na pasta mapa
-def carregar_grafo(ficheiro_json="mapa/grafo2.json"):
+def carregar_grafo(ficheiro_json="mapa/grafo3.json"):
     """
     Carrega o grafo a partir de um ficheiro JSON.
     """

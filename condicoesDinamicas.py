@@ -20,7 +20,7 @@ class CondicoesDinamicas:
 
     #define se vai alterar uma condição meteorológica ou o estado de um caminho
     def escolhe_condicao_a_alterar(self):
-        if random.random() > 0.30 and self.grafo.m_nodes:
+        if random.random() > 0.10 and self.grafo.m_nodes:
             self.alterar_meteo_no()
         else:
             self.alterar_estado_caminho()
