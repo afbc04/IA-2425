@@ -32,6 +32,10 @@ from meteorologia import Meteorologia
 
 # Função para carregar o grafo a partir de um ficheiro JSON na pasta mapa
 def carregar_grafo(ficheiro_json="mapa/grafo2.json"):
+    """
+    Carrega o grafo a partir de um ficheiro JSON.
+    """
+    import json
     with open(ficheiro_json, 'r') as f:
         dados = json.load(f)
 
@@ -51,7 +55,7 @@ def carregar_grafo(ficheiro_json="mapa/grafo2.json"):
         )
         no = No(name=nome, populacao=populacao, janela_tempo=tempo, meteorologia=meteorologia)
         grafo.m_nodes.append(no)
-        grafo.m_graph[nome] = []  # Inicializa a lista de adjacências do nó
+        grafo.m_graph[nome] = [] 
 
     # Adicionar arestas ao grafo
     for aresta in dados["arestas"]:
@@ -59,9 +63,12 @@ def carregar_grafo(ficheiro_json="mapa/grafo2.json"):
         destino = aresta["destino"]
         peso = aresta["peso"]
         bloqueada = aresta.get("bloqueada", False)
+        print(f"Processar aresta: {origem} -> {destino}, Peso: {peso}, Bloqueada: {bloqueada}")  # Depuração
         grafo.add_edge(origem, destino, peso, blocked=bloqueada)
 
+
     return grafo
+
 
 # Função para mostrar o menu e executar o algoritmo escolhido
 def mostrar_menu():

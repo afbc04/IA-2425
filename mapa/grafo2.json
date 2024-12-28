@@ -10,7 +10,7 @@
     "arestas": [
         {"origem": "A", "destino": "B", "peso": 10, "bloqueada": false},
         {"origem": "B", "destino": "C", "peso": 15, "bloqueada": false},
-        {"origem": "C", "destino": "D", "peso": 20, "bloqueada": false},
+        {"origem": "C", "destino": "D", "peso": 20, "bloqueada": true},
         {"origem": "A", "destino": "E", "peso": 12, "bloqueada": false},
         {"origem": "E", "destino": "F", "peso": 18, "bloqueada": true}
     ]

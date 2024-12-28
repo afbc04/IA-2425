@@ -31,6 +31,7 @@ class Grafo:
         """
         Adiciona uma aresta entre dois nós com um peso e estado (bloqueada ou livre).
         """
+        print(f"Adicionar aresta: {node1} -> {node2}, Peso: {weight}, Bloqueada: {blocked}")  # Depuração
         n1 = self._get_or_create_node(node1)
         n2 = self._get_or_create_node(node2)
 
@@ -38,6 +39,7 @@ class Grafo:
         self.m_graph[node1].append((node2, weight, blocked))
         if not self.m_directed:
             self.m_graph[node2].append((node1, weight, blocked))
+
 
     # Calcula a heurística de prioridade
     @staticmethod
@@ -116,18 +118,21 @@ class Grafo:
         As arestas livres são desenhadas a preto e as bloqueadas a vermelho.
         """
         g = nx.Graph()
+        edge_list = []  # Lista para armazenar as arestas (origem, destino)
         edge_colors = []  # Lista para armazenar as cores das arestas
+        edge_labels = {}  # Dicionário para armazenar os pesos das arestas
 
         # Adicionar nós e arestas ao grafo
         for node in self.m_nodes:
             n = node.getName()
             g.add_node(n)
             for (adjacente, peso, bloqueada) in self.m_graph[n]:
-                if g.has_edge(n, adjacente):  # Evitar duplicar arestas em grafos não direcionados
-                    continue
-                g.add_edge(n, adjacente, weight=peso)
-                # Define a cor da aresta com base no estado (bloqueada ou livre)
-                edge_colors.append("red" if bloqueada else "black")
+                # Evitar duplicar arestas em grafos não direcionados
+                if not g.has_edge(n, adjacente):
+                    g.add_edge(n, adjacente)
+                    edge_list.append((n, adjacente))  # Adiciona a aresta à lista
+                    edge_colors.append("red" if bloqueada else "black")  # Adiciona a cor correspondente
+                    edge_labels[(n, adjacente)] = peso  # Associa o peso da aresta
 
         # Gera a disposição dos nós
         pos = nx.spring_layout(g, seed=42, k=0.8)
@@ -136,9 +141,8 @@ class Grafo:
         plt.figure(figsize=(15, 10))
         nx.draw_networkx_nodes(g, pos, node_size=6000, node_color="skyblue", edgecolors="black")
         nx.draw_networkx_labels(g, pos, font_size=10, font_weight="bold")
-        nx.draw_networkx_edges(g, pos, edge_color=edge_colors, width=2)
-        labels = nx.get_edge_attributes(g, "weight")
-        nx.draw_networkx_edge_labels(g, pos, edge_labels=labels, font_size=8)
+        nx.draw_networkx_edges(g, pos, edgelist=edge_list, edge_color=edge_colors, width=2)
+        nx.draw_networkx_edge_labels(g, pos, edge_labels=edge_labels, font_size=8)
         plt.title("Mapa de Zonas e Conexões", fontsize=16)
         plt.axis("off")
         plt.show()
