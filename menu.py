@@ -3,6 +3,7 @@ from grafo import Grafo
 from no import No 
 from algoritmos_procura import procura_DFS, procura_BFS, procura_aStar, greedy
 from meteorologia import Meteorologia
+from condicoesDinamicas import CondicoesDinamicas
 
 # Função para carregar o grafo a partir de um ficheiro JSON na pasta mapa
 # def carregar_grafo2(ficheiro_json="mapa/mapaGrafo.json"):
@@ -85,6 +86,9 @@ def mostrar_menu():
 # Função principal do menu
 def iniciar_menu():
     grafo = carregar_grafo()
+
+    condicoes_dinamicas = CondicoesDinamicas(grafo)
+    condicoes_dinamicas.iniciar_alteracoes()
 
     while True:
         # Encontrar o nó de maior prioridade

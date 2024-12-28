@@ -3,98 +3,168 @@
         {
             "id" : "Catanuandes",
             "populacao" : 0,
-            "meteorologia" : null,
+            "meteorologia" : {
+                "chuva" : 0.6,
+                "tempestade" : 0.4,
+                "vento" : 0.8,
+                "nevoeiro" : 0.1
+            },
             "janela_critica" : 0
 
         },
         {
             "id" : "San Andres",
             "populacao" : 0,
-            "meteorologia" : null,
+            "meteorologia" : {
+                "chuva" : 0.2,
+                "tempestade" : 0.1,
+                "vento" : 0.0,
+                "nevoeiro" : 0.4
+            },
             "janela_critica" : 0
 
         },
         {
             "id" : "Virac",
             "populacao" : 0,
-            "meteorologia" : null,
+            "meteorologia" : {
+                "chuva" : 0.0,
+                "tempestade" : 0.0,
+                "vento" : 0.7,
+                "nevoeiro" : 0.1
+            },
             "janela_critica" : 0
 
         },
         {
             "id" : "San Miguel",
             "populacao" : 0,
-            "meteorologia" : null,
+            "meteorologia" : {
+                "chuva" : 0.9,
+                "tempestade" : 0.7,
+                "vento" : 0.6,
+                "nevoeiro" : 0.0
+            },
             "janela_critica" : 0
 
         },
         {
             "id" : "Bato",
             "populacao" : 0,
-            "meteorologia" : null,
+            "meteorologia" : {
+                "chuva" : 0.3,
+                "tempestade" : 0.1,
+                "vento" : 0.4,
+                "nevoeiro" : 0.1
+            },
             "janela_critica" : 0
 
         },
         {
             "id" : "Baras",
             "populacao" : 0,
-            "meteorologia" : null,
+            "meteorologia" : {
+                "chuva" : 0.1,
+                "tempestade" : 0.3,
+                "vento" : 0.1,
+                "nevoeiro" : 0.1
+            },
             "janela_critica" : 0
 
         },
         {
             "id" : "Caramoran",
             "populacao" : 0,
-            "meteorologia" : null,
+            "meteorologia" : {
+                "chuva" : 0.5,
+                "tempestade" : 0.4,
+                "vento" : 0.1,
+                "nevoeiro" : 0.5
+            },
             "janela_critica" : 0
 
         },
         {
             "id" : "Vigo",
             "populacao" : 0,
-            "meteorologia" : null,
+            "meteorologia" : {
+                "chuva" : 0.3,
+                "tempestade" : 0.5,
+                "vento" : 0.1,
+                "nevoeiro" : 0.9
+            },
             "janela_critica" : 0
 
         },
         {
             "id" : "Pandan",
             "populacao" : 0,
-            "meteorologia" : null,
+            "meteorologia" : {
+                "chuva" : 0.1,
+                "tempestade" : 0.1,
+                "vento" : 0.0,
+                "nevoeiro" : 0.0
+            },
             "janela_critica" : 0
 
         },
         {
             "id" : "Bagamanoc",
             "populacao" : 0,
-            "meteorologia" : null,
+            "meteorologia" : {
+                "chuva" : 0.7,
+                "tempestade" : 0.9,
+                "vento" : 0.9,
+                "nevoeiro" : 0.0
+            },
             "janela_critica" : 0
 
         },
         {
             "id" : "Presentacion",
             "populacao" : 0,
-            "meteorologia" : null,
+            "meteorologia" : {
+                "chuva" : 0.3,
+                "tempestade" : 0.5,
+                "vento" : 0.8,
+                "nevoeiro" : 0.0
+            },
             "janela_critica" : 0
 
         },
         {
             "id" : "Gigmoto",
             "populacao" : 0,
-            "meteorologia" : null,
+            "meteorologia" : {
+                "chuva" : 0.1,
+                "tempestade" : 0.2,
+                "vento" : 0.3,
+                "nevoeiro" : 0.7
+            },
             "janela_critica" : 0
 
         },
         {
             "id" : "Caramoan",
             "populacao" : 0,
-            "meteorologia" : null,
+            "meteorologia" : {
+                "chuva" : 0.7,
+                "tempestade" : 0.5,
+                "vento" : 0.4,
+                "nevoeiro" : 0.1
+            },
             "janela_critica" : 0
 
         },
         {
             "id" : "Colongcogogong",
             "populacao" : 0,
-            "meteorologia" : null,
+            "meteorologia" : {
+                "chuva" : 0.3,
+                "tempestade" : 0.2,
+                "vento" : 0.9,
+                "nevoeiro" : 0.2
+            },
             "janela_critica" : 0
 
         }
