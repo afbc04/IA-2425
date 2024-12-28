@@ -1,5 +1,5 @@
 import math
-from mapa.no import No  # Certifique-se de que a classe No está corretamente implementada
+from mapa.no import No  
 import networkx as nx
 import matplotlib.pyplot as plt
 
@@ -9,22 +9,6 @@ class Grafo:
         self.m_directed = directed  # Se o grafo é direcionado
         self.m_graph = {}  # Representação do grafo: {nó: [(adjacente, peso)]}
         self.m_h = {}  # Heurísticas: {nó: valor}
-
-    # Método para adicionar uma aresta entre dois nós
-    def add_edge(self, node1, node2, weight):
-        """
-        Adiciona uma aresta entre dois nós com um peso.
-        :param node1: Nome do nó de origem.
-        :param node2: Nome do nó de destino.
-        :param weight: Peso da aresta (distância ou custo).
-        """
-        n1 = self._get_or_create_node(node1)
-        n2 = self._get_or_create_node(node2)
-
-        # Adiciona a aresta com peso
-        self.m_graph[node1].append((node2, weight))
-        if not self.m_directed:
-            self.m_graph[node2].append((node1, weight))
 
     def _get_or_create_node(self, node_name):
         """
@@ -43,14 +27,17 @@ class Grafo:
         self.m_graph[node_name] = []
         return new_node
 
-    # Adiciona uma heurística para um nó específico
-    def add_heuristica(self, n, estima):
+    # Calcula a heurística de prioridade
+    @staticmethod
+    def calcula_heuristica_prioridade(no):
         """
-        Adiciona uma heurística a um nó.
-        :param n: Nome do nó.
-        :param estima: Valor da heurística.
+        Calcula a prioridade heurística de um nó com base na população e tempo.
+        :param no: Objeto do tipo No.
+        :return: Heurística de prioridade.
         """
-        self.m_h[n] = estima
+        if no.janela_tempo <= 0:
+            return 0
+        return no.populacao / no.janela_tempo
 
     # Devolve a heurística do nó, ou um valor alto se não estiver definida
     def getH(self, nodo):
@@ -60,18 +47,6 @@ class Grafo:
         :return: Valor da heurística.
         """
         return self.m_h.get(nodo, float('inf'))
-
-    # Calcula a heurística de prioridade
-    @staticmethod
-    def calcula_heuristica_prioridade(no):
-        """
-        Calcula a prioridade heurística de um nó com base em população e tempo.
-        :param no: Objeto do tipo No.
-        :return: Heurística de prioridade.
-        """
-        if no.janela_tempo <= 0:
-            return float('inf')
-        return no.populacao / no.janela_tempo
 
     # Função para calcular o custo total de um caminho
     def calcula_custo(self, caminho):

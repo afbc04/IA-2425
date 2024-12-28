@@ -4,15 +4,7 @@ from mapa.grafo import Grafo
 
 # Algoritmo de procura em profundidade (DFS)
 def procura_DFS(grafo, start, end, path=None, visited=None):
-    """
-    Algoritmo de procura em profundidade (Depth-First Search).
-    :param grafo: Objeto do tipo Grafo.
-    :param start: Nó inicial.
-    :param end: Nó final.
-    :param path: Caminho atual (lista).
-    :param visited: Conjunto de nós visitados.
-    :return: Tuplo com o caminho e custo total, ou None.
-    """
+
     if path is None:
         path = []
     if visited is None:

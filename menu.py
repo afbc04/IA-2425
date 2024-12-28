@@ -1,32 +1,32 @@
 import json
 from mapa.grafo import Grafo
-from mapa.no import No  # Certifique-se de que a classe No está corretamente implementada e importada
+from mapa.no import No 
 from algoritmos_procura import procura_DFS, procura_BFS, procura_aStar, greedy
 
 # Função para carregar o grafo a partir de um ficheiro JSON na pasta mapa
-def carregar_grafo2(ficheiro_json="mapa/mapaGrafo.json"):
-    with open(ficheiro_json, 'r') as f:
-        dados = json.load(f)
+# def carregar_grafo2(ficheiro_json="mapa/mapaGrafo.json"):
+#     with open(ficheiro_json, 'r') as f:
+#         dados = json.load(f)
 
-    grafo = Grafo(directed=False)
+#     grafo = Grafo(directed=False)
 
-    # Adicionar nós ao grafo com população e tempo
-    for no_data in dados["nos"]:
-        nome = no_data["nome"]
-        populacao = no_data["populacao"]
-        tempo = no_data["tempo"]
-        no = No(nome, populacao=populacao, janela_tempo=tempo)
-        grafo.m_nodes.append(no)
-        grafo.m_graph[nome] = []  # Inicializa a lista de adjacências do nó
+#     # Adicionar nós ao grafo com população e tempo
+#     for no_data in dados["nos"]:
+#         nome = no_data["nome"]
+#         populacao = no_data["populacao"]
+#         tempo = no_data["tempo"]
+#         no = No(nome, populacao=populacao, janela_tempo=tempo)
+#         grafo.m_nodes.append(no)
+#         grafo.m_graph[nome] = []  # Inicializa a lista de adjacências do nó
 
-    # Adicionar arestas ao grafo
-    for aresta in dados["arestas"]:
-        origem = aresta["origem"]
-        destino = aresta["destino"]
-        peso = aresta["peso"]
-        grafo.add_edge(origem, destino, peso)
+#     # Adicionar arestas ao grafo
+#     for aresta in dados["arestas"]:
+#         origem = aresta["origem"]
+#         destino = aresta["destino"]
+#         peso = aresta["peso"]
+#         grafo.add_edge(origem, destino, peso)
 
-    return grafo
+#     return grafo
 
 
 # Função para carregar o grafo a partir de um ficheiro JSON na pasta mapa
