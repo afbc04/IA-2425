@@ -1,5 +1,5 @@
 import math
-from mapa.no import No  
+from no import No  
 import networkx as nx
 import matplotlib.pyplot as plt
 
@@ -26,6 +26,18 @@ class Grafo:
         self.m_nodes.append(new_node)
         self.m_graph[node_name] = []
         return new_node
+
+    def add_edge(self, node1, node2, weight, blocked=False):
+        """
+        Adiciona uma aresta entre dois nós com um peso e estado (bloqueada ou livre).
+        """
+        n1 = self._get_or_create_node(node1)
+        n2 = self._get_or_create_node(node2)
+
+        # Adiciona a aresta com peso e estado
+        self.m_graph[node1].append((node2, weight, blocked))
+        if not self.m_directed:
+            self.m_graph[node2].append((node1, weight, blocked))
 
     # Calcula a heurística de prioridade
     @staticmethod
@@ -64,23 +76,23 @@ class Grafo:
     def get_arc_cost(self, node1, node2):
         """
         Retorna o custo de uma aresta entre dois nós.
+        Considera o estado da aresta (bloqueada ou livre).
         :param node1: Nó de origem.
         :param node2: Nó de destino.
-        :return: Peso da aresta ou infinito se não existir.
+        :return: Peso da aresta ou infinito se não existir ou estiver bloqueada.
         """
-        for adjacente, custo in self.m_graph.get(node1, []):
+        for adjacente, custo, bloqueada in self.m_graph.get(node1, []):
             if adjacente == node2:
-                return custo
+                return custo if not bloqueada else float('inf')  # Retorna custo infinito se a aresta estiver bloqueada
         return float('inf')
+
 
     # Devolve os vizinhos de um nó específico no grafo
     def getNeighbours(self, nodo):
         """
-        Retorna os vizinhos de um nó no grafo.
-        :param nodo: Nome do nó.
-        :return: Lista de tuplos (vizinho, peso).
+        Retorna os vizinhos de um nó no grafo, ignorando arestas bloqueadas.
         """
-        return self.m_graph.get(nodo, [])
+        return [(adjacente, peso) for adjacente, peso, bloqueada in self.m_graph.get(nodo, []) if not bloqueada]
 
     # Retorna o nó com a maior prioridade no grafo
     def get_no_maior_prioridade(self):
@@ -101,19 +113,30 @@ class Grafo:
     def desenha(self):
         """
         Gera uma visualização do grafo usando NetworkX e Matplotlib.
+        As arestas livres são desenhadas a preto e as bloqueadas a vermelho.
         """
         g = nx.Graph()
+        edge_colors = []  # Lista para armazenar as cores das arestas
+
+        # Adicionar nós e arestas ao grafo
         for node in self.m_nodes:
             n = node.getName()
             g.add_node(n)
-            for (adjacente, peso) in self.m_graph[n]:
+            for (adjacente, peso, bloqueada) in self.m_graph[n]:
+                if g.has_edge(n, adjacente):  # Evitar duplicar arestas em grafos não direcionados
+                    continue
                 g.add_edge(n, adjacente, weight=peso)
+                # Define a cor da aresta com base no estado (bloqueada ou livre)
+                edge_colors.append("red" if bloqueada else "black")
 
+        # Gera a disposição dos nós
         pos = nx.spring_layout(g, seed=42, k=0.8)
+
+        # Desenhar o grafo
         plt.figure(figsize=(15, 10))
         nx.draw_networkx_nodes(g, pos, node_size=6000, node_color="skyblue", edgecolors="black")
         nx.draw_networkx_labels(g, pos, font_size=10, font_weight="bold")
-        nx.draw_networkx_edges(g, pos, width=2, edge_color="gray")
+        nx.draw_networkx_edges(g, pos, edge_color=edge_colors, width=2)
         labels = nx.get_edge_attributes(g, "weight")
         nx.draw_networkx_edge_labels(g, pos, edge_labels=labels, font_size=8)
         plt.title("Mapa de Zonas e Conexões", fontsize=16)

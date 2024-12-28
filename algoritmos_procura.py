@@ -1,6 +1,6 @@
 import math
 from queue import Queue
-from mapa.grafo import Grafo  
+from grafo import Grafo  
 
 # Algoritmo de procura em profundidade (DFS)
 def procura_DFS(grafo, start, end, path=None, visited=None):
@@ -32,8 +32,6 @@ def procura_DFS(grafo, start, end, path=None, visited=None):
     # Se não encontrar o caminho, retorna None
     print(f"Retornando sem sucesso de: {start}")
     return None, math.inf
-
-
 
 # Algoritmo de procura em largura (BFS)
 def procura_BFS(grafo, start, end):

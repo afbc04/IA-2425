@@ -1,7 +1,8 @@
 import json
-from mapa.grafo import Grafo
-from mapa.no import No 
+from grafo import Grafo
+from no import No 
 from algoritmos_procura import procura_DFS, procura_BFS, procura_aStar, greedy
+from meteorologia import Meteorologia
 
 # Função para carregar o grafo a partir de um ficheiro JSON na pasta mapa
 # def carregar_grafo2(ficheiro_json="mapa/mapaGrafo.json"):
@@ -36,12 +37,19 @@ def carregar_grafo(ficheiro_json="mapa/grafo2.json"):
 
     grafo = Grafo(directed=False)
 
-    # Adicionar nós ao grafo com população e tempo
+    # Adicionar nós ao grafo
     for no_data in dados["nos"]:
         nome = no_data["nome"]
         populacao = no_data["populacao"]
         tempo = no_data["tempo"]
-        no = No(nome, populacao=populacao, janela_tempo=tempo)
+        meteo_data = no_data.get("meteorologia", {"chuva": 0, "tempestade": 0, "vento": 0, "nevoeiro": 0})
+        meteorologia = Meteorologia(
+            chuva=meteo_data["chuva"],
+            tempestade=meteo_data["tempestade"],
+            vento=meteo_data["vento"],
+            nevoeiro=meteo_data["nevoeiro"]
+        )
+        no = No(name=nome, populacao=populacao, janela_tempo=tempo, meteorologia=meteorologia)
         grafo.m_nodes.append(no)
         grafo.m_graph[nome] = []  # Inicializa a lista de adjacências do nó
 
@@ -50,7 +58,8 @@ def carregar_grafo(ficheiro_json="mapa/grafo2.json"):
         origem = aresta["origem"]
         destino = aresta["destino"]
         peso = aresta["peso"]
-        grafo.add_edge(origem, destino, peso)
+        bloqueada = aresta.get("bloqueada", False)
+        grafo.add_edge(origem, destino, peso, blocked=bloqueada)
 
     return grafo
 

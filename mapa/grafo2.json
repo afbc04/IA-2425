@@ -1,17 +1,17 @@
 {
     "nos": [
-        {"nome": "A", "populacao": 1000, "tempo": 15},
-        {"nome": "B", "populacao": 800, "tempo": 12},
-        {"nome": "C", "populacao": 1200, "tempo": 10},
-        {"nome": "D", "populacao": 600, "tempo": 8},
-        {"nome": "E", "populacao": 700, "tempo": 20},
-        {"nome": "F", "populacao": 500, "tempo": 18}
+        {"nome": "A", "populacao": 1000, "tempo": 15, "meteorologia": {"chuva": 1, "tempestade": 0, "vento": 3, "nevoeiro": 2}},
+        {"nome": "B", "populacao": 800, "tempo": 12, "meteorologia": {"chuva": 0, "tempestade": 1, "vento": 2, "nevoeiro": 1}},
+        {"nome": "C", "populacao": 1200, "tempo": 10, "meteorologia": {"chuva": 2, "tempestade": 0, "vento": 4, "nevoeiro": 0}},
+        {"nome": "D", "populacao": 600, "tempo": 8, "meteorologia": {"chuva": 3, "tempestade": 0, "vento": 1, "nevoeiro": 1}},
+        {"nome": "E", "populacao": 700, "tempo": 20, "meteorologia": {"chuva": 0, "tempestade": 2, "vento": 3, "nevoeiro": 2}},
+        {"nome": "F", "populacao": 500, "tempo": 18, "meteorologia": {"chuva": 1, "tempestade": 1, "vento": 0, "nevoeiro": 3}}
     ],
     "arestas": [
-        {"origem": "A", "destino": "B", "peso": 10},
-        {"origem": "B", "destino": "C", "peso": 15},
-        {"origem": "C", "destino": "D", "peso": 20},
-        {"origem": "A", "destino": "E", "peso": 12},
-        {"origem": "E", "destino": "F", "peso": 18}
+        {"origem": "A", "destino": "B", "peso": 10, "bloqueada": false},
+        {"origem": "B", "destino": "C", "peso": 15, "bloqueada": false},
+        {"origem": "C", "destino": "D", "peso": 20, "bloqueada": false},
+        {"origem": "A", "destino": "E", "peso": 12, "bloqueada": false},
+        {"origem": "E", "destino": "F", "peso": 18, "bloqueada": true}
     ]
 }
