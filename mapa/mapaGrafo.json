@@ -1,0 +1,264 @@
+{
+    "areas": [
+        {
+            "id" : "Catanuandes",
+            "populacao" : 0,
+            "meteorologia" : null,
+            "janela_critica" : 0
+
+        },
+        {
+            "id" : "San Andres",
+            "populacao" : 0,
+            "meteorologia" : null,
+            "janela_critica" : 0
+
+        },
+        {
+            "id" : "Virac",
+            "populacao" : 0,
+            "meteorologia" : null,
+            "janela_critica" : 0
+
+        },
+        {
+            "id" : "San Miguel",
+            "populacao" : 0,
+            "meteorologia" : null,
+            "janela_critica" : 0
+
+        },
+        {
+            "id" : "Bato",
+            "populacao" : 0,
+            "meteorologia" : null,
+            "janela_critica" : 0
+
+        },
+        {
+            "id" : "Baras",
+            "populacao" : 0,
+            "meteorologia" : null,
+            "janela_critica" : 0
+
+        },
+        {
+            "id" : "Caramoran",
+            "populacao" : 0,
+            "meteorologia" : null,
+            "janela_critica" : 0
+
+        },
+        {
+            "id" : "Vigo",
+            "populacao" : 0,
+            "meteorologia" : null,
+            "janela_critica" : 0
+
+        },
+        {
+            "id" : "Pandan",
+            "populacao" : 0,
+            "meteorologia" : null,
+            "janela_critica" : 0
+
+        },
+        {
+            "id" : "Bagamanoc",
+            "populacao" : 0,
+            "meteorologia" : null,
+            "janela_critica" : 0
+
+        },
+        {
+            "id" : "Presentacion",
+            "populacao" : 0,
+            "meteorologia" : null,
+            "janela_critica" : 0
+
+        },
+        {
+            "id" : "Gigmoto",
+            "populacao" : 0,
+            "meteorologia" : null,
+            "janela_critica" : 0
+
+        },
+        {
+            "id" : "Caramoan",
+            "populacao" : 0,
+            "meteorologia" : null,
+            "janela_critica" : 0
+
+        },
+        {
+            "id" : "Colongcogogong",
+            "populacao" : 0,
+            "meteorologia" : null,
+            "janela_critica" : 0
+
+        }
+    ],
+    "arestas": [
+        {
+            "origem": "Catanuandes",
+            "destino": "San Andres",
+            "veiculos_permitidos" : ["carro","drone"],
+            "bloqueado" : false,
+            "distancia" : 10
+        },
+        {
+            "origem": "Catanuandes",
+            "destino": "Virac",
+            "veiculos_permitidos" : ["carro","drone"],
+            "bloqueado" : false,
+            "distancia" : 15
+        },
+        {
+            "origem": "San Andres",
+            "destino": "San Miguel",
+            "veiculos_permitidos" : ["carro","drone"],
+            "bloqueado" : false,
+            "distancia" : 20
+        },
+        {
+            "origem": "San Andres",
+            "destino": "Bato",
+            "veiculos_permitidos" : ["carro","drone"],
+            "bloqueado" : false,
+            "distancia" : 12
+        },
+        {
+            "origem": "Virac",
+            "destino": "Baras",
+            "veiculos_permitidos" : ["carro","drone"],
+            "bloqueado" : false,
+            "distancia" : 18
+        },
+        {
+            "origem": "Virac",
+            "destino": "Caramoran",
+            "veiculos_permitidos" : ["carro","drone"],
+            "bloqueado" : false,
+            "distancia" : 25
+        },
+        {
+            "origem": "San Miguel",
+            "destino": "Vigo",
+            "veiculos_permitidos" : ["carro","drone"],
+            "bloqueado" : false,
+            "distancia" : 22
+        },
+        {
+            "origem": "Bato",
+            "destino": "Pandan",
+            "veiculos_permitidos" : ["carro","drone"],
+            "bloqueado" : false,
+            "distancia" : 30
+        },
+        {
+            "origem": "Baras",
+            "destino": "Bagamanoc",
+            "veiculos_permitidos" : ["carro","drone"],
+            "bloqueado" : false,
+            "distancia" : 35
+        },
+        {
+            "origem": "Vigo",
+            "destino": "Presentacion",
+            "veiculos_permitidos" : ["carro","drone"],
+            "bloqueado" : false,
+            "distancia" : 50
+        },
+        {
+            "origem": "Pandan",
+            "destino": "Gigmoto",
+            "veiculos_permitidos" : ["carro","drone"],
+            "bloqueado" : false,
+            "distancia" : 28
+        },
+        {
+            "origem": "Bagamanoc",
+            "destino": "Caramoan",
+            "veiculos_permitidos" : ["carro","drone"],
+            "bloqueado" : false,
+            "distancia" : 38
+        },
+        {
+            "origem": "Catanuandes",
+            "destino": "San Miguel",
+            "veiculos_permitidos" : ["carro","drone"],
+            "bloqueado" : false,
+            "distancia" : 40
+        },
+        {
+            "origem": "Catanuandes",
+            "destino": "Bato",
+            "veiculos_permitidos" : ["carro","drone"],
+            "bloqueado" : false,
+            "distancia" : 45
+        },
+        {
+            "origem": "San Andres",
+            "destino": "Baras",
+            "veiculos_permitidos" : ["carro","drone"],
+            "bloqueado" : false,
+            "distancia" : 50
+        },
+        {
+            "origem": "Virac",
+            "destino": "Vigo",
+            "veiculos_permitidos" : ["carro","drone"],
+            "bloqueado" : false,
+            "distancia" : 55
+        },
+        {
+            "origem": "Caramoran",
+            "destino": "Bagamanoc",
+            "veiculos_permitidos" : ["carro","drone"],
+            "bloqueado" : false,
+            "distancia" : 60
+        },
+        {
+            "origem": "Pandan",
+            "destino": "Presentacion",
+            "veiculos_permitidos" : ["carro","drone"],
+            "bloqueado" : false,
+            "distancia" : 48
+        },
+        {
+            "origem": "Bagamanoc",
+            "destino": "Gigmoto",
+            "veiculos_permitidos" : ["carro","drone"],
+            "bloqueado" : false,
+            "distancia" : 65
+        },
+        {
+            "origem": "Vigo",
+            "destino": "Caramoan",
+            "veiculos_permitidos" : ["carro","drone"],
+            "bloqueado" : false,
+            "distancia" : 53
+        },
+        {
+            "origem": "Gigmoto",
+            "destino": "Colongcogogong",
+            "veiculos_permitidos" : ["carro","drone"],
+            "bloqueado" : false,
+            "distancia" : 67
+        }
+    ],
+    "veiculos" : [
+        {
+            "id" : 1,
+            "tipo" : "carro",
+            "carga_max" : 500,
+            "combustivel" : 150,
+            "velocidade" : 2.25,
+            "chuva_max" : 0.6,
+            "afetade_tempestade" : false,
+            "vento_max" : 0.5,
+            "nevoeiro_max" : 0.8
+        }
+    ]
+}

@@ -1,8 +1,9 @@
 class Area:
-    def __init__(self, id = -1, pop = 0, gravidade = 1, janelaCritica= -1, caminhos = []):
+    def __init__(self, id = -1, pop = 0, meteo = None,janelaCritica= -1, caminhos = []):
         self.id = id
         self.pop = pop
-        self.gravidade = gravidade
+        self.meteo = meteo
+        self.perigoMeteo = 0
         self.janelaCritica = janelaCritica
         self.caminhos = caminhos
 
