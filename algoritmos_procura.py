@@ -74,6 +74,17 @@ def procura_aStar(grafo, start, end):
     g = {start: 0}
     parents = {start: start}
 
+     # Obtém os veículos disponíveis no nó inicial
+    veiculos_disponiveis = grafo.get_veiculos_no(start)
+    if not veiculos_disponiveis:
+        print(f"Nó {start} não possui veículos disponíveis.")
+        return None, math.inf
+
+    # Escolhe o primeiro veículo disponível para a busca
+    veiculo_atual = veiculos_disponiveis[0]
+    print(f"Veículo escolhido para a busca: {veiculo_atual}")
+
+
     while open_list:
         # Usa a heurística baseada em calculaDist
         n = min(open_list, key=lambda v: g[v] + grafo.calculaDist(v, end))
@@ -83,12 +94,12 @@ def procura_aStar(grafo, start, end):
                 caminho.append(n)
                 n = parents[n]
             caminho.append(start)
-            return caminho[::-1], grafo.calcula_custo(caminho[::-1])
+            return caminho[::-1], grafo.calcula_custo(caminho[::-1], veiculo_atual)
 
         open_list.remove(n)
         closed_list.add(n)
 
-        for m, weight in grafo.getNeighbours(n):
+        for m, weight in grafo.getNeighbours(n, veiculo_atual):
             if m not in open_list and m not in closed_list:
                 open_list.add(m)
                 parents[m] = n
@@ -102,15 +113,26 @@ def procura_aStar(grafo, start, end):
 
     return None, math.inf
 
-# Algoritmo Greedy usando a heurística definida no grafo
 def greedy(grafo, start, end):
     open_list = {start}
     closed_list = set()
     parents = {start: start}
 
+    # Obtém os veículos disponíveis no nó inicial
+    veiculos_disponiveis = grafo.get_veiculos_no(start)
+    if not veiculos_disponiveis:
+        print(f"Nó {start} não possui veículos disponíveis.")
+        return None, math.inf
+
+    # Escolhe o primeiro veículo disponível para a busca
+    veiculo_atual = veiculos_disponiveis[0]
+    print(f"Veículo escolhido para a busca: {veiculo_atual}")
+
     while open_list:
+        # Pega o nó com o menor custo (com base na heurística de distância para o final)
         n = min(open_list, key=lambda v: grafo.calculaDist(v, end))
 
+        # Se o destino for alcançado, construa o caminho
         if n == end:
             caminho = []
             while parents[n] != n:
@@ -118,14 +140,16 @@ def greedy(grafo, start, end):
                 n = parents[n]
             caminho.append(start)
             caminho.reverse()
-            return caminho, grafo.calcula_custo(caminho)
+            return caminho, grafo.calcula_custo(caminho, veiculo_atual)
 
         open_list.remove(n)
         closed_list.add(n)
 
-        for m, weight in grafo.getNeighbours(n):
+        # Explora os vizinhos do nó atual
+        for m, weight in grafo.getNeighbours(n, veiculo_atual):
+            # Verifica se o vizinho não foi visitado e não está na lista de fechados
             if m not in open_list and m not in closed_list:
                 open_list.add(m)
                 parents[m] = n
 
-    return None, math.inf  
+    return None, math.inf
