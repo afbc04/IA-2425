@@ -122,6 +122,7 @@ class Grafo:
 
         dist = self.calculaDist(coord_no, coord_destino)
 
+        return dist
 
     def desenha(self):
         """
