@@ -1,11 +1,11 @@
 {
     "nos": [
-        {"nome": "A", "populacao": 1000, "tempo": 15, "meteorologia": {"chuva": 1, "tempestade": 0, "vento": 3, "nevoeiro": 2}},
-        {"nome": "B", "populacao": 800, "tempo": 12, "meteorologia": {"chuva": 0, "tempestade": 1, "vento": 2, "nevoeiro": 1}},
-        {"nome": "C", "populacao": 1200, "tempo": 10, "meteorologia": {"chuva": 2, "tempestade": 0, "vento": 4, "nevoeiro": 0}},
-        {"nome": "D", "populacao": 600, "tempo": 8, "meteorologia": {"chuva": 3, "tempestade": 0, "vento": 1, "nevoeiro": 1}},
-        {"nome": "E", "populacao": 700, "tempo": 20, "meteorologia": {"chuva": 0, "tempestade": 2, "vento": 3, "nevoeiro": 2}},
-        {"nome": "F", "populacao": 500, "tempo": 18, "meteorologia": {"chuva": 1, "tempestade": 1, "vento": 0, "nevoeiro": 3}}
+        {"nome": "A", "populacao": 1000, "tempo": 15, "x": 3, "y": 0, "meteorologia": {"chuva": 1, "tempestade": 0, "vento": 3, "nevoeiro": 2}},
+        {"nome": "B", "populacao": 800, "tempo": 12, "x": 1, "y": 2, "meteorologia": {"chuva": 0, "tempestade": 1, "vento": 2, "nevoeiro": 1}},
+        {"nome": "C", "populacao": 1200, "tempo": 10, "x": 3, "y": 1, "meteorologia": {"chuva": 2, "tempestade": 0, "vento": 4, "nevoeiro": 0}},
+        {"nome": "D", "populacao": 600, "tempo": 8, "x": 4, "y": 3, "meteorologia": {"chuva": 3, "tempestade": 0, "vento": 1, "nevoeiro": 1}},
+        {"nome": "E", "populacao": 700, "tempo": 20, "x": 2, "y": -1, "meteorologia": {"chuva": 0, "tempestade": 2, "vento": 3, "nevoeiro": 2}},
+        {"nome": "F", "populacao": 500, "tempo": 18, "x": 5, "y": -2, "meteorologia": {"chuva": 1, "tempestade": 1, "vento": 0, "nevoeiro": 3}}
     ],
     "arestas": [
         {"origem": "A", "destino": "B", "peso": 10, "bloqueada": false},
