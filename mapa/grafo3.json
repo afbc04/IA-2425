@@ -1,132 +1,162 @@
 {
     "nos": [
-        {
-            "nome": "A", 
-            "populacao": 1000, 
-            "tempo": 15, 
-            "meteorologia": {
-                "chuva": 0.2, 
-                "tempestade": 0.0,
-                "vento": 0.9,
-                "nevoeiro": 0.6
-            }
-        },
-        {
-            "nome": "B", 
-            "populacao": 800, 
-            "tempo": 12, 
-            "meteorologia": {
-                "chuva": 0.0,
-                "tempestade": 0.1,
-                "vento": 0.7,
-                "nevoeiro": 0.4
-            }
-        },
-        {
-            "nome": "C", 
-            "populacao": 1200, 
-            "tempo": 10, 
-            "meteorologia": {
-                "chuva": 0.6,
-                "tempestade": 0.0,
-                "vento": 0.9,
-                "nevoeiro": 0.0
-            }
-        },
-        {
-            "nome": "D", 
-            "populacao": 1600, 
-            "tempo": 28, 
-            "meteorologia": {
-                "chuva": 0.8,
-                "tempestade": 0.0,
-                "vento": 0.2,
-                "nevoeiro": 0.2
-            }
-        },
-        {
-            "nome": "E", 
-            "populacao": 2000, 
-            "tempo": 20, 
-            "meteorologia": {
-                "chuva": 0.0,
-                "tempestade": 0.4,
-                "vento": 0.6,
-                "nevoeiro": 0.4
-            }
-        },
-        {
-            "nome": "F", 
-            "populacao": 500, 
-            "tempo": 18, 
-            "meteorologia": {
-                "chuva": 0.2,
-                "tempestade": 0.3, 
-                "vento": 0.1,
-                "nevoeiro": 0.6
-            }
-        },
-        {
-            "nome": "G", 
-            "populacao": 1700, 
-            "tempo": 25, 
-            "meteorologia": {
-                "chuva": 0.0,
-                "tempestade": 0.5,
-                "vento": 0.7,
-                "nevoeiro": 0.4
-            }
-        },
-        {
-            "nome": "H", 
-            "populacao": 700, 
-            "tempo": 40, 
-            "meteorologia": {
-                "chuva": 0.2,
-                "tempestade": 0.4,
-                "vento": 0.8,
-                "nevoeiro": 0.3
-            }
-        },
-        {
-            "nome": "I", 
-            "populacao": 2200, 
-            "tempo": 20, 
-            "meteorologia": {
-                "chuva": 0.0,
-                "tempestade": 0.6,
-                "vento": 0.8,
-                "nevoeiro": 0.2
-            }
-        },
-        {
-            "nome": "J", 
-            "populacao": 1500, 
-            "tempo": 30, 
-            "meteorologia": {
-                "chuva": 0.4,
-                "tempestade": 0.5,
-                "vento": 0.9,
-                "nevoeiro": 0.1
-            }
+      {
+        "name": "A",
+        "id": 1,
+        "populacao": 1000,
+        "janela_tempo": 15,
+        "x": 0,
+        "y": 0,
+        "meteorologia": {
+          "chuva": 0.2,
+          "tempestade": 0.0,
+          "vento": 0.9,
+          "nevoeiro": 0.6
         }
-        
+      },
+      {
+        "name": "B",
+        "id": 2,
+        "populacao": 800,
+        "janela_tempo": 12,
+        "x": 2,
+        "y": 3,
+        "meteorologia": {
+          "chuva": 0.0,
+          "tempestade": 0.1,
+          "vento": 0.7,
+          "nevoeiro": 0.4
+        }
+      },
+      {
+        "name": "C",
+        "id": 3,
+        "populacao": 1200,
+        "janela_tempo": 10,
+        "x": 4,
+        "y": 0,
+        "meteorologia": {
+          "chuva": 0.6,
+          "tempestade": 0.0,
+          "vento": 0.9,
+          "nevoeiro": 0.0
+        }
+      },
+      {
+        "name": "D",
+        "id": 4,
+        "populacao": 1600,
+        "janela_tempo": 28,
+        "x": 5,
+        "y": 4,
+        "meteorologia": {
+          "chuva": 0.8,
+          "tempestade": 0.0,
+          "vento": 0.2,
+          "nevoeiro": 0.2
+        }
+      },
+      {
+        "name": "E",
+        "id": 5,
+        "populacao": 2000,
+        "janela_tempo": 20,
+        "x": 6,
+        "y": 0,
+        "meteorologia": {
+          "chuva": 0.0,
+          "tempestade": 0.4,
+          "vento": 0.6,
+          "nevoeiro": 0.4
+        }
+      },
+      {
+        "name": "F",
+        "id": 6,
+        "populacao": 500,
+        "janela_tempo": 18,
+        "x": 3,
+        "y": -2,
+        "meteorologia": {
+          "chuva": 0.2,
+          "tempestade": 0.3,
+          "vento": 0.1,
+          "nevoeiro": 0.6
+        }
+      },
+      {
+        "name": "G",
+        "id": 7,
+        "populacao": 1700,
+        "janela_tempo": 25,
+        "x": 7,
+        "y": 2,
+        "meteorologia": {
+          "chuva": 0.0,
+          "tempestade": 0.5,
+          "vento": 0.7,
+          "nevoeiro": 0.4
+        }
+      },
+      {
+        "name": "H",
+        "id": 8,
+        "populacao": 700,
+        "janela_tempo": 40,
+        "x": 8,
+        "y": -1,
+        "meteorologia": {
+          "chuva": 0.2,
+          "tempestade": 0.4,
+          "vento": 0.8,
+          "nevoeiro": 0.3
+        }
+      },
+      {
+        "name": "I",
+        "id": 9,
+        "populacao": 2200,
+        "janela_tempo": 20,
+        "x": 9,
+        "y": 3,
+        "meteorologia": {
+          "chuva": 0.0,
+          "tempestade": 0.6,
+          "vento": 0.8,
+          "nevoeiro": 0.2
+        }
+      },
+      {
+        "name": "J",
+        "id": 10,
+        "populacao": 1500,
+        "janela_tempo": 30,
+        "x": 10,
+        "y": 0,
+        "meteorologia": {
+          "chuva": 0.4,
+          "tempestade": 0.5,
+          "vento": 0.9,
+          "nevoeiro": 0.1
+        }
+      }
     ],
     "arestas": [
-        {"origem": "A", "destino": "B", "peso": 8, "bloqueada": false},
-        {"origem": "A", "destino": "C", "peso": 15, "bloqueada": false},
-        {"origem": "A", "destino": "F", "peso": 12, "bloqueada": false},
-        {"origem": "B", "destino": "D", "peso": 10, "bloqueada": false},
-        {"origem": "B", "destino": "G", "peso": 6, "bloqueada": false},
-        {"origem": "C", "destino": "E", "peso": 7, "bloqueada": true},
-        {"origem": "C", "destino": "H", "peso": 9, "bloqueada": false},
-        {"origem": "D", "destino": "I", "peso": 14, "bloqueada": false},
-        {"origem": "E", "destino": "I", "peso": 5, "bloqueada": false},
-        {"origem": "F", "destino": "G", "peso": 11, "bloqueada": true},
-        {"origem": "F", "destino": "J", "peso": 8, "bloqueada": false},
-        {"origem": "G", "destino": "H", "peso": 13, "bloqueada": false},
-        {"origem": "H", "destino": "I", "peso": 16, "bloqueada": false},
-        {"origem": "H", "destino": "J", "peso": 7, "bloqueada": false},
-        {"origem": "I", "destino": "J", "peso": 10, "bloqueada": true}
+      {"origem": "A", "destino": "B", "peso": 8, "bloqueada": false},
+      {"origem": "A", "destino": "C", "peso": 15, "bloqueada": false},
+      {"origem": "A", "destino": "F", "peso": 12, "bloqueada": false},
+      {"origem": "B", "destino": "D", "peso": 10, "bloqueada": false},
+      {"origem": "B", "destino": "G", "peso": 6, "bloqueada": false},
+      {"origem": "C", "destino": "E", "peso": 7, "bloqueada": true},
+      {"origem": "C", "destino": "H", "peso": 9, "bloqueada": false},
+      {"origem": "D", "destino": "I", "peso": 14, "bloqueada": false},
+      {"origem": "E", "destino": "I", "peso": 5, "bloqueada": false},
+      {"origem": "F", "destino": "G", "peso": 11, "bloqueada": true},
+      {"origem": "F", "destino": "J", "peso": 8, "bloqueada": false},
+      {"origem": "G", "destino": "H", "peso": 13, "bloqueada": false},
+      {"origem": "H", "destino": "I", "peso": 16, "bloqueada": false},
+      {"origem": "H", "destino": "J", "peso": 7, "bloqueada": false},
+      {"origem": "I", "destino": "J", "peso": 10, "bloqueada": true}
     ]
-}
+  }
+  

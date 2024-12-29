@@ -9,6 +9,7 @@ class Grafo:
         self.m_directed = directed  # Se o grafo é direcionado
         self.m_graph = {}  # Representação do grafo: {nó: [(adjacente, peso)]}
         self.m_h = {}  # Heurísticas: {nó: valor}
+        self.m_positions = {} # Coordenadas x e y para cada nó
 
     def _get_or_create_node(self, node_name):
         """
@@ -39,19 +40,6 @@ class Grafo:
         self.m_graph[node1].append((node2, weight, blocked))
         if not self.m_directed:
             self.m_graph[node2].append((node1, weight, blocked))
-
-
-    # Calcula a heurística de prioridade
-    @staticmethod
-    def calcula_heuristica_prioridade(no):
-        """
-        Calcula a prioridade heurística de um nó com base na população e tempo.
-        :param no: Objeto do tipo No.
-        :return: Heurística de prioridade.
-        """
-        if no.janela_tempo <= 0:
-            return 0
-        return no.populacao / no.janela_tempo
 
     # Devolve a heurística do nó, ou um valor alto se não estiver definida
     def getH(self, nodo):
@@ -111,6 +99,29 @@ class Grafo:
                 no_maior_prioridade = no
 
         return no_maior_prioridade
+    
+    def calculaDist(self, CoordNode1, CoordNode2):
+        """
+        Retorna a distância em linha reta entre dois nós
+        """
+        return math.sqrt((CoordNode1[0] - CoordNode2[0])**2 + (CoordNode1[1] - CoordNode2[1])**2)
+
+        # Calcula a heurística de prioridade
+    def calcula_heuristica(self, no):
+        """
+        Calcula a prioridade heurística de um nó com base na população, tempo e coordenadas.
+        :param no: Objeto do tipo No.
+        :return: Heurística de prioridade.
+        """
+        # Obtém o nó com a maior prioridade (destino)
+        destino = self.get_no_maior_prioridade()
+
+        # Calcular a distancia em linha reta entre dois nós
+        coord_no = no.get_coordenadas()
+        coord_destino = destino.get_coordenadas()
+
+        dist = self.calculaDist(coord_no, coord_destino)
+
 
     def desenha(self):
         """
