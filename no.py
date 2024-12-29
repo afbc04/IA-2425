@@ -1,9 +1,11 @@
 from meteorologia import Meteorologia
 
 class No:
-    def __init__(self, name, id=-1, populacao=0, janela_tempo=24, meteorologia=None):
+    def __init__(self, name, id=-1, populacao=0, janela_tempo=24, meteorologia=None, x=0, y=0):
         self.m_id = id
         self.m_name = str(name)
+        self.x = x
+        self.y = y
         self.populacao = populacao        
         self.janela_tempo = janela_tempo  
         self.meteorologia = meteorologia if meteorologia else Meteorologia()
@@ -53,3 +55,6 @@ class No:
 
     def __hash__(self):
         return hash(self.m_name)
+
+    def get_coordenadas(self):
+        return self.x, self.y
