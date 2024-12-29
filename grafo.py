@@ -109,8 +109,10 @@ class Grafo:
 
     def desenha(self):
         """
-        Gera uma visualização do grafo com informações adicionais
+        Gera uma visualização do grafo com informações adicionais.
         """
+        plt.ion()  # Ativa o modo interativo
+
         g = nx.Graph()
 
         # Adicionar nós ao grafo NetworkX com coordenadas e informações adicionais
@@ -119,7 +121,6 @@ class Grafo:
         for node in self.m_nodes:
             g.add_node(node.getName())
             pos[node.getName()] = node.get_coordenadas()  # Usa as coordenadas do JSON
-            # Rótulo do nó inclui o nome e os veículos associados
             vehicles = ', '.join(node.get_veiculos())  
             node_labels[node.getName()] = f"{node.getName()} ({vehicles})"
 
@@ -149,9 +150,9 @@ class Grafo:
             g,
             pos,
             with_labels=True,
-            labels=node_labels,  # Usa os rótulos personalizados para os nós
+            labels=node_labels,
             node_size=7000,
-            node_color=node_colors,  # Define as cores dos nós
+            node_color=node_colors,
             edge_color=edge_colors,
             font_size=9,
             font_weight="bold",
@@ -167,4 +168,8 @@ class Grafo:
 
         plt.title("Mapa de Zonas e Conexões", fontsize=16)
         plt.axis("off")
-        plt.show()
+        plt.show(block=False)  # Exibe o grafo sem bloquear o programa
+
+        # Atualiza a janela para refletir mudanças no grafo
+        plt.pause(0.1)
+
