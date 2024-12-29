@@ -4,7 +4,6 @@ from grafo import Grafo
 
 # Algoritmo de procura em profundidade (DFS)
 def procura_DFS(grafo, start, end, path=None, visited=None):
-
     if path is None:
         path = []
     if visited is None:
@@ -14,24 +13,41 @@ def procura_DFS(grafo, start, end, path=None, visited=None):
     path = path + [start]
     visited.add(start)
 
-    # Imprime o progresso para depuração
-    print(f"Visitando: {start}, Caminho atual: {path}")
+    # Obtém os veículos disponíveis no nó atual
+    veiculos_disponiveis = grafo.get_veiculos_no(start)
+    if not veiculos_disponiveis:
+        print(f"Nó {start} não possui veículos disponíveis.")
+        return None, math.inf
+
+    # Usa o primeiro veículo disponível para começar
+    veiculo_atual = veiculos_disponiveis[0]
+    print(f"Visitando: {start} com veículo: {veiculo_atual}, Caminho atual: {path}")
 
     # Caso base: destino encontrado
     if start == end:
         print(f"Destino encontrado: {end}")
-        return path, grafo.calcula_custo(path)
+        custo = grafo.calcula_custo(path, veiculo_atual)
+        if custo == float('inf'):
+            print(f"O veículo '{veiculo_atual}' não pode ser usado em todas as arestas do caminho.")
+            return None, math.inf
+        return path, custo
 
     # Explora os vizinhos do nó atual
-    for adjacente, peso in grafo.getNeighbours(start):
+    caminho_valido = False
+    for adjacente, peso in grafo.getNeighbours(start, veiculo_atual):
         if adjacente not in visited:
             resultado = procura_DFS(grafo, adjacente, end, path, visited)
             if resultado[0] is not None:  # Caminho encontrado
+                caminho_valido = True
                 return resultado
 
-    # Se não encontrar o caminho, retorna None
-    print(f"Retornando sem sucesso de: {start}")
+    # Se nenhum vizinho for válido, retorna que não há caminho
+    if not caminho_valido:
+        print(f"Nó {start} não possui caminhos válidos para o destino {end} com o veículo {veiculo_atual}.")
+        return None, math.inf
+
     return None, math.inf
+
 
 # Algoritmo de procura em largura (BFS)
 def procura_BFS(grafo, start, end):

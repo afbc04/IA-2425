@@ -24,25 +24,37 @@ class Grafo:
         self.m_graph[node_name] = []
         return new_node
 
-    def add_edge(self, node1, node2, weight, blocked=False):
+    def add_edge(self, node1, node2, weight, blocked=False, permitidos=None):
         """
-        Adiciona uma aresta entre dois nós com um peso e estado (bloqueada ou livre).
+        Adiciona uma aresta entre dois nós com um peso, estado (bloqueada ou livre) e veículos permitidos.
         """
-        print(f"Adicionar aresta: {node1} -> {node2}, Peso: {weight}, Bloqueada: {blocked}")
+        permitidos = permitidos or []  # Se não for especificado, assume vazio
+        print(f"Adicionar aresta: {node1} -> {node2}, Peso: {weight}, Bloqueada: {blocked}, Veículos Permitidos: {permitidos}")
         n1 = self._get_or_create_node(node1)
         n2 = self._get_or_create_node(node2)
 
-        self.m_graph[node1].append((node2, weight, blocked))
+        # Adiciona a aresta com peso, estado e veículos permitidos
+        self.m_graph[node1].append((node2, weight, blocked, permitidos))
         if not self.m_directed:
-            self.m_graph[node2].append((node1, weight, blocked))
+            self.m_graph[node2].append((node1, weight, blocked, permitidos))
 
-    def getNeighbours(self, nodo):
-        return [(adjacente, peso) for adjacente, peso, bloqueada in self.m_graph.get(nodo, []) if not bloqueada]
+    def getNeighbours(self, nodo, veiculo):
+        """
+        Retorna os vizinhos de um nó no grafo acessíveis com o veículo especificado.
+        """
+        return [
+            (adjacente, peso)
+            for adjacente, peso, bloqueada, permitidos in self.m_graph.get(nodo, [])
+            if not bloqueada and veiculo in permitidos
+        ]
 
-    def get_arc_cost(self, node1, node2):
-        for adjacente, custo, bloqueada in self.m_graph.get(node1, []):
+    def get_arc_cost(self, node1, node2, veiculo):
+        """
+        Retorna o custo de uma aresta entre dois nós se o veículo for permitido.
+        """
+        for adjacente, custo, bloqueada, permitidos in self.m_graph.get(node1, []):
             if adjacente == node2:
-                return custo if not bloqueada else float('inf')
+                return custo if not bloqueada and veiculo in permitidos else float('inf')
         return float('inf')
 
     def calculaDist(self, node1_name, node2_name):
@@ -54,11 +66,17 @@ class Grafo:
             coord2 = node2.get_coordenadas()
             return math.sqrt((coord1[0] - coord2[0])**2 + (coord1[1] - coord2[1])**2)
         return float('inf')
-    
-    def calcula_custo(self, caminho):
+
+    def calcula_custo(self, caminho, veiculo):
+        """
+        Calcula o custo total de um caminho no grafo validando o veículo em cada aresta.
+        """
         custo = 0
         for i in range(len(caminho) - 1):
-            custo += self.get_arc_cost(caminho[i], caminho[i + 1])
+            custo_trecho = self.get_arc_cost(caminho[i], caminho[i + 1], veiculo)
+            if custo_trecho == float('inf'):
+                return float('inf')  # Caminho inválido
+            custo += custo_trecho
         return custo
 
     def calcula_heuristica(self, no):
@@ -80,27 +98,40 @@ class Grafo:
 
         return no_maior_prioridade
 
+    def get_veiculos_no(self, no_name):
+        """
+        Retorna os veículos associados a um nó específico no grafo.
+        """
+        for node in self.m_nodes:
+            if node.getName() == no_name:
+                return node.get_veiculos()
+        return []
+
     def desenha(self):
         """
-        Gera uma visualização do grafo usando as coordenadas definidas nos nós.
+        Gera uma visualização do grafo com informações adicionais 
         """
         g = nx.Graph()
 
-        # Adicionar nós ao grafo NetworkX com coordenadas
+        # Adicionar nós ao grafo NetworkX com coordenadas e informações adicionais
         pos = {}
+        node_labels = {}
         for node in self.m_nodes:
             g.add_node(node.getName())
             pos[node.getName()] = node.get_coordenadas()  # Usa as coordenadas do JSON
+            # Rótulo do nó inclui o nome e os veículos associados
+            vehicles = ', '.join(node.get_veiculos())  
+            node_labels[node.getName()] = f"{node.getName()} ({vehicles})"
 
         # Adicionar arestas ao grafo NetworkX
         edge_colors = []
         edge_labels = {}
         for node in self.m_nodes:
-            for adjacente, peso, bloqueada in self.m_graph[node.getName()]:
+            for adjacente, peso, bloqueada, permitidos in self.m_graph[node.getName()]:
                 if not g.has_edge(node.getName(), adjacente):
                     g.add_edge(node.getName(), adjacente, weight=peso)
                     edge_colors.append("red" if bloqueada else "black")
-                    edge_labels[(node.getName(), adjacente)] = peso
+                    edge_labels[(node.getName(), adjacente)] = f"{peso} ({', '.join(permitidos)})"
 
         # Desenhar o grafo com as coordenadas fornecidas
         plt.figure(figsize=(12, 8))
@@ -108,10 +139,11 @@ class Grafo:
             g,
             pos,
             with_labels=True,
-            node_size=3000,
+            labels=node_labels,  # Usa os rótulos personalizados para os nós
+            node_size=7000,
             node_color="skyblue",
             edge_color=edge_colors,
-            font_size=10,
+            font_size=9,
             font_weight="bold",
             edgecolors="black",
         )
@@ -123,6 +155,6 @@ class Grafo:
             bbox=dict(facecolor="white", alpha=0.7, edgecolor="none"),
         )
 
-        plt.title("Mapa de Zonas e Conexões", fontsize=16)
+        plt.title("Mapa de Zonas e Conexões", fontsize=16) # TODO, VER O MOTIVO PELO QUAL JÁ NÃO APARECE O TÍTULO
         plt.axis("off")
         plt.show()

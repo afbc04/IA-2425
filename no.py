@@ -1,7 +1,7 @@
 from meteorologia import Meteorologia
 
 class No:
-    def __init__(self, name, id=-1, populacao=0, janela_tempo=24, meteorologia=None, x=0, y=0):
+    def __init__(self, name, id=-1, populacao=0, janela_tempo=24, meteorologia=None, x=0, y=0, veiculos=None):
         self.m_id = id
         self.m_name = str(name)
         self.x = x
@@ -9,6 +9,7 @@ class No:
         self.populacao = populacao        
         self.janela_tempo = janela_tempo  
         self.meteorologia = meteorologia if meteorologia else Meteorologia()
+        self.veiculos = veiculos if veiculos else []
 
     def __str__(self):
         return f"no {self.m_name}"
@@ -27,6 +28,10 @@ class No:
     
     def get_coordenadas(self):
         return self.x, self.y
+
+    def get_veiculos(self):
+        return getattr(self, "veiculos", [])
+
 
     def calcula_impacto_meteorologia(self):
         """

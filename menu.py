@@ -1,16 +1,15 @@
 import json
 from grafo import Grafo
-from no import No 
+from no import No
 from algoritmos_procura import procura_DFS, procura_BFS, procura_aStar, greedy
 from meteorologia import Meteorologia
 from condicoesDinamicas import CondicoesDinamicas
 
 # Função para carregar o grafo a partir de um ficheiro JSON na pasta mapa
-def carregar_grafo(ficheiro_json="mapa/grafo3.json"):
+def carregar_grafo(ficheiro_json="mapa/grafo2.json"):
     """
     Carrega o grafo a partir de um ficheiro JSON.
     """
-    import json
     with open(ficheiro_json, 'r') as f:
         dados = json.load(f)
 
@@ -21,8 +20,8 @@ def carregar_grafo(ficheiro_json="mapa/grafo3.json"):
         nome = no_data["nome"]
         populacao = no_data["populacao"]
         tempo = no_data["tempo"]
-        x = no_data.get("x", 0)  # Coordenada X do nó
-        y = no_data.get("y", 0)  # Coordenada Y do nó
+        x = no_data.get("x", 0)
+        y = no_data.get("y", 0)
         meteo_data = no_data.get("meteorologia", {"chuva": 0, "tempestade": 0, "vento": 0, "nevoeiro": 0})
         meteorologia = Meteorologia(
             chuva=meteo_data["chuva"],
@@ -30,8 +29,8 @@ def carregar_grafo(ficheiro_json="mapa/grafo3.json"):
             vento=meteo_data["vento"],
             nevoeiro=meteo_data["nevoeiro"]
         )
-        # Criar o nó com coordenadas
-        no = No(name=nome, populacao=populacao, janela_tempo=tempo, meteorologia=meteorologia, x=x, y=y)
+        veiculos = no_data.get("veiculos", [])
+        no = No(name=nome, populacao=populacao, janela_tempo=tempo, meteorologia=meteorologia, x=x, y=y, veiculos=veiculos)
         grafo.m_nodes.append(no)
         grafo.m_graph[nome] = []
 
@@ -41,8 +40,9 @@ def carregar_grafo(ficheiro_json="mapa/grafo3.json"):
         destino = aresta["destino"]
         peso = aresta["peso"]
         bloqueada = aresta.get("bloqueada", False)
-        print(f"Processar aresta: {origem} -> {destino}, Peso: {peso}, Bloqueada: {bloqueada}")  # Depuração
-        grafo.add_edge(origem, destino, peso, blocked=bloqueada)
+        permitidos = aresta.get("permitidos", [])
+        print(f"Processar aresta: {origem} -> {destino}, Peso: {peso}, Bloqueada: {bloqueada}, Permitidos: {permitidos}")
+        grafo.add_edge(origem, destino, peso, blocked=bloqueada, permitidos=permitidos)
 
     return grafo
 
@@ -61,23 +61,25 @@ def mostrar_menu():
 # Função principal do menu
 def iniciar_menu():
     grafo = carregar_grafo()
-
-    condicoes_dinamicas = CondicoesDinamicas(grafo)
-    condicoes_dinamicas.iniciar_alteracoes()
+    #condicoes_dinamicas = CondicoesDinamicas(grafo)
+    #condicoes_dinamicas.iniciar_alteracoes()
+    #TODO documentado, porque não compila, uma vez que não foram adicionados os veículos
 
     while True:
-        # Encontrar o nó de maior prioridade
         destino = grafo.get_no_maior_prioridade()
         if destino is None:
             print("Não existem nós válidos no grafo.")
             break
 
         print(f"\nDestino automaticamente escolhido: {destino.getName()} (prioridade: {destino.calcula_prioridade()})")
-
         opcao = mostrar_menu()
 
         if opcao == "1":
             inicio = input("Nó inicial: ")
+            veiculos_disponiveis = grafo.get_veiculos_no(inicio.upper())
+            if not veiculos_disponiveis:
+                print("O nó inicial não possui veículos disponíveis.")
+                continue
             resultado = procura_DFS(grafo, inicio.upper(), destino.getName().upper())
             if resultado:
                 print("Caminho DFS:", resultado[0], "Custo:", resultado[1])
@@ -117,3 +119,5 @@ def iniciar_menu():
 
         else:
             print("Opção inválida. Tente novamente.")
+
+
