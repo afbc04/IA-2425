@@ -109,7 +109,7 @@ def greedy(grafo, start, end):
     parents = {start: start}
 
     while open_list:
-        n = min(open_list, key=lambda v: grafo.getH(v))
+        n = min(open_list, key=lambda v: grafo.calculaDist(v, end))
 
         if n == end:
             caminho = []
