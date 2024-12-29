@@ -6,34 +6,6 @@ from meteorologia import Meteorologia
 from condicoesDinamicas import CondicoesDinamicas
 
 # Função para carregar o grafo a partir de um ficheiro JSON na pasta mapa
-def carregar_grafo2(ficheiro_json="mapa/mapaGrafo.json"):
-     with open(ficheiro_json, 'r') as f:
-         dados = json.load(f)
-
-     grafo = Grafo(directed=False)
-
-     # Adicionar nós ao grafo com população e tempo
-     for no_data in dados["areas"]:
-         nome = no_data["id"]
-         populacao = no_data["populacao"]
-         tempo = no_data["janela_critica"]
-         no = No(nome, populacao=populacao, janela_tempo=tempo)
-         grafo.m_nodes.append(no)
-         grafo.m_graph[nome] = []  # Inicializa a lista de adjacências do nó
-
-     # Adicionar arestas ao grafo
-     for aresta in dados["arestas"]:
-         origem = aresta["origem"]
-         destino = aresta["destino"]
-         peso = aresta["distancia"]
-         bloqueada = aresta.get("bloqueado", False)
-         print(f"Processar aresta: {origem} -> {destino}, Peso: {peso}, Bloqueada: {bloqueada}")  # Depuração
-         grafo.add_edge(origem, destino, peso, blocked=bloqueada)
-
-     return grafo
-
-
-# Função para carregar o grafo a partir de um ficheiro JSON na pasta mapa
 def carregar_grafo(ficheiro_json="mapa/grafo3.json"):
     """
     Carrega o grafo a partir de um ficheiro JSON.
@@ -49,6 +21,8 @@ def carregar_grafo(ficheiro_json="mapa/grafo3.json"):
         nome = no_data["nome"]
         populacao = no_data["populacao"]
         tempo = no_data["tempo"]
+        x = no_data.get("x", 0)  # Coordenada X do nó
+        y = no_data.get("y", 0)  # Coordenada Y do nó
         meteo_data = no_data.get("meteorologia", {"chuva": 0, "tempestade": 0, "vento": 0, "nevoeiro": 0})
         meteorologia = Meteorologia(
             chuva=meteo_data["chuva"],
@@ -56,9 +30,10 @@ def carregar_grafo(ficheiro_json="mapa/grafo3.json"):
             vento=meteo_data["vento"],
             nevoeiro=meteo_data["nevoeiro"]
         )
-        no = No(name=nome, populacao=populacao, janela_tempo=tempo, meteorologia=meteorologia)
+        # Criar o nó com coordenadas
+        no = No(name=nome, populacao=populacao, janela_tempo=tempo, meteorologia=meteorologia, x=x, y=y)
         grafo.m_nodes.append(no)
-        grafo.m_graph[nome] = [] 
+        grafo.m_graph[nome] = []
 
     # Adicionar arestas ao grafo
     for aresta in dados["arestas"]:
@@ -69,9 +44,7 @@ def carregar_grafo(ficheiro_json="mapa/grafo3.json"):
         print(f"Processar aresta: {origem} -> {destino}, Peso: {peso}, Bloqueada: {bloqueada}")  # Depuração
         grafo.add_edge(origem, destino, peso, blocked=bloqueada)
 
-
     return grafo
-
 
 # Função para mostrar o menu e executar o algoritmo escolhido
 def mostrar_menu():
