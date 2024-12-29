@@ -59,7 +59,8 @@ def procura_aStar(grafo, start, end):
     parents = {start: start}
 
     while open_list:
-        n = min(open_list, key=lambda v: g[v] + grafo.getH(v))
+        # Usa a heurística baseada em calculaDist
+        n = min(open_list, key=lambda v: g[v] + grafo.calculaDist(v, end))
         if n == end:
             caminho = []
             while parents[n] != n:
