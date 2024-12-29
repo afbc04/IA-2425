@@ -109,7 +109,7 @@ class Grafo:
 
     def desenha(self):
         """
-        Gera uma visualização do grafo com informações adicionais 
+        Gera uma visualização do grafo com informações adicionais
         """
         g = nx.Graph()
 
@@ -123,6 +123,10 @@ class Grafo:
             vehicles = ', '.join(node.get_veiculos())  
             node_labels[node.getName()] = f"{node.getName()} ({vehicles})"
 
+        # Identificar o nó de maior prioridade
+        no_maior_prioridade = self.get_no_maior_prioridade()
+        no_destacado = no_maior_prioridade.getName() if no_maior_prioridade else None
+
         # Adicionar arestas ao grafo NetworkX
         edge_colors = []
         edge_labels = {}
@@ -133,6 +137,12 @@ class Grafo:
                     edge_colors.append("red" if bloqueada else "black")
                     edge_labels[(node.getName(), adjacente)] = f"{peso} ({', '.join(permitidos)})"
 
+        # Determinar cores dos nós (vermelho para maior prioridade, azul claro para os demais)
+        node_colors = [
+            "red" if node.getName() == no_destacado else "skyblue" 
+            for node in self.m_nodes
+        ]
+
         # Desenhar o grafo com as coordenadas fornecidas
         plt.figure(figsize=(12, 8))
         nx.draw(
@@ -141,7 +151,7 @@ class Grafo:
             with_labels=True,
             labels=node_labels,  # Usa os rótulos personalizados para os nós
             node_size=7000,
-            node_color="skyblue",
+            node_color=node_colors,  # Define as cores dos nós
             edge_color=edge_colors,
             font_size=9,
             font_weight="bold",
@@ -155,6 +165,6 @@ class Grafo:
             bbox=dict(facecolor="white", alpha=0.7, edgecolor="none"),
         )
 
-        plt.title("Mapa de Zonas e Conexões", fontsize=16) # TODO, VER O MOTIVO PELO QUAL JÁ NÃO APARECE O TÍTULO
+        plt.title("Mapa de Zonas e Conexões", fontsize=16)
         plt.axis("off")
         plt.show()
