@@ -24,6 +24,9 @@ class No:
 
     def getName(self):
         return self.m_name
+    
+    def get_coordenadas(self):
+        return self.x, self.y
 
     def calcula_impacto_meteorologia(self):
         """
@@ -55,6 +58,3 @@ class No:
 
     def __hash__(self):
         return hash(self.m_name)
-
-    def get_coordenadas(self):
-        return self.x, self.y
