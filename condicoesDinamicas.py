@@ -20,7 +20,7 @@ class CondicoesDinamicas:
 
     #define se vai alterar uma condição meteorológica ou o estado de um caminho
     def escolhe_condicao_a_alterar(self):
-        if random.random() > 0.10 and self.grafo.m_nodes:
+        if random.randint(1,10) > 1 and self.grafo.m_nodes:
             self.alterar_meteo_no()
         else:
             self.alterar_estado_caminho()
@@ -34,8 +34,7 @@ class CondicoesDinamicas:
         lista_cond_meteo = ["chuva", "tempestade", "vento", "nevoeiro"]
         cond_a_alterar = random.choices(lista_cond_meteo, [0.3, 0.1, 0.3, 0.3], k=1)[0]
 
-        #if cond_a_alterar == "tempestade"
-        novo_valor_cond = random.random()
+        novo_valor_cond = random.randint(1,10)
 
         setattr(no_a_alterar.meteorologia, cond_a_alterar, novo_valor_cond)
         #print("\nMeteorologia alterada: " + no_a_alterar.getName() + "\nCondição: " + cond_a_alterar + "\nNovo valor: " + str(novo_valor_cond))
