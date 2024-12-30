@@ -82,7 +82,12 @@ def iniciar_menu():
                 continue
             resultado = procura_DFS(grafo, inicio.upper(), destino.getName().upper())
             if resultado:
-                print("Caminho DFS:", resultado[0], "Custo:", resultado[1])
+
+                print("Caminho DFS:")
+
+                for veiculo, (path,custo) in resultado.items():
+                    print("veículo:",veiculo," -> ", path, " Custo:", custo)
+
             else:
                 print("Caminho não encontrado com DFS.")
 
@@ -90,7 +95,12 @@ def iniciar_menu():
             inicio = input("Nó inicial: ")
             resultado = procura_BFS(grafo, inicio.upper(), destino.getName().upper())
             if resultado:
-                print("Caminho BFS:", resultado[0], "Custo:", resultado[1])
+                
+                print("Caminho BFS:")
+
+                for veiculo, (path,custo) in resultado.items():
+                    print("veículo:",veiculo," -> ", path, " Custo:", custo)
+
             else:
                 print("Caminho não encontrado com BFS.")
 
