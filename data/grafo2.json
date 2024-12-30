@@ -12,7 +12,7 @@
         {"origem": "A", "destino": "B", "peso": 10, "bloqueada": false, "permitidos": ["barco", "carro"]},
         {"origem": "B", "destino": "C", "peso": 15, "bloqueada": false, "permitidos": ["barco", "carro"]},
         {"origem": "C", "destino": "D", "peso": 20, "bloqueada": false, "permitidos": ["barco", "carro"]},
-        {"origem": "A", "destino": "E", "peso": 12, "bloqueada": false, "permitidos": ["aviao", "barco", "carro"]},
+        {"origem": "A", "destino": "E", "peso": 12, "bloqueada": false, "permitidos": ["aviao", "barco"]},
         {"origem": "E", "destino": "F", "peso": 8, "bloqueada": false, "permitidos": ["barco", "carro"]},
         {"origem": "F", "destino": "Z", "peso": 8, "bloqueada": false, "permitidos": ["barco", "carro"]},
         {"origem": "D", "destino": "Z", "peso": 8, "bloqueada": false, "permitidos": ["barco", "carro"]}

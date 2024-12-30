@@ -62,38 +62,60 @@ def procura_DFS(grafo, inicio, fim):
     print("Nenhum caminho válido encontrado.")
     return None
 
-
-
 def procura_BFS(grafo, inicio, fim):
-    queue = [(inicio, [inicio], None)]  # (nó atual, caminho até agora, veículo usado)
-    visited = set()
+    """
+    Realiza a busca em largura (BFS) para encontrar o melhor caminho
+    considerando todos os veículos disponíveis no nó inicial.
+    Retorna o melhor caminho com base no custo mais baixo.
+    """
+    # Obter veículos disponíveis no nó inicial
+    veiculos_disponiveis = grafo.get_veiculos_no(inicio)
+    if not veiculos_disponiveis:
+        print(f"Nó {inicio} não possui veículos disponíveis.")
+        return None
 
-    while queue:
-        nodo_atual, path, veiculo_atual = queue.pop(0)  # Retira o primeiro elemento da fila
-        visited.add(nodo_atual)
+    print(f"Veículos disponíveis em {inicio}: {[v.get_tipo() for v in veiculos_disponiveis]}")
 
-        # Verifica se já chegamos ao destino
-        if nodo_atual == fim:
-            custo = grafo.calcula_custo(path, veiculo_atual)
-            return {veiculo_atual.get_tipo(): (path, custo)}
+    melhores_caminhos = []
 
-        # Obter veículos disponíveis no nó inicial apenas na primeira iteração
-        if veiculo_atual is None:
-            veiculos_disponiveis = grafo.get_veiculos_no(nodo_atual)
-            veiculos_disponiveis.sort(key=lambda v: v.get_custo())  # Ordenar veículos por custo
-        else:
-            veiculos_disponiveis = [veiculo_atual]
+    # Iterar sobre cada veículo disponível
+    for veiculo in veiculos_disponiveis:
+        print(f"Usando veículo: {veiculo.get_tipo()}")
+        queue = [(inicio, [inicio])]  # Fila para BFS (nó atual, caminho até agora)
+        visited = set()
 
-        # Explorar vizinhos
-        for veiculo in veiculos_disponiveis:
+        while queue:
+            nodo_atual, caminho = queue.pop(0)
+            if nodo_atual in visited:
+                continue
+
+            visited.add(nodo_atual)
+            print(f"BFS: Visitando {nodo_atual}, Caminho atual: {caminho}")
+
+            # Se o destino foi alcançado
+            if nodo_atual == fim:
+                custo_arestas = grafo.calcula_custo(caminho, veiculo.get_tipo())
+                custo_final = custo_arestas * veiculo.get_custo()
+                print(f"[DEBUG] Veículo: {veiculo.get_tipo()}, Caminho: {caminho}, Custo (arestas): {custo_arestas}, Custo final: {custo_final}")
+                if custo_final != float('inf'):  # Apenas considerar caminhos válidos
+                    melhores_caminhos.append((veiculo.get_tipo(), caminho, custo_final))
+                continue  # Continuar para outros caminhos possíveis
+
+            # Adicionar vizinhos acessíveis à fila
             for (adjacente, peso, bloqueada, permitidos) in grafo.m_graph[nodo_atual]:
-                if adjacente not in visited:
-                    # Validar veículo permitido na aresta
-                    if not bloqueada and veiculo.get_tipo() in permitidos:
-                        # Adiciona o vizinho à fila com o veículo atual
-                        queue.append((adjacente, path + [adjacente], veiculo))
+                if adjacente not in visited and veiculo.get_tipo() in permitidos and not bloqueada:
+                    queue.append((adjacente, caminho + [adjacente]))
+                    print(f"Vizinho {adjacente} adicionado à fila com caminho: {caminho + [adjacente]}")
 
-    return None  # Nenhum caminho válido encontrado
+    # Escolher o melhor caminho (menor custo) entre todos os veículos
+    if melhores_caminhos:
+        melhor_caminho = min(melhores_caminhos, key=lambda x: x[2])  # Ordenar pelo custo
+        print(f"Melhor caminho: {melhor_caminho[1]} com veículo {melhor_caminho[0]} e custo {melhor_caminho[2]}")
+        return {melhor_caminho[0]: (melhor_caminho[1], melhor_caminho[2])}
+
+    print("Nenhum caminho válido encontrado.")
+    return None
+
 
 # Algoritmo A*
 def procura_aStar(grafo, start, end):
