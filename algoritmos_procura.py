@@ -36,6 +36,37 @@ def procura_DFS(grafo, inicio, fim, path=None, visited=None, veiculo_atual=None)
 
     return None  # Nenhum caminho válido encontrado
 
+def procura_BFS(grafo, inicio, fim):
+    queue = [(inicio, [inicio], None)]  # (nó atual, caminho até agora, veículo usado)
+    visited = set()
+
+    while queue:
+        nodo_atual, path, veiculo_atual = queue.pop(0)  # Retira o primeiro elemento da fila
+        visited.add(nodo_atual)
+
+        # Verifica se já chegamos ao destino
+        if nodo_atual == fim:
+            custo = grafo.calcula_custo(path, veiculo_atual)
+            return {veiculo_atual.get_tipo(): (path, custo)}
+
+        # Obter veículos disponíveis no nó inicial apenas na primeira iteração
+        if veiculo_atual is None:
+            veiculos_disponiveis = grafo.get_veiculos_no(nodo_atual)
+            veiculos_disponiveis.sort(key=lambda v: v.get_custo())  # Ordenar veículos por custo
+        else:
+            veiculos_disponiveis = [veiculo_atual]
+
+        # Explorar vizinhos
+        for veiculo in veiculos_disponiveis:
+            for (adjacente, peso, bloqueada, permitidos) in grafo.m_graph[nodo_atual]:
+                if adjacente not in visited:
+                    # Validar veículo permitido na aresta
+                    if not bloqueada and veiculo.get_tipo() in permitidos:
+                        # Adiciona o vizinho à fila com o veículo atual
+                        queue.append((adjacente, path + [adjacente], veiculo))
+
+    return None  # Nenhum caminho válido encontrado
+
 # Algoritmo A*
 def procura_aStar(grafo, start, end):
     open_list = {start}
