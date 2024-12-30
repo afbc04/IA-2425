@@ -1,9 +1,10 @@
 import math
 from queue import Queue
+from collections import deque
 from grafo import Grafo  
 
 # Algoritmo de procura em profundidade (DFS)
-def procura_DFS(grafo, start, end, path=None, visited=None):
+def procura_DFS_lx(grafo, start, end, path=None, visited=None):
     if path is None:
         path = []
     if visited is None:
@@ -47,6 +48,44 @@ def procura_DFS(grafo, start, end, path=None, visited=None):
 
     return None, math.inf
 
+def procura_DFS(grafo, start, end):
+    visited = set()
+    stack = deque()
+    stack.append((start, [start]))  # A fila mantém o nó atual e o caminho até ele
+
+    # Obtém os veículos disponíveis no nó inicial
+    veiculos_disponiveis = grafo.get_veiculos_no(start)
+    if not veiculos_disponiveis:
+        print(f"Nó {start} não possui veículos disponíveis.")
+        return None, math.inf
+
+    for veiculo_atual in veiculos_disponiveis:
+        print(f"Tentar a procura com o veículo: {veiculo_atual}")
+
+        visited = set()
+        stack = deque()
+        stack.append((start,[start]))
+        visited.add(start)
+
+        while stack:
+            nodo_atual, path = stack.pop()
+            
+            if nodo_atual == end:
+                custo = grafo.calcula_custo(path, veiculo_atual)
+                if custo == float('inf'): # veículo atual não é capaz de percorrer a aresta
+                    print(f"O veículo '{veiculo_atual}' não pode ser usado em todas as arestas do caminho.")
+                    break  # Tenta o próximo veículo
+                return path, custo
+
+            for adjacente, peso in grafo.getNeighbours(nodo_atual, veiculo_atual):
+                if adjacente not in visited:
+                    visited.add(adjacente)
+                    stack.append((adjacente, path + [adjacente]))
+
+    return None, math.inf
+
+
+
 # Algoritmo de procura em largura (BFS)
 def procura_BFS(grafo, start, end):
     visited = set()
@@ -61,6 +100,11 @@ def procura_BFS(grafo, start, end):
 
     for veiculo_atual in veiculos_disponiveis:
         print(f"Tentar a procura com o veículo: {veiculo_atual}")
+
+        visited = set()
+        fila = Queue()
+        fila.put((start,[start]))
+        visited.add(start)
 
         while not fila.empty():
             nodo_atual, path = fila.get()
