@@ -7,10 +7,16 @@ from algoritmos_procura import procura_DFS, procura_BFS, procura_aStar, greedy
 
 def carregar_caracteristicas_veiculos(ficheiro_caracteristicas="data/caracteristicas_dos_veiculos.json"):
     """
-    Carrega as características dos veículos (custo e limite de carga) a partir de um ficheiro JSON.
+    Carrega as características dos veículos (custo, limite de carga e combustível disponível) a partir de um ficheiro JSON.
     """
-    with open(ficheiro_caracteristicas, "r") as f:
-        return json.load(f)
+    try:
+        with open(ficheiro_caracteristicas, "r") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        print(f"[ERRO] O ficheiro '{ficheiro_caracteristicas}' não foi encontrado.")
+    except json.JSONDecodeError:
+        print(f"[ERRO] O ficheiro '{ficheiro_caracteristicas}' contém JSON inválido.")
+    return {}
 
 def carregar_grafo(ficheiro_grafo="data/grafo2.json", ficheiro_caracteristicas="data/caracteristicas_dos_veiculos.json"):
     """
@@ -30,39 +36,29 @@ def carregar_grafo(ficheiro_grafo="data/grafo2.json", ficheiro_caracteristicas="
         x = no_data.get("x", 0)
         y = no_data.get("y", 0)
         medicamento = no_data.get("medicamento", 0)
-        meteo_data = no_data.get("meteorologia", {"chuva": 0, "tempestade": 0, "vento": 0, "nevoeiro": 0})
-        meteorologia = Meteorologia(
-            chuva=meteo_data["chuva"],
-            tempestade=meteo_data["tempestade"],
-            vento=meteo_data["vento"],
-            nevoeiro=meteo_data["nevoeiro"]
-        )
+        meteorologia = no_data.get("meteorologia", {"chuva": 0, "tempestade": 0, "vento": 0, "nevoeiro": 0})
 
-        veiculos_data = no_data.get("veiculos", [])
         veiculos = []
-        for veiculo_info in veiculos_data:
-            tipo = veiculo_info["tipo"]
-            combustivel_disponivel = veiculo_info["combustivel_disponivel"]
+        for veiculo_tipo in no_data["veiculos"]:
+            if veiculo_tipo in caracteristicas_veiculos:
+                veiculo_data = caracteristicas_veiculos[veiculo_tipo]
+                veiculos.append(Veiculo(
+                    tipo=veiculo_tipo,
+                    custo=veiculo_data["custo"],
+                    combustivel_disponivel=veiculo_data["combustivel_disponivel"],
+                    limite_carga=veiculo_data["limite_carga"]
+                ))
 
-            if tipo in caracteristicas_veiculos:
-                custo = caracteristicas_veiculos[tipo]["custo"]
-                limite_carga = caracteristicas_veiculos[tipo]["limite_carga"]
-                veiculo = Veiculo(tipo=tipo, custo=custo, combustivel_disponivel=combustivel_disponivel, limite_carga=limite_carga)
-                veiculos.append(veiculo)
-            else:
-                print(f"[AVISO] Características para o veículo '{tipo}' não encontradas. Ignorado.")
-
-        no = No(name=nome, populacao=populacao, janela_tempo=tempo, medicamento=medicamento, meteorologia=meteorologia, x=x, y=y, veiculos=veiculos)
+        no = No(nome, populacao=populacao, janela_tempo=tempo, medicamento=medicamento, veiculos=veiculos, x=x, y=y)
         grafo.m_nodes.append(no)
         grafo.m_graph[nome] = []
 
     for aresta in dados["arestas"]:
-        origem = aresta["origem"]
-        destino = aresta["destino"]
-        peso = aresta["peso"]
-        bloqueada = aresta.get("bloqueada", False)
-        permitidos = aresta.get("permitidos", [])
-        grafo.add_edge(origem, destino, peso, blocked=bloqueada, permitidos=permitidos)
+        grafo.add_edge(
+            aresta["origem"], aresta["destino"],
+            peso=aresta["peso"], blocked=aresta["bloqueada"],
+            permitidos=aresta["permitidos"]
+        )
 
     return grafo
 

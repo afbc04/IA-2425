@@ -25,19 +25,20 @@ class Grafo:
         self.m_graph[node_name] = []
         return new_node
 
-    def add_edge(self, node1, node2, weight, blocked=False, permitidos=None):
+    def add_edge(self, node1, node2, peso, blocked=False, permitidos=None):
         """
-        Adiciona uma aresta entre dois nós com um peso, estado (bloqueada ou livre) e veículos permitidos.
+        Adiciona uma aresta entre dois nós com peso, estado (bloqueada ou não) e veículos permitidos.
         """
-        permitidos = permitidos or []  # Se não for especificado, assume vazio
-        print(f"Adicionar aresta: {node1} -> {node2}, Peso: {weight}, Bloqueada: {blocked}, Veículos Permitidos: {permitidos}")
+        permitidos = permitidos or []  # Define uma lista vazia como padrão
+        print(f"Adicionar aresta: {node1} -> {node2}, Peso: {peso}, Bloqueada: {blocked}, Permitidos: {permitidos}")
+
         n1 = self._get_or_create_node(node1)
         n2 = self._get_or_create_node(node2)
 
-        # Adiciona a aresta com peso, estado e veículos permitidos
-        self.m_graph[node1].append((node2, weight, blocked, permitidos))
+        # Adicionar a aresta à estrutura do grafo
+        self.m_graph[node1].append((node2, peso, blocked, permitidos))
         if not self.m_directed:
-            self.m_graph[node2].append((node1, weight, blocked, permitidos))
+            self.m_graph[node2].append((node1, peso, blocked, permitidos))
 
     def getNeighbours(self, nodo, veiculo):
         """

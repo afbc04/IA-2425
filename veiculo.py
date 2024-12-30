@@ -3,7 +3,7 @@ class Veiculo:
         self.tipo = tipo
         self.custo = custo
         self.combustivel_disponivel = combustivel_disponivel
-        self.limite_carga = limite_carga  
+        self.limite_carga = limite_carga
 
     def get_custo(self):
         return self.custo
@@ -15,7 +15,7 @@ class Veiculo:
         return self.combustivel_disponivel
 
     def get_limite_carga(self):
-        return self.limite_carga  
+        return self.limite_carga
 
 
         #self.velocidade = velocidade
