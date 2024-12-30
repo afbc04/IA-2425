@@ -68,6 +68,8 @@ def carregar_grafo(ficheiro_grafo="data/grafo2.json", ficheiro_caracteristicas="
             permitidos=aresta["permitidos"]
         )
 
+    grafo.atualizar_medicamentos_e_populacao()
+
     return grafo
 
 # Função para mostrar o menu e executar o algoritmo escolhido

@@ -163,6 +163,30 @@ class Grafo:
         """
         self.custos_veiculos = custos
 
+    def atualizar_medicamentos_e_populacao(grafo):
+        """
+        Ajusta os valores de medicamentos e população para cada nó.
+        Se o número de medicamentos é suficiente para atender parte da população,
+        os medicamentos são subtraídos e a população restante é ajustada.
+        """
+        for no in grafo.m_nodes:
+            populacao = no.populacao
+            medicamentos = no.get_medicamento()
+
+            if medicamentos >= populacao:
+                # Todos os medicamentos necessários estão disponíveis
+                no.populacao = 0
+                no.set_medicamento(medicamentos - populacao)
+            else:
+                # Medicamentos insuficientes para a população
+                no.populacao = populacao - medicamentos
+                no.set_medicamento(0)
+
+            print(
+                f"Nó {no.getName()}: População atualizada = {no.populacao}, Medicamentos restantes = {no.get_medicamento()}"
+            )
+
+
     def desenha(self):
         """
         Gera uma visualização do grafo.
@@ -179,7 +203,13 @@ class Grafo:
             pos[node.getName()] = node.get_coordenadas()  # Usa as coordenadas do JSON
             vehicles = ', '.join([veiculo.get_tipo() for veiculo in node.get_veiculos()])
             medicamentos = node.get_medicamento()  # Obtém o número de medicamentos corretamente
-            node_labels[node.getName()] = f"{node.getName()}\nMedicamentos: {medicamentos}\nVeículos: {vehicles}"
+            populacao = node.populacao  # Obtém a população do nó
+            node_labels[node.getName()] = (
+                f"{node.getName()}\n"
+                f"População: {populacao}\n"
+                f"Medicamentos: {medicamentos}\n"
+                f"Veículos: {vehicles}"
+            )
 
         # Identificar o nó de maior prioridade
         no_maior_prioridade = self.get_no_maior_prioridade()
@@ -217,7 +247,7 @@ class Grafo:
         # Adicionar retângulos como nós
         ax = plt.gca()
         rect_width = 0.8  # Largura do retângulo
-        rect_height = 0.5  # Altura do retângulo
+        rect_height = 0.6  # Altura do retângulo
         for node, (x, y) in pos.items():
             rect = plt.Rectangle(
                 (x - rect_width / 2, y - rect_height / 2),  # Posição inicial (centro menos metade da largura/altura)
