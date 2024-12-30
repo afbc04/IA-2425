@@ -11,6 +11,15 @@ class Grafo:
         self.m_h = {}  # Heurísticas: {nó: valor}
         self.custos_veiculos = {}  # Dicionário global para custos de veículos
 
+    def get_node_by_name(self, node_name):
+        """
+        Retorna o nó pelo nome, ou None se o nó não existir.
+        """
+        for node in self.m_nodes:
+            if node.getName() == node_name:
+                return node
+        return None
+
     def _get_or_create_node(self, node_name):
         """
         Obtém um nó existente ou cria um novo nó se ele não existir.
@@ -59,9 +68,12 @@ class Grafo:
                 if not bloqueada and veiculo_tipo in permitidos:
                     return peso
                 else:
-                    print(f"Aresta bloqueada ou veículo {veiculo_tipo} não permitido entre {node1} e {node2}")
+                    print(f"[DEBUG] Aresta bloqueada ou veículo '{veiculo_tipo}' não permitido entre {node1} e {node2}")
                     return float('inf')  # Caminho inválido para este veículo
+        print(f"[DEBUG] Aresta não encontrada entre {node1} e {node2}")
         return float('inf')  # Não existe conexão entre os nós
+
+
 
     def calculaDist(self, node1_name, node2_name):
         node1 = next((node for node in self.m_nodes if node.getName() == node1_name), None)
@@ -73,9 +85,10 @@ class Grafo:
             return math.sqrt((coord1[0] - coord2[0])**2 + (coord1[1] - coord2[1])**2)
         return float('inf')
 
-    def calcula_custo(self, caminho, veiculo):
+    def calcula_acumulado_arestas(self, caminho, veiculo):
         """
-        Calcula o custo total de um caminho no grafo para um veículo específico.
+        Calcula a soma total das arestas ao longo do caminho e retorna o valor acumulado.
+        Considera apenas arestas válidas para o veículo especificado.
         """
         custo_total_arestas = 0
 
@@ -90,14 +103,47 @@ class Grafo:
                 return float('inf')  # Caminho inválido para este veículo
 
             custo_total_arestas += peso
+            print(f"Aresta {node1} -> {node2}, Peso: {peso}, Custo acumulado: {custo_total_arestas}")
 
-        # Multiplicar pelo custo do veículo
-        custo_veiculo = self.custos_veiculos.get(veiculo.get_tipo(), float('inf'))
-        if custo_veiculo == float('inf'):
-            print(f"Custo não definido para o veículo {veiculo.get_tipo()}")
-            return float('inf')  # Veículo inválido ou custo não definido
+        return custo_total_arestas
 
-        return custo_total_arestas * custo_veiculo
+
+    def calcula_custo(self, caminho, veiculo):
+        """
+        Calcula o custo total de um caminho no grafo considerando:
+        - Soma dos pesos das arestas (calculada por calcula_acumulado_arestas).
+        - Custo do veículo.
+        - Número de pessoas socorridas (respeitando o limite de carga do veículo).
+        """
+        # Calcular o acumulado das arestas
+        custo_total_arestas = self.calcula_acumulado_arestas(caminho, veiculo)
+        if custo_total_arestas == float('inf'):
+            return float('inf')  # Caminho inválido para este veículo
+
+        origem = self.get_node_by_name(caminho[0])
+        destino = self.get_node_by_name(caminho[-1])
+
+        if origem and destino:
+            medicamentos_disponiveis = origem.get_medicamento()
+            populacao_por_assistir = destino.populacao
+            limite_carga = veiculo.get_limite_carga()
+
+            # Debug adicional para validar os valores antes do cálculo
+            print(f"[DEBUG] Medicamentos em {caminho[0]}: {medicamentos_disponiveis}, "
+                f"População em {caminho[-1]}: {populacao_por_assistir}, Limite do veículo: {limite_carga}")
+
+            # Número de pessoas socorridas
+            pessoas_socorridas = min(medicamentos_disponiveis, populacao_por_assistir, limite_carga)
+
+        # Calcular o custo final ajustado
+        custo_veiculo = veiculo.get_custo()
+        custo_final = custo_total_arestas * (custo_veiculo / pessoas_socorridas)
+        print(f"[DEBUG] Veículo: {veiculo.get_tipo()}, Soma das arestas: {custo_total_arestas}, "
+            f"Custo do veículo: {custo_veiculo}, Pessoas socorridas: {pessoas_socorridas}, "
+            f"Custo final ajustado: {custo_final}")
+
+        return custo_final
+
 
     def calcula_heuristica(self, no):
         destino = self.get_no_maior_prioridade()
@@ -129,34 +175,6 @@ class Grafo:
                 return veiculos
         return []
 
-    def calcula_custo(self, caminho, veiculo_tipo):
-        """
-        Calcula o custo total de um caminho no grafo com base nas arestas.
-        """
-        custo_total_arestas = 0
-
-        for i in range(len(caminho) - 1):
-            node1 = caminho[i]
-            node2 = caminho[i + 1]
-
-            # Obter o custo da aresta entre node1 e node2
-            peso = self.get_arc_cost(node1, node2, veiculo_tipo)
-            if peso == float('inf'):
-                print(f"Aresta inválida entre {node1} e {node2} para o veículo {veiculo_tipo}")
-                return float('inf')  # Caminho inválido para este veículo
-
-            custo_total_arestas += peso
-            print(f"Aresta {node1} -> {node2}, Peso: {peso}, Custo acumulado: {custo_total_arestas}")
-
-        return custo_total_arestas
-
-        # Multiplicar pelo custo do veículo
-        custo_veiculo = self.custos_veiculos.get(veiculo.get_tipo(), float('inf'))
-        if custo_veiculo == float('inf'):
-            return float('inf')  # Veículo inválido ou custo não definido
-
-        return custo_total * custo_veiculo
-
     def set_custos_veiculos(self, custos):
         """
         Define os custos globais dos veículos.
@@ -185,6 +203,42 @@ class Grafo:
             print(
                 f"Nó {no.getName()}: População atualizada = {no.populacao}, Medicamentos restantes = {no.get_medicamento()}"
             )
+
+    def transferir_medicamentos(self, caminho, veiculo):
+        """
+        Transfere medicamentos ao longo do caminho especificado.
+        Cada transferência considera a capacidade do veículo, a disponibilidade do nó de origem
+        e a necessidade do nó de destino.
+        """
+        for i in range(len(caminho) - 1):
+            origem = self.get_node_by_name(caminho[i])
+            destino = self.get_node_by_name(caminho[i + 1])
+
+            if not origem or not destino:
+                print(f"Erro: Não foi possível encontrar os nós {caminho[i]} ou {caminho[i+1]}")
+                continue
+
+            # Determinar a quantidade a transferir
+            medicamentos_disponiveis = origem.get_medicamento()
+            populacao_por_assistir = destino.populacao
+            limite_carga = veiculo.get_limite_carga()
+
+            # A quantidade máxima que pode ser transferida
+            quantidade_a_transferir = min(medicamentos_disponiveis, populacao_por_assistir, limite_carga)
+
+            if quantidade_a_transferir > 0:
+                # Atualizar os medicamentos do nó de origem
+                origem.set_medicamento(medicamentos_disponiveis - quantidade_a_transferir)
+
+                # Atualizar a população e os medicamentos do nó de destino
+                destino.set_medicamento(destino.get_medicamento() + quantidade_a_transferir)
+                destino.populacao -= quantidade_a_transferir
+
+                print(f"Transferidos {quantidade_a_transferir} medicamentos de {origem.getName()} para {destino.getName()}.")
+                print(f"Nó {origem.getName()}: Medicamentos restantes = {origem.get_medicamento()}")
+                print(f"Nó {destino.getName()}: População por assistir = {destino.populacao}, Medicamentos = {destino.get_medicamento()}")
+            else:
+                print(f"Sem transferência possível de {origem.getName()} para {destino.getName()}.")
 
 
     def desenha(self):

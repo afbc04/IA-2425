@@ -31,14 +31,19 @@ def procura_DFS(grafo, inicio, fim):
 
             # Se o destino foi alcançado
             if nodo_atual == fim:
-                custo_arestas = grafo.calcula_custo(caminho, veiculo.get_tipo())
-                # Verificar se o custo acumulado excede o combustível disponível
-                if custo_arestas > veiculo.get_combustivel_disponivel():
-                    print(f"[DEBUG] Veículo: {veiculo.get_tipo()} NÃO PODE COMPLETAR o caminho: {caminho}. Custo acumulado ({custo_arestas}) excede o combustível disponível ({veiculo.get_combustivel_disponivel()}).")
+                # Verificar se o combustível do veículo é suficiente
+                custo_acumulado_arestas = grafo.calcula_acumulado_arestas(caminho, veiculo)
+                if custo_acumulado_arestas == float('inf') or custo_acumulado_arestas > veiculo.get_combustivel_disponivel():
+                    print(f"[DEBUG] Veículo: {veiculo.get_tipo()} NÃO PODE COMPLETAR o caminho: {caminho}. "
+                          f"Custo acumulado das arestas ({custo_acumulado_arestas}) excede o combustível disponível "
+                          f"({veiculo.get_combustivel_disponivel()}).")
                 else:
-                    custo_final = custo_arestas * veiculo.get_custo()
-                    print(f"[DEBUG] Veículo: {veiculo.get_tipo()} PODE COMPLETAR o caminho: {caminho}. Custo acumulado: {custo_arestas}, Custo final: {custo_final}")
-                    melhores_caminhos.append((veiculo.get_tipo(), caminho, custo_final))
+                    custo_final = grafo.calcula_custo(caminho, veiculo)
+                    if custo_final == float('inf'):
+                        print(f"[DEBUG] Veículo: {veiculo.get_tipo()} NÃO PODE COMPLETAR o caminho: {caminho}.")
+                    else:
+                        print(f"[DEBUG] Veículo: {veiculo.get_tipo()} PODE COMPLETAR o caminho: {caminho}. Custo final: {custo_final}")
+                        melhores_caminhos.append((veiculo, caminho, custo_final))
                 continue
 
             # Adicionar vizinhos acessíveis à pilha
@@ -55,8 +60,11 @@ def procura_DFS(grafo, inicio, fim):
     # Escolher o melhor caminho (menor custo) entre todos os veículos
     if melhores_caminhos:
         melhor_caminho = min(melhores_caminhos, key=lambda x: x[2])  # Ordenar pelo custo
-        print(f"Melhor caminho: {melhor_caminho[1]} com veículo {melhor_caminho[0]} e custo {melhor_caminho[2]}")
-        return {melhor_caminho[0]: (melhor_caminho[1], melhor_caminho[2])}
+        veiculo, caminho, custo = melhor_caminho
+
+        print(f"Melhor caminho: {caminho} com veículo {veiculo.get_tipo()} e custo {custo}")
+
+        return {veiculo.get_tipo(): (caminho, custo)}
 
     print("Nenhum caminho válido encontrado.")
     return None
@@ -100,6 +108,9 @@ def procura_BFS(grafo, inicio, fim):
                 else:
                     custo_final = custo_arestas * veiculo.get_custo()
                     print(f"[DEBUG] Veículo: {veiculo.get_tipo()} PODE COMPLETAR o caminho: {caminho}. Custo acumulado: {custo_arestas}, Custo final: {custo_final}")
+
+                    grafo.transferir_medicamentos(caminho, veiculo)
+
                     melhores_caminhos.append((veiculo.get_tipo(), caminho, custo_final))
                 continue  # Continuar para outros caminhos possíveis
 
