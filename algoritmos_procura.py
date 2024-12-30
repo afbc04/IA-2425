@@ -38,7 +38,7 @@ def procura_DFS(grafo, inicio, fim):
                           f"Custo acumulado das arestas ({custo_acumulado_arestas}) excede o combustível disponível "
                           f"({veiculo.get_combustivel_disponivel()}).")
                 else:
-                    custo_final = grafo.calcula_custo(caminho, veiculo)
+                    custo_final, pessoas_socorridas = grafo.calcula_custo(caminho, veiculo)
                     if custo_final == float('inf'):
                         print(f"[DEBUG] Veículo: {veiculo.get_tipo()} NÃO PODE COMPLETAR o caminho: {caminho}.")
                     else:
@@ -63,6 +63,11 @@ def procura_DFS(grafo, inicio, fim):
         veiculo, caminho, custo = melhor_caminho
 
         print(f"Melhor caminho: {caminho} com veículo {veiculo.get_tipo()} e custo {custo}")
+
+        # Transferir medicamentos
+        no_origem = caminho[0]
+        no_destino = caminho[-1]
+        grafo.transferir_valores(pessoas_socorridas, no_origem, no_destino)
 
         return {veiculo.get_tipo(): (caminho, custo)}
 

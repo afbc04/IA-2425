@@ -142,7 +142,7 @@ class Grafo:
             f"Custo do veículo: {custo_veiculo}, Pessoas socorridas: {pessoas_socorridas}, "
             f"Custo final ajustado: {custo_final}")
 
-        return custo_final
+        return custo_final, pessoas_socorridas
 
 
     def calcula_heuristica(self, no):
@@ -204,41 +204,36 @@ class Grafo:
                 f"Nó {no.getName()}: População atualizada = {no.populacao}, Medicamentos restantes = {no.get_medicamento()}"
             )
 
-    def transferir_medicamentos(self, caminho, veiculo):
-        """
-        Transfere medicamentos ao longo do caminho especificado.
-        Cada transferência considera a capacidade do veículo, a disponibilidade do nó de origem
-        e a necessidade do nó de destino.
-        """
-        for i in range(len(caminho) - 1):
-            origem = self.get_node_by_name(caminho[i])
-            destino = self.get_node_by_name(caminho[i + 1])
+    def transferir_valores(grafo, valor, no_origem, no_destino):
+     
+        origem = grafo.get_node_by_name(no_origem)
+        destino = grafo.get_node_by_name(no_destino)
 
-            if not origem or not destino:
-                print(f"Erro: Não foi possível encontrar os nós {caminho[i]} ou {caminho[i+1]}")
-                continue
+        if not origem or not destino:
+            print(f"Erro: Não foi possível encontrar os nós '{no_origem}' ou '{no_destino}'.")
+            return False
 
-            # Determinar a quantidade a transferir
-            medicamentos_disponiveis = origem.get_medicamento()
-            populacao_por_assistir = destino.populacao
-            limite_carga = veiculo.get_limite_carga()
+        # Verificar se há medicamentos suficientes no nó de origem
+        if origem.get_medicamento() < valor:
+            print(f"Erro: O nó de origem '{no_origem}' não tem medicamentos suficientes. "
+                f"Disponível: {origem.get_medicamento()}, Necessário: {valor}.")
+            return False
 
-            # A quantidade máxima que pode ser transferida
-            quantidade_a_transferir = min(medicamentos_disponiveis, populacao_por_assistir, limite_carga)
+        # Verificar se há população suficiente no nó de destino
+        if destino.populacao < valor:
+            print(f"Erro: O nó de destino '{no_destino}' não tem população suficiente. "
+                f"Disponível: {destino.populacao}, Necessário: {valor}.")
+            return False
 
-            if quantidade_a_transferir > 0:
-                # Atualizar os medicamentos do nó de origem
-                origem.set_medicamento(medicamentos_disponiveis - quantidade_a_transferir)
+        # Realizar a transferência
+        origem.set_medicamento(origem.get_medicamento() - valor)
+        destino.populacao -= valor
 
-                # Atualizar a população e os medicamentos do nó de destino
-                destino.set_medicamento(destino.get_medicamento() + quantidade_a_transferir)
-                destino.populacao -= quantidade_a_transferir
-
-                print(f"Transferidos {quantidade_a_transferir} medicamentos de {origem.getName()} para {destino.getName()}.")
-                print(f"Nó {origem.getName()}: Medicamentos restantes = {origem.get_medicamento()}")
-                print(f"Nó {destino.getName()}: População por assistir = {destino.populacao}, Medicamentos = {destino.get_medicamento()}")
-            else:
-                print(f"Sem transferência possível de {origem.getName()} para {destino.getName()}.")
+        print(f"Transferidos {valor} medicamentos de '{no_origem}' para '{no_destino}'.")
+        print(f"Medicamentos restantes no nó de origem '{no_origem}': {origem.get_medicamento()}.")
+        print(f"População restante no nó de destino '{no_destino}': {destino.populacao}.")
+        
+        return True
 
 
     def desenha(self):
