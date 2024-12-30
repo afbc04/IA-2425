@@ -94,9 +94,12 @@ def procura_BFS(grafo, inicio, fim):
             # Se o destino foi alcançado
             if nodo_atual == fim:
                 custo_arestas = grafo.calcula_custo(caminho, veiculo.get_tipo())
-                custo_final = custo_arestas * veiculo.get_custo()
-                print(f"[DEBUG] Veículo: {veiculo.get_tipo()}, Caminho: {caminho}, Custo (arestas): {custo_arestas}, Custo final: {custo_final}")
-                if custo_final != float('inf'):  # Apenas considerar caminhos válidos
+                # Verificar se o custo acumulado excede o combustível disponível
+                if custo_arestas > veiculo.get_combustivel_disponivel():
+                    print(f"[DEBUG] Veículo: {veiculo.get_tipo()} NÃO PODE COMPLETAR o caminho: {caminho}. Custo acumulado ({custo_arestas}) excede o combustível disponível ({veiculo.get_combustivel_disponivel()}).")
+                else:
+                    custo_final = custo_arestas * veiculo.get_custo()
+                    print(f"[DEBUG] Veículo: {veiculo.get_tipo()} PODE COMPLETAR o caminho: {caminho}. Custo acumulado: {custo_arestas}, Custo final: {custo_final}")
                     melhores_caminhos.append((veiculo.get_tipo(), caminho, custo_final))
                 continue  # Continuar para outros caminhos possíveis
 
