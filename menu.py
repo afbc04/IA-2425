@@ -2,17 +2,24 @@ import json
 from grafo import Grafo
 from no import No
 from veiculo import Veiculo
-from algoritmos_procura import procura_DFS, procura_BFS, procura_aStar, greedy
 from meteorologia import Meteorologia
-from condicoesDinamicas import CondicoesDinamicas
+from algoritmos_procura import procura_DFS, procura_BFS, procura_aStar, greedy
 
-# Função para carregar o grafo a partir de um ficheiro JSON na pasta mapa
-def carregar_grafo(ficheiro_json="mapa/grafo2.json"):
+def carregar_custos_veiculos(ficheiro_custos="data/custos_veiculos.json"):
     """
-    Carrega o grafo a partir de um ficheiro JSON.
+    Carrega os custos dos veículos a partir de um ficheiro JSON.
     """
-    with open(ficheiro_json, 'r') as f:
+    with open(ficheiro_custos, "r") as f:
+        return json.load(f)
+
+def carregar_grafo(ficheiro_grafo="data/grafo2.json", ficheiro_custos="data/custos_veiculos.json"):
+    """
+    Carrega o grafo e os custos dos veículos a partir dos ficheiros JSON.
+    """
+    with open(ficheiro_grafo, "r") as f:
         dados = json.load(f)
+
+    custos_veiculos = carregar_custos_veiculos(ficheiro_custos)
 
     grafo = Grafo(directed=False)
 
@@ -31,12 +38,11 @@ def carregar_grafo(ficheiro_json="mapa/grafo2.json"):
             nevoeiro=meteo_data["nevoeiro"]
         )
 
-        # Processar veículos com custo
+        # Processar veículos e adicionar custos
         veiculos_data = no_data.get("veiculos", [])
         veiculos = []
-        for veiculo_data in veiculos_data:
-            tipo = veiculo_data["tipo"]
-            custo = veiculo_data["custo"]
+        for tipo in veiculos_data:
+            custo = custos_veiculos.get(tipo, float('inf'))  # Obter custo do ficheiro de custos
             veiculo = Veiculo(tipo=tipo, custo=custo)
             veiculos.append(veiculo)
 
@@ -51,7 +57,6 @@ def carregar_grafo(ficheiro_json="mapa/grafo2.json"):
         peso = aresta["peso"]
         bloqueada = aresta.get("bloqueada", False)
         permitidos = aresta.get("permitidos", [])
-        #print(f"Processar aresta: {origem} -> {destino}, Peso: {peso}, Bloqueada: {bloqueada}, Permitidos: {permitidos}")
         grafo.add_edge(origem, destino, peso, blocked=bloqueada, permitidos=permitidos)
 
     return grafo

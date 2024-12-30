@@ -9,6 +9,7 @@ class Grafo:
         self.m_directed = directed  # Indica se o grafo é direcionado
         self.m_graph = {}  # Representação do grafo: {nó: [(vizinho, peso, bloqueada)]}
         self.m_h = {}  # Heurísticas: {nó: valor}
+        self.custos_veiculos = {}  # Dicionário global para custos de veículos
 
     def _get_or_create_node(self, node_name):
         """
@@ -48,15 +49,18 @@ class Grafo:
             if not bloqueada and veiculo in permitidos
         ]
 
-    def get_arc_cost(self, node1, node2, veiculo):
+    def get_arc_cost(self, node1, node2, veiculo_tipo):
         """
-        Retorna o peso da aresta entre dois nós se o veículo for permitido e se não estiver bloqueada.
+        Retorna o peso da aresta entre dois nós se o veículo for permitido e a aresta não estiver bloqueada.
         """
         for adjacente, peso, bloqueada, permitidos in self.m_graph.get(node1, []):
             if adjacente == node2:
-                
-                return peso if not bloqueada and veiculo in permitidos else float('inf')
-        return float('inf') 
+                if not bloqueada and veiculo_tipo in permitidos:
+                    return peso
+                else:
+                    print(f"Aresta bloqueada ou veículo {veiculo_tipo} não permitido entre {node1} e {node2}")
+                    return float('inf')  # Caminho inválido para este veículo
+        return float('inf')  # Não existe conexão entre os nós
 
     def calculaDist(self, node1_name, node2_name):
         node1 = next((node for node in self.m_nodes if node.getName() == node1_name), None)
@@ -70,15 +74,29 @@ class Grafo:
 
     def calcula_custo(self, caminho, veiculo):
         """
-        Calcula o custo total de um caminho no grafo validando o veículo em cada aresta.
+        Calcula o custo total de um caminho no grafo para um veículo específico.
         """
-        custo = 0
+        custo_total_arestas = 0
+
         for i in range(len(caminho) - 1):
-            custo_trecho = self.get_arc_cost(caminho[i], caminho[i + 1], veiculo)
-            if custo_trecho == float('inf'):
-                return float('inf')  # Caminho inválido
-            custo += custo_trecho
-        return custo
+            node1 = caminho[i]
+            node2 = caminho[i + 1]
+
+            # Obter o custo da aresta entre node1 e node2
+            peso = self.get_arc_cost(node1, node2, veiculo.get_tipo())
+            if peso == float('inf'):
+                print(f"Aresta inválida entre {node1} e {node2} para o veículo {veiculo.get_tipo()}")
+                return float('inf')  # Caminho inválido para este veículo
+
+            custo_total_arestas += peso
+
+        # Multiplicar pelo custo do veículo
+        custo_veiculo = self.custos_veiculos.get(veiculo.get_tipo(), float('inf'))
+        if custo_veiculo == float('inf'):
+            print(f"Custo não definido para o veículo {veiculo.get_tipo()}")
+            return float('inf')  # Veículo inválido ou custo não definido
+
+        return custo_total_arestas * custo_veiculo
 
     def calcula_heuristica(self, no):
         destino = self.get_no_maior_prioridade()
@@ -110,21 +128,39 @@ class Grafo:
                 return veiculos
         return []
 
-    def calcula_custo(self, caminho, veiculo):
+    def calcula_custo(self, caminho, veiculo_tipo):
         """
-        Calcula o custo total de um caminho no grafo, somando os pesos das arestas
-        e multiplicando pelo custo do veículo utilizado.
+        Calcula o custo total de um caminho no grafo com base nas arestas.
         """
         custo_total_arestas = 0
-        for i in range(len(caminho) - 1):
-            custo_trecho = self.get_arc_cost(caminho[i], caminho[i + 1], veiculo.get_tipo())
-            if custo_trecho == float('inf'):
-                return float('inf')  # Caminho inválido
-            custo_total_arestas += custo_trecho
 
-        # Multiplica pelo custo do veículo
-        custo_veiculo = veiculo.get_custo()
-        return custo_total_arestas * custo_veiculo
+        for i in range(len(caminho) - 1):
+            node1 = caminho[i]
+            node2 = caminho[i + 1]
+
+            # Obter o custo da aresta entre node1 e node2
+            peso = self.get_arc_cost(node1, node2, veiculo_tipo)
+            if peso == float('inf'):
+                print(f"Aresta inválida entre {node1} e {node2} para o veículo {veiculo_tipo}")
+                return float('inf')  # Caminho inválido para este veículo
+
+            custo_total_arestas += peso
+            print(f"Aresta {node1} -> {node2}, Peso: {peso}, Custo acumulado: {custo_total_arestas}")
+
+        return custo_total_arestas
+
+        # Multiplicar pelo custo do veículo
+        custo_veiculo = self.custos_veiculos.get(veiculo.get_tipo(), float('inf'))
+        if custo_veiculo == float('inf'):
+            return float('inf')  # Veículo inválido ou custo não definido
+
+        return custo_total * custo_veiculo
+
+    def set_custos_veiculos(self, custos):
+        """
+        Define os custos globais dos veículos.
+        """
+        self.custos_veiculos = custos
 
     def desenha(self):
         """
