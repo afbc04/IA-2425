@@ -5,32 +5,31 @@ from veiculo import Veiculo
 from meteorologia import Meteorologia
 from algoritmos_procura import procura_DFS, procura_BFS, procura_aStar, greedy
 
-def carregar_custos_veiculos(ficheiro_custos="data/custos_veiculos.json"):
+def carregar_caracteristicas_veiculos(ficheiro_caracteristicas="data/caracteristicas_dos_veiculos.json"):
     """
-    Carrega os custos dos veículos a partir de um ficheiro JSON.
+    Carrega as características dos veículos (custo e limite de carga) a partir de um ficheiro JSON.
     """
-    with open(ficheiro_custos, "r") as f:
+    with open(ficheiro_caracteristicas, "r") as f:
         return json.load(f)
 
-def carregar_grafo(ficheiro_grafo="data/grafo2.json", ficheiro_custos="data/custos_veiculos.json"):
+def carregar_grafo(ficheiro_grafo="data/grafo2.json", ficheiro_caracteristicas="data/caracteristicas_dos_veiculos.json"):
     """
-    Carrega o grafo e os custos dos veículos a partir dos ficheiros JSON.
+    Carrega o grafo e as características dos veículos a partir dos ficheiros JSON.
     """
     with open(ficheiro_grafo, "r") as f:
         dados = json.load(f)
 
-    # Chamar a função carregar_custos_veiculos para obter os custos
-    custos_veiculos = carregar_custos_veiculos(ficheiro_custos)
+    caracteristicas_veiculos = carregar_caracteristicas_veiculos(ficheiro_caracteristicas)
 
     grafo = Grafo(directed=False)
 
-    # Adicionar nós ao grafo
     for no_data in dados["nos"]:
         nome = no_data["nome"]
         populacao = no_data["populacao"]
         tempo = no_data["tempo"]
         x = no_data.get("x", 0)
         y = no_data.get("y", 0)
+        medicamento = no_data.get("medicamento", 0)
         meteo_data = no_data.get("meteorologia", {"chuva": 0, "tempestade": 0, "vento": 0, "nevoeiro": 0})
         meteorologia = Meteorologia(
             chuva=meteo_data["chuva"],
@@ -44,15 +43,19 @@ def carregar_grafo(ficheiro_grafo="data/grafo2.json", ficheiro_custos="data/cust
         for veiculo_info in veiculos_data:
             tipo = veiculo_info["tipo"]
             combustivel_disponivel = veiculo_info["combustivel_disponivel"]
-            custo = custos_veiculos.get(tipo, 1)  # Define um custo padrão caso não esteja no ficheiro
-            veiculo = Veiculo(tipo=tipo, custo=custo, combustivel_disponivel=combustivel_disponivel)
-            veiculos.append(veiculo)
 
-        no = No(name=nome, populacao=populacao, janela_tempo=tempo, meteorologia=meteorologia, x=x, y=y, veiculos=veiculos)
+            if tipo in caracteristicas_veiculos:
+                custo = caracteristicas_veiculos[tipo]["custo"]
+                limite_carga = caracteristicas_veiculos[tipo]["limite_carga"]
+                veiculo = Veiculo(tipo=tipo, custo=custo, combustivel_disponivel=combustivel_disponivel, limite_carga=limite_carga)
+                veiculos.append(veiculo)
+            else:
+                print(f"[AVISO] Características para o veículo '{tipo}' não encontradas. Ignorado.")
+
+        no = No(name=nome, populacao=populacao, janela_tempo=tempo, medicamento=medicamento, meteorologia=meteorologia, x=x, y=y, veiculos=veiculos)
         grafo.m_nodes.append(no)
         grafo.m_graph[nome] = []
 
-    # Adicionar arestas ao grafo
     for aresta in dados["arestas"]:
         origem = aresta["origem"]
         destino = aresta["destino"]
@@ -62,7 +65,6 @@ def carregar_grafo(ficheiro_grafo="data/grafo2.json", ficheiro_custos="data/cust
         grafo.add_edge(origem, destino, peso, blocked=bloqueada, permitidos=permitidos)
 
     return grafo
-
 
 # Função para mostrar o menu e executar o algoritmo escolhido
 def mostrar_menu():

@@ -1,0 +1,5 @@
+{
+    "carro": {"custo": 1, "limite_carga": 200},
+    "barco": {"custo": 3, "limite_carga": 500},
+    "aviao": {"custo": 500, "limite_carga": 1000}
+}

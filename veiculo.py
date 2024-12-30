@@ -1,8 +1,9 @@
 class Veiculo:
-    def __init__(self, tipo, custo, combustivel_disponivel):
+    def __init__(self, tipo, custo, combustivel_disponivel, limite_carga):
         self.tipo = tipo
         self.custo = custo
         self.combustivel_disponivel = combustivel_disponivel
+        self.limite_carga = limite_carga  
 
     def get_custo(self):
         return self.custo
@@ -13,6 +14,8 @@ class Veiculo:
     def get_combustivel_disponivel(self):
         return self.combustivel_disponivel
 
+    def get_limite_carga(self):
+        return self.limite_carga  
+
 
         #self.velocidade = velocidade
-        #self.volume_carga = volume_carga # que pode transportar
