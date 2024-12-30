@@ -3,134 +3,38 @@ from queue import Queue
 from collections import deque
 from grafo import Grafo  
 
-
-"""
-def procura_DFS_lx(grafo, start, end, path=None, visited=None):
+def procura_DFS(grafo, inicio, fim, path=None, visited=None, veiculo_atual=None):
     if path is None:
         path = []
     if visited is None:
         visited = set()
 
-    # Adiciona o nó atual ao caminho e marca como visitado
-    path = path + [start]
-    visited.add(start)
+    path = path + [inicio]
+    visited.add(inicio)
 
-    # Obtém os veículos disponíveis no nó atual
-    veiculos_disponiveis = grafo.get_veiculos_no(start)
-    if not veiculos_disponiveis:
-        print(f"Nó {start} não possui veículos disponíveis.")
-        return None, math.inf
+    # Verifica destino
+    if inicio == fim:
+        custo = grafo.calcula_custo(path, veiculo_atual)
+        return {veiculo_atual.get_tipo(): (path, custo)}
 
-    # Itera por todos os veículos disponíveis
-    for veiculo_atual in veiculos_disponiveis:
-        print(f"Visitando: {start} com o veículo: {veiculo_atual}, Caminho atual: {path}")
+    if veiculo_atual is None:
+        veiculos_disponiveis = grafo.get_veiculos_no(inicio)
+        veiculos_disponiveis.sort(key=lambda v: v.get_custo())  # Ordenar veículos por custo
+    else:
+        veiculos_disponiveis = [veiculo_atual]  # Continuar com o veículo já em uso
 
-        # Caso base: destino encontrado
-        if start == end:
-            print(f"Destino encontrado: {end}")
-            custo = grafo.calcula_custo(path, veiculo_atual)
-            if custo == float('inf'):
-                print(f"O veículo '{veiculo_atual}' não pode ser usado em todas as arestas do caminho.")
-                continue  # Tenta o próximo veículo
-            return path, custo
-
-        # Explora os vizinhos do nó atual
-        caminho_valido = False
-        for adjacente, peso in grafo.getNeighbours(start, veiculo_atual):
+    for veiculo in veiculos_disponiveis:
+        # Explorar vizinhos do nó atual
+        for (adjacente, peso, bloqueada, permitidos) in grafo.m_graph[inicio]:
             if adjacente not in visited:
-                resultado = procura_DFS(grafo, adjacente, end, path, visited)
-                if resultado[0] is not None:  # Caminho encontrado
-                    caminho_valido = True
-                    return resultado
+                # Validar veículo permitido na aresta
+                if not bloqueada and veiculo.get_tipo() in permitidos:
+                    # Chamada recursiva com o veículo atual
+                    novo_caminho = procura_DFS(grafo, adjacente, fim, path, visited, veiculo)
+                    if novo_caminho:
+                        return novo_caminho
 
-        # Se nenhum vizinho for válido, tenta o próximo veículo
-        if not caminho_valido:
-            print(f"Nó {start} não possui caminhos válidos para o destino {end} com o veículo {veiculo_atual}.")
-
-    return None, math.inf
-"""
-# Algoritmo de procura em profundidade (DFS)
-def procura_DFS(grafo, start, end):
-    visited = set()
-    stack = deque()
-    stack.append((start, [start]))  # A fila mantém o nó atual e o caminho até ele
-    resultado = {}
-
-    # Obtém os veículos disponíveis no nó inicial
-    veiculos_disponiveis = grafo.get_veiculos_no(start)
-    if not veiculos_disponiveis:
-        print(f"Nó {start} não possui veículos disponíveis.")
-        return None, math.inf
-
-    for veiculo_atual in veiculos_disponiveis:
-
-        resultado[veiculo_atual] = ([],math.inf)
-
-        print(f"Tentar a procura com o veículo: {veiculo_atual}")
-
-        visited = set()
-        stack = deque()
-        stack.append((start,[start]))
-        visited.add(start)
-
-        while stack:
-            nodo_atual, path = stack.pop()
-            
-            if nodo_atual == end:
-                custo = grafo.calcula_custo(path, veiculo_atual)
-                if custo == float('inf'): # veículo atual não é capaz de percorrer a aresta
-                    print(f"O veículo '{veiculo_atual}' não pode ser usado em todas as arestas do caminho.")
-                    break  # Tenta o próximo veículo
-                resultado[veiculo_atual] = (path,custo)
-
-            for adjacente, peso in grafo.getNeighbours(nodo_atual, veiculo_atual):
-                if adjacente not in visited:
-                    visited.add(adjacente)
-                    stack.append((adjacente, path + [adjacente]))
-
-    return resultado
-
-
-
-# Algoritmo de procura em largura (BFS)
-def procura_BFS(grafo, start, end):
-    visited = set()
-    fila = Queue()
-    fila.put((start, [start]))  # A fila mantém o nó atual e o caminho até ele
-    resultado = {}
-
-    # Obtém os veículos disponíveis no nó inicial
-    veiculos_disponiveis = grafo.get_veiculos_no(start)
-    if not veiculos_disponiveis:
-        print(f"Nó {start} não possui veículos disponíveis.")
-        return None, math.inf
-
-    for veiculo_atual in veiculos_disponiveis:
-        print(f"Tentar a procura com o veículo: {veiculo_atual}")
-
-        resultado[veiculo_atual] = ([],math.inf)
-
-        visited = set()
-        fila = Queue()
-        fila.put((start,[start]))
-        visited.add(start)
-
-        while not fila.empty():
-            nodo_atual, path = fila.get()
-            
-            if nodo_atual == end:
-                custo = grafo.calcula_custo(path, veiculo_atual)
-                if custo == float('inf'): # veículo atual não é capaz de percorrer a aresta
-                    print(f"O veículo '{veiculo_atual}' não pode ser usado em todas as arestas do caminho.")
-                    break  # Tenta o próximo veículo
-                resultado[veiculo_atual]=(path, custo)
-
-            for adjacente, peso in grafo.getNeighbours(nodo_atual, veiculo_atual):
-                if adjacente not in visited:
-                    visited.add(adjacente)
-                    fila.put((adjacente, path + [adjacente]))
-
-    return resultado
+    return None  # Nenhum caminho válido encontrado
 
 # Algoritmo A*
 def procura_aStar(grafo, start, end):
