@@ -3,7 +3,8 @@ from queue import Queue
 from collections import deque
 from grafo import Grafo  
 
-# Algoritmo de procura em profundidade (DFS)
+
+"""
 def procura_DFS_lx(grafo, start, end, path=None, visited=None):
     if path is None:
         path = []
@@ -47,7 +48,8 @@ def procura_DFS_lx(grafo, start, end, path=None, visited=None):
             print(f"Nó {start} não possui caminhos válidos para o destino {end} com o veículo {veiculo_atual}.")
 
     return None, math.inf
-
+"""
+# Algoritmo de procura em profundidade (DFS)
 def procura_DFS(grafo, start, end):
     visited = set()
     stack = deque()
@@ -139,6 +141,12 @@ def procura_aStar(grafo, start, end):
     for veiculo_atual in veiculos_disponiveis:
         print(f"Tentar a procura com o veículo: {veiculo_atual}")
 
+        #reiniciar as listas
+        open_list = {start}
+        closed_list = set()
+        g = {start: 0}
+        parents = {start: start}
+
         while open_list:
             # Usa a heurística baseada em calculaDist
             n = min(open_list, key=lambda v: g[v] + grafo.calculaDist(v, end))
@@ -181,6 +189,11 @@ def greedy(grafo, start, end):
 
     for veiculo_atual in veiculos_disponiveis:
         print(f"Tentando a procura com o veículo: {veiculo_atual}")
+
+        # Reiniciar as listas para cada veículo
+        open_list = {start}
+        closed_list = set()
+        parents = {start: start}
 
         while open_list:
             # Pega o nó com o menor custo (com base na heurística de distância para o final)
