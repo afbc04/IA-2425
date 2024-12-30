@@ -50,12 +50,13 @@ class Grafo:
 
     def get_arc_cost(self, node1, node2, veiculo):
         """
-        Retorna o custo de uma aresta entre dois nós se o veículo for permitido.
+        Retorna o peso da aresta entre dois nós se o veículo for permitido e se não estiver bloqueada.
         """
-        for adjacente, custo, bloqueada, permitidos in self.m_graph.get(node1, []):
+        for adjacente, peso, bloqueada, permitidos in self.m_graph.get(node1, []):
             if adjacente == node2:
-                return custo if not bloqueada and veiculo in permitidos else float('inf')
-        return float('inf')
+                
+                return peso if not bloqueada and veiculo in permitidos else float('inf')
+        return float('inf') 
 
     def calculaDist(self, node1_name, node2_name):
         node1 = next((node for node in self.m_nodes if node.getName() == node1_name), None)
@@ -100,12 +101,30 @@ class Grafo:
 
     def get_veiculos_no(self, no_name):
         """
-        Retorna os veículos associados a um nó específico no grafo.
+        Retorna os veículos associados a um nó específico no grafo, ordenados por custo.
         """
         for node in self.m_nodes:
             if node.getName() == no_name:
-                return node.get_veiculos()
+                veiculos = node.get_veiculos()
+                veiculos.sort(key=lambda v: v.get_custo())  # Ordenar por custo
+                return veiculos
         return []
+
+    def calcula_custo(self, caminho, veiculo):
+        """
+        Calcula o custo total de um caminho no grafo, somando os pesos das arestas
+        e multiplicando pelo custo do veículo utilizado.
+        """
+        custo_total_arestas = 0
+        for i in range(len(caminho) - 1):
+            custo_trecho = self.get_arc_cost(caminho[i], caminho[i + 1], veiculo.get_tipo())
+            if custo_trecho == float('inf'):
+                return float('inf')  # Caminho inválido
+            custo_total_arestas += custo_trecho
+
+        # Multiplica pelo custo do veículo
+        custo_veiculo = veiculo.get_custo()
+        return custo_total_arestas * custo_veiculo
 
     def desenha(self):
         """
@@ -121,7 +140,7 @@ class Grafo:
         for node in self.m_nodes:
             g.add_node(node.getName())
             pos[node.getName()] = node.get_coordenadas()  # Usa as coordenadas do JSON
-            vehicles = ', '.join(node.get_veiculos())  
+            vehicles = ', '.join([veiculo.get_tipo() for veiculo in node.get_veiculos()])
             node_labels[node.getName()] = f"{node.getName()} ({vehicles})"
 
         # Identificar o nó de maior prioridade
@@ -134,13 +153,14 @@ class Grafo:
         for node in self.m_nodes:
             for adjacente, peso, bloqueada, permitidos in self.m_graph[node.getName()]:
                 if not g.has_edge(node.getName(), adjacente):
-                    g.add_edge(node.getName(), adjacente, weight=peso)
+                    g.add_edge(node.getName(), adjacente)
                     edge_colors.append("red" if bloqueada else "black")
+                    # Adiciona rótulo com o custo e veículos permitidos
                     edge_labels[(node.getName(), adjacente)] = f"{peso} ({', '.join(permitidos)})"
 
         # Determinar cores dos nós (vermelho para maior prioridade, azul claro para os demais)
         node_colors = [
-            "red" if node.getName() == no_destacado else "skyblue" 
+            "red" if node.getName() == no_destacado else "skyblue"
             for node in self.m_nodes
         ]
 
@@ -158,6 +178,8 @@ class Grafo:
             font_weight="bold",
             edgecolors="black",
         )
+
+        # Adicionar rótulos às arestas (custo e veículos permitidos)
         nx.draw_networkx_edge_labels(
             g,
             pos,
@@ -172,4 +194,3 @@ class Grafo:
 
         # Atualiza a janela para refletir mudanças no grafo
         plt.pause(0.1)
-
