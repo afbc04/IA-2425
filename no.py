@@ -10,6 +10,7 @@ class No:
         self.janela_tempo = janela_tempo  
         self.meteorologia = meteorologia if meteorologia else Meteorologia()
         self.veiculos = veiculos if veiculos else []
+        self.medicamento = medicamento
 
     def __str__(self):
         return f"no {self.m_name}"

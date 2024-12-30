@@ -165,20 +165,21 @@ class Grafo:
 
     def desenha(self):
         """
-        Gera uma visualização do grafo com informações adicionais.
+        Gera uma visualização do grafo.
         """
         plt.ion()  # Ativa o modo interativo
 
         g = nx.Graph()
 
-        # Adicionar nós ao grafo NetworkX com coordenadas e informações adicionais
+        # Adicionar nós ao grafo NetworkX com coordenadas, entre outros
         pos = {}
         node_labels = {}
         for node in self.m_nodes:
             g.add_node(node.getName())
             pos[node.getName()] = node.get_coordenadas()  # Usa as coordenadas do JSON
             vehicles = ', '.join([veiculo.get_tipo() for veiculo in node.get_veiculos()])
-            node_labels[node.getName()] = f"{node.getName()} ({vehicles})"
+            medicamentos = node.get_medicamento()  # Obtém o número de medicamentos corretamente
+            node_labels[node.getName()] = f"{node.getName()}\nMedicamentos: {medicamentos}\nVeículos: {vehicles}"
 
         # Identificar o nó de maior prioridade
         no_maior_prioridade = self.get_no_maior_prioridade()
@@ -192,31 +193,19 @@ class Grafo:
                 if not g.has_edge(node.getName(), adjacente):
                     g.add_edge(node.getName(), adjacente)
                     edge_colors.append("red" if bloqueada else "black")
-                    # Adiciona rótulo com o custo e veículos permitidos
                     edge_labels[(node.getName(), adjacente)] = f"{peso} ({', '.join(permitidos)})"
 
-        # Determinar cores dos nós (vermelho para maior prioridade, azul claro para os demais)
-        node_colors = [
-            "red" if node.getName() == no_destacado else "skyblue"
-            for node in self.m_nodes
-        ]
-
-        # Desenhar o grafo com as coordenadas fornecidas
+        # Criar a figura do grafo
         plt.figure(figsize=(12, 8))
-        nx.draw(
+
+        # Desenhar as arestas
+        nx.draw_networkx_edges(
             g,
             pos,
-            with_labels=True,
-            labels=node_labels,
-            node_size=7000,
-            node_color=node_colors,
             edge_color=edge_colors,
-            font_size=9,
-            font_weight="bold",
-            edgecolors="black",
         )
 
-        # Adicionar rótulos às arestas (custo e veículos permitidos)
+        # Adicionar rótulos às arestas
         nx.draw_networkx_edge_labels(
             g,
             pos,
@@ -225,9 +214,31 @@ class Grafo:
             bbox=dict(facecolor="white", alpha=0.7, edgecolor="none"),
         )
 
+        # Adicionar retângulos como nós
+        ax = plt.gca()
+        rect_width = 0.8  # Largura do retângulo
+        rect_height = 0.5  # Altura do retângulo
+        for node, (x, y) in pos.items():
+            rect = plt.Rectangle(
+                (x - rect_width / 2, y - rect_height / 2),  # Posição inicial (centro menos metade da largura/altura)
+                rect_width,
+                rect_height,
+                edgecolor="black",
+                facecolor="red" if node == no_destacado else "skyblue",
+                zorder=2,
+            )
+            ax.add_patch(rect)
+            ax.text(
+                x, y, node_labels[node],
+                verticalalignment="center", horizontalalignment="center",
+                fontsize=9, zorder=3, color="black",
+            )
+
+        # Ajustar os limites do gráfico
         plt.title("Mapa de Zonas e Conexões", fontsize=16)
         plt.axis("off")
-        plt.show(block=False)  # Exibe o grafo sem bloquear o programa
+        plt.xlim(min(x for x, y in pos.values()) - 1, max(x for x, y in pos.values()) + 1)
+        plt.ylim(min(y for x, y in pos.values()) - 1, max(y for x, y in pos.values()) + 1)
 
-        # Atualiza a janela para refletir mudanças no grafo
+        plt.show(block=False)  # Exibe o grafo sem bloquear o programa
         plt.pause(0.1)

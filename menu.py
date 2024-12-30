@@ -36,20 +36,28 @@ def carregar_grafo(ficheiro_grafo="data/grafo2.json", ficheiro_caracteristicas="
         x = no_data.get("x", 0)
         y = no_data.get("y", 0)
         medicamento = no_data.get("medicamento", 0)
-        meteorologia = no_data.get("meteorologia", {"chuva": 0, "tempestade": 0, "vento": 0, "nevoeiro": 0})
+        meteo_data = no_data.get("meteorologia", {"chuva": 0, "tempestade": 0, "vento": 0, "nevoeiro": 0})
+        meteorologia = Meteorologia(
+            chuva=meteo_data["chuva"],
+            tempestade=meteo_data["tempestade"],
+            vento=meteo_data["vento"],
+            nevoeiro=meteo_data["nevoeiro"]
+        )
 
         veiculos = []
-        for veiculo_tipo in no_data["veiculos"]:
-            if veiculo_tipo in caracteristicas_veiculos:
-                veiculo_data = caracteristicas_veiculos[veiculo_tipo]
+        for tipo in no_data.get("veiculos", []):
+            if tipo in caracteristicas_veiculos:
+                veiculo_data = caracteristicas_veiculos[tipo]
                 veiculos.append(Veiculo(
-                    tipo=veiculo_tipo,
+                    tipo=tipo,
                     custo=veiculo_data["custo"],
                     combustivel_disponivel=veiculo_data["combustivel_disponivel"],
                     limite_carga=veiculo_data["limite_carga"]
                 ))
+            else:
+                print(f"[AVISO] O veículo '{tipo}' não tem características definidas no ficheiro '{ficheiro_caracteristicas}'.")
 
-        no = No(nome, populacao=populacao, janela_tempo=tempo, medicamento=medicamento, veiculos=veiculos, x=x, y=y)
+        no = No(nome, populacao=populacao, janela_tempo=tempo, medicamento=medicamento, veiculos=veiculos, x=x, y=y, meteorologia=meteorologia)
         grafo.m_nodes.append(no)
         grafo.m_graph[nome] = []
 
