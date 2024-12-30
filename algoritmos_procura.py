@@ -9,17 +9,13 @@ def procura_DFS(grafo, inicio, fim):
     considerando todos os veículos disponíveis no nó inicial.
     Retorna o melhor caminho com base no custo mais baixo.
     """
-    # Obter veículos disponíveis no nó inicial
     veiculos_disponiveis = grafo.get_veiculos_no(inicio)
     if not veiculos_disponiveis:
         print(f"Nó {inicio} não possui veículos disponíveis.")
         return None
 
-    print(f"Veículos disponíveis em {inicio}: {[v.get_tipo() for v in veiculos_disponiveis]}")
-
     melhores_caminhos = []
 
-    # Iterar sobre cada veículo disponível
     for veiculo in veiculos_disponiveis:
         print(f"Usando veículo: {veiculo.get_tipo()}")
         stack = [(inicio, [inicio])]  # Pilha para DFS (nó atual, caminho até agora)
@@ -36,11 +32,14 @@ def procura_DFS(grafo, inicio, fim):
             # Se o destino foi alcançado
             if nodo_atual == fim:
                 custo_arestas = grafo.calcula_custo(caminho, veiculo.get_tipo())
-                custo_final = custo_arestas * veiculo.get_custo()
-                print(f"[DEBUG] Veículo: {veiculo.get_tipo()}, Caminho: {caminho}, Custo (arestas): {custo_arestas}, Custo final: {custo_final}")
-                if custo_final != float('inf'):  # Apenas considerar caminhos válidos
+                # Verificar se o custo acumulado excede o combustível disponível
+                if custo_arestas > veiculo.get_combustivel_disponivel():
+                    print(f"[DEBUG] Veículo: {veiculo.get_tipo()} NÃO PODE COMPLETAR o caminho: {caminho}. Custo acumulado ({custo_arestas}) excede o combustível disponível ({veiculo.get_combustivel_disponivel()}).")
+                else:
+                    custo_final = custo_arestas * veiculo.get_custo()
+                    print(f"[DEBUG] Veículo: {veiculo.get_tipo()} PODE COMPLETAR o caminho: {caminho}. Custo acumulado: {custo_arestas}, Custo final: {custo_final}")
                     melhores_caminhos.append((veiculo.get_tipo(), caminho, custo_final))
-                continue  # Continuar para outros caminhos possíveis
+                continue
 
             # Adicionar vizinhos acessíveis à pilha
             vizinhos = [
@@ -48,9 +47,9 @@ def procura_DFS(grafo, inicio, fim):
                 for adjacente, peso, bloqueada, permitidos in grafo.m_graph[nodo_atual]
                 if adjacente not in visited and veiculo.get_tipo() in permitidos and not bloqueada
             ]
-            # Adiciona os vizinhos em ordem inversa para respeitar a lógica DFS (último adicionado, primeiro a ser visitado)
-            stack.extend(reversed(vizinhos))
+            # Adicionar os vizinhos na ordem inversa para respeitar DFS
             for adjacente, novo_caminho in reversed(vizinhos):
+                stack.append((adjacente, novo_caminho))
                 print(f"Vizinho {adjacente} adicionado à pilha com caminho: {novo_caminho}")
 
     # Escolher o melhor caminho (menor custo) entre todos os veículos

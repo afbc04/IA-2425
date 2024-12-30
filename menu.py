@@ -19,6 +19,7 @@ def carregar_grafo(ficheiro_grafo="data/grafo2.json", ficheiro_custos="data/cust
     with open(ficheiro_grafo, "r") as f:
         dados = json.load(f)
 
+    # Chamar a função carregar_custos_veiculos para obter os custos
     custos_veiculos = carregar_custos_veiculos(ficheiro_custos)
 
     grafo = Grafo(directed=False)
@@ -38,12 +39,13 @@ def carregar_grafo(ficheiro_grafo="data/grafo2.json", ficheiro_custos="data/cust
             nevoeiro=meteo_data["nevoeiro"]
         )
 
-        # Processar veículos e adicionar custos
         veiculos_data = no_data.get("veiculos", [])
         veiculos = []
-        for tipo in veiculos_data:
-            custo = custos_veiculos.get(tipo, float('inf'))  # Obter custo do ficheiro de custos
-            veiculo = Veiculo(tipo=tipo, custo=custo)
+        for veiculo_info in veiculos_data:
+            tipo = veiculo_info["tipo"]
+            combustivel_disponivel = veiculo_info["combustivel_disponivel"]
+            custo = custos_veiculos.get(tipo, 1)  # Define um custo padrão caso não esteja no ficheiro
+            veiculo = Veiculo(tipo=tipo, custo=custo, combustivel_disponivel=combustivel_disponivel)
             veiculos.append(veiculo)
 
         no = No(name=nome, populacao=populacao, janela_tempo=tempo, meteorologia=meteorologia, x=x, y=y, veiculos=veiculos)
@@ -60,6 +62,7 @@ def carregar_grafo(ficheiro_grafo="data/grafo2.json", ficheiro_custos="data/cust
         grafo.add_edge(origem, destino, peso, blocked=bloqueada, permitidos=permitidos)
 
     return grafo
+
 
 # Função para mostrar o menu e executar o algoritmo escolhido
 def mostrar_menu():
