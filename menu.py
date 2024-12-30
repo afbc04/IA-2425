@@ -1,6 +1,7 @@
 import json
 from grafo import Grafo
 from no import No
+from veiculo import Veiculo
 from algoritmos_procura import procura_DFS, procura_BFS, procura_aStar, greedy
 from meteorologia import Meteorologia
 from condicoesDinamicas import CondicoesDinamicas
@@ -29,7 +30,16 @@ def carregar_grafo(ficheiro_json="mapa/grafo2.json"):
             vento=meteo_data["vento"],
             nevoeiro=meteo_data["nevoeiro"]
         )
-        veiculos = no_data.get("veiculos", [])
+
+        # Processar veículos com custo
+        veiculos_data = no_data.get("veiculos", [])
+        veiculos = []
+        for veiculo_data in veiculos_data:
+            tipo = veiculo_data["tipo"]
+            custo = veiculo_data["custo"]
+            veiculo = Veiculo(tipo=tipo, custo=custo)
+            veiculos.append(veiculo)
+
         no = No(name=nome, populacao=populacao, janela_tempo=tempo, meteorologia=meteorologia, x=x, y=y, veiculos=veiculos)
         grafo.m_nodes.append(no)
         grafo.m_graph[nome] = []
@@ -41,7 +51,7 @@ def carregar_grafo(ficheiro_json="mapa/grafo2.json"):
         peso = aresta["peso"]
         bloqueada = aresta.get("bloqueada", False)
         permitidos = aresta.get("permitidos", [])
-        print(f"Processar aresta: {origem} -> {destino}, Peso: {peso}, Bloqueada: {bloqueada}, Permitidos: {permitidos}")
+        #print(f"Processar aresta: {origem} -> {destino}, Peso: {peso}, Bloqueada: {bloqueada}, Permitidos: {permitidos}")
         grafo.add_edge(origem, destino, peso, blocked=bloqueada, permitidos=permitidos)
 
     return grafo
