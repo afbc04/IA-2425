@@ -493,3 +493,121 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
 
     print("Nenhum caminho válido encontrado.")
     return None
+
+
+def hill_climbing(grafo, destino, max_restarts, max_iteracoes):
+    melhor_caminho_global = None
+    melhor_custo_global = float('inf')
+    melhor_veiculo_global = None
+    
+    destino_node = grafo.get_node_by_name(destino)
+    
+    for tentativa in range(max_restarts):
+        print(f"\n{'=' * 30}")
+        print(f"Tentativa {tentativa+1} de {max_restarts}")
+        
+        todos_nos = [no for no in grafo.m_nodes if no.getName()!=destino]
+            
+        no_origem = random.choice(todos_nos)
+        print(f"Ponto inicial escolhido: {no_origem.getName()} (Medicamentos: {no_origem.get_medicamento()})")
+
+        if no_origem.janela_tempo==0:
+            continue
+
+        veiculos_disponiveis = grafo.get_veiculos_no(no_origem.getName())
+        if not veiculos_disponiveis:
+            continue
+
+        for veiculo in veiculos_disponiveis:
+            medicamentos_disponiveis = no_origem.get_medicamento()
+            if medicamentos_disponiveis == 0 or veiculo.get_limite_carga() == 0:
+                continue
+                
+            print(f"\nA testar {veiculo.get_tipo()}")
+            
+            caminho_atual = [no_origem.getName()]
+            distancia_atual = grafo.calcula_heuristica(no_origem, destino_node)
+            
+            for iteracao in range(max_iteracoes):
+                ultimo_no = caminho_atual[-1]
+                ultimo_no_obj = grafo.get_node_by_name(ultimo_no)
+
+                print(f"Iteração {iteracao}: Explorando a partir de {ultimo_no}")
+                
+                if ultimo_no == destino:
+                    tempo_total = 0
+                    no_anterior = None
+                    
+                    for no in caminho_atual:
+                        if no_anterior:
+                            for viz, peso, _, _ in grafo.m_graph[no_anterior]:
+                                if viz == no:
+                                    tempo_total += peso / veiculo.get_velocidade()
+                                    break
+                        no_anterior = no
+                    
+                    if tempo_total <= destino_node.janela_tempo:
+                        custo_final = grafo.calcula_custo(caminho_atual, veiculo)
+                        
+                        if custo_final < melhor_custo_global:
+                            melhor_caminho_global = caminho_atual.copy()
+                            melhor_custo_global = custo_final
+                            melhor_veiculo_global = veiculo
+                            print(f"\nNovo melhor caminho encontrado!")
+                            print(f"Caminho: {' -> '.join(caminho_atual)}")
+                            print(f"Tempo total: {tempo_total:.2f}")
+                            print(f"Custo: {custo_final}")
+                            
+                            # Distribuição de medicamentos por prioridade calculada
+                            medicamentos_disponiveis = min(
+                                no_origem.get_medicamento(),
+                                veiculo.get_limite_carga()
+                            )
+                            
+                            # Criar lista de nós que estão no caminho
+                            nos_caminho = []
+                            for no_nome in caminho_atual[1:]:
+                                no = grafo.get_node_by_name(no_nome)
+                                if no.janela_tempo > 0 and no.populacao > 0:
+                                    nos_caminho.append(no)
+                            
+                            # Ordena os nós por prioridade
+                            nos_caminho.sort(key=lambda x: x.calcula_prioridade())
+                            
+                            #Distribui, se possível, medicamentos pelos nos
+                            for no in nos_caminho:
+                                if medicamentos_disponiveis > 0:
+                                    qtd = min(no.populacao, medicamentos_disponiveis)
+                                    if grafo.transferir_valores(qtd, no_origem.getName(), no.getName()):
+                                        medicamentos_disponiveis -= qtd
+                            grafo.desenha()
+                    break
+                
+                todos_vizinhos = []
+                for vizinho, peso, bloqueada, permitidos in grafo.m_graph[ultimo_no]:
+                    if (vizinho not in caminho_atual and 
+                        veiculo.get_tipo() in permitidos and 
+                        not bloqueada and
+                        grafo.get_node_by_name(vizinho).janela_tempo > 0):
+                        todos_vizinhos.append((vizinho, peso))
+                
+                melhor_vizinho = None
+                menor_distancia = distancia_atual
+                
+                for vizinho, _ in todos_vizinhos:
+                    vizinho_obj = grafo.get_node_by_name(vizinho)
+                    dist = grafo.calcula_heuristica(vizinho_obj, destino_node)
+                    if dist < menor_distancia:
+                        melhor_vizinho = vizinho
+                        menor_distancia = dist
+                
+                if melhor_vizinho:
+                    caminho_atual.append(melhor_vizinho)
+                    distancia_atual = menor_distancia
+                else:
+                    break     
+
+    if melhor_caminho_global is None:
+        return None, None, float('inf')
+        
+    return melhor_veiculo_global, melhor_caminho_global, melhor_custo_global
