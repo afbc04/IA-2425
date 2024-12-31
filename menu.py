@@ -52,7 +52,8 @@ def carregar_grafo(ficheiro_grafo="data/grafo2.json", ficheiro_caracteristicas="
                     tipo=tipo,
                     custo=veiculo_data["custo"],
                     combustivel_disponivel=veiculo_data["combustivel_disponivel"],
-                    limite_carga=veiculo_data["limite_carga"]
+                    limite_carga=veiculo_data["limite_carga"],
+                    velocidade=veiculo_data["velocidade"]
                 ))
             else:
                 print(f"[AVISO] O veículo '{tipo}' não tem características definidas no ficheiro '{ficheiro_caracteristicas}'.")
