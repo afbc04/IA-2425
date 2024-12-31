@@ -60,7 +60,7 @@ class No:
             return float('inf') 
 
         if self.janela_tempo == 0:
-            return 0  # Prioridade máxima para janela esgotada
+            return float('inf') 
 
         impacto_meteorologico = self.calcula_impacto_meteorologia()
 

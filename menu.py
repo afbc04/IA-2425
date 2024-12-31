@@ -109,8 +109,16 @@ def iniciar_menu():
 
         destino = grafo.get_no_maior_prioridade()
         if destino is None:
-            print("Não existem nós válidos no grafo.")
-            break
+            print("Todos os nós foram processados. Escolha uma ação.")
+            opcao = mostrar_menu()
+            if opcao == "5":
+                grafo.desenha()
+            elif opcao == "0":
+                print("A sair...")
+                break
+            else:
+                print("Opção inválida. Tente novamente.")
+            continue
 
         todos_com_populacao_zero = False  # Reset da flag caso haja nós com população > 0
         print(f"\nDestino automaticamente escolhido: {destino.getName()} (prioridade: {destino.calcula_prioridade()})")
