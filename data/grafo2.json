@@ -1,7 +1,7 @@
 {
     "nos": [
-        {"nome": "A", "populacao": 0, "tempo": 15, "x": 3, "y": 3, "medicamento": 1500, "meteorologia": {"chuva": 1, "tempestade": 0, "vento": 3, "nevoeiro": 2}, "veiculos": ["barco", "carro"]},
-        {"nome": "B", "populacao": 10, "tempo": 12, "x": 1, "y": 2, "medicamento": 0, "meteorologia": {"chuva": 0, "tempestade": 1, "vento": 2, "nevoeiro": 1}, "veiculos": ["barco"]},
+        {"nome": "A", "populacao": 0, "tempo": 15, "x": 3, "y": 3, "medicamento": 1200, "meteorologia": {"chuva": 1, "tempestade": 0, "vento": 3, "nevoeiro": 2}, "veiculos": ["barco", "carro"]},
+        {"nome": "B", "populacao": 1, "tempo": 12, "x": 1, "y": 2, "medicamento": 0, "meteorologia": {"chuva": 0, "tempestade": 1, "vento": 2, "nevoeiro": 1}, "veiculos": ["barco"]},
         {"nome": "C", "populacao": 10, "tempo": 10, "x": 1, "y": 0, "medicamento": 0, "meteorologia": {"chuva": 2, "tempestade": 0, "vento": 4, "nevoeiro": 0}, "veiculos": ["carro", "aviao"]},
         {"nome": "D", "populacao": 10, "tempo": 10, "x": 1, "y": -2, "medicamento": 0, "meteorologia": {"chuva": 3, "tempestade": 0, "vento": 1, "nevoeiro": 1}, "veiculos": ["barco"]},
         {"nome": "E", "populacao": 0, "tempo": 20, "x": 5, "y": 2, "medicamento": 400, "meteorologia": {"chuva": 0, "tempestade": 2, "vento": 3, "nevoeiro": 2}, "veiculos": ["carro", "aviao"]},

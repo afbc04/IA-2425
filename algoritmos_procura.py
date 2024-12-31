@@ -277,51 +277,117 @@ def procura_aStar(grafo, start, end):
 
     return None, math.inf
 
-# Algoritmo procura gulosa
-def greedy(grafo, start, end):
-    open_list = {start}
-    closed_list = set()
-    parents = {start: start}
+def greedy(grafo, inicio, destino):
+    """
+    Realiza a busca gulosa para encontrar o melhor caminho considerando todos os veículos disponíveis no nó inicial.
+    Prioriza a transferência para o destino e, com os medicamentos restantes, socorre outros nós do caminho por prioridade.
+    """
+    no_origem = grafo.get_node_by_name(inicio)
+    no_destino = grafo.get_node_by_name(destino)
 
-    # Obtém os veículos disponíveis no nó inicial
-    veiculos_disponiveis = grafo.get_veiculos_no(start)
+    if no_origem.janela_tempo == 0:
+        print(f"[ERRO] O nó de origem '{inicio}' não pode ser utilizado porque o tempo esgotou.")
+        return None
+
+    if no_origem.get_medicamento() == 0:
+        print(f"[ERRO] NINGUÉM FOI SOCORRIDO, NÓ ORIGEM SEM MEDICAMENTOS: '{inicio}'")
+        return None
+
+    veiculos_disponiveis = grafo.get_veiculos_no(inicio)
     if not veiculos_disponiveis:
-        print(f"Nó {start} não possui veículos disponíveis.")
-        return None, math.inf
+        print(f"Nó {inicio} não possui veículos disponíveis.")
+        return None
 
-    for veiculo_atual in veiculos_disponiveis:
-        print(f"Tentando a procura com o veículo: {veiculo_atual}")
+    melhores_caminhos = []
 
-        # Reiniciar as listas para cada veículo
-        open_list = {start}
-        closed_list = set()
-        parents = {start: start}
+    for veiculo in veiculos_disponiveis:
+        print(f"Usando veículo: {veiculo.get_tipo()} (Velocidade: {veiculo.get_velocidade()})")
+
+        # Inicializa a lista de nós a explorar e os visitados
+        open_list = [(inicio, [inicio])]  # [(nó atual, caminho percorrido)]
+        visited = set()
 
         while open_list:
-            # Pega o nó com o menor custo (com base na heurística de distância para o final)
-            n = min(open_list, key=lambda v: grafo.calculaDist(v, end))
+            # Ordena a lista de abertos pela heurística do nó atual
+            open_list.sort(key=lambda x: grafo.m_h[x[0]])
+            nodo_atual, caminho = open_list.pop(0)
 
-            # Se o destino for alcançado, construa o caminho
-            if n == end:
-                caminho = []
-                while parents[n] != n:
-                    caminho.append(n)
-                    n = parents[n]
-                caminho.append(start)
-                caminho.reverse()
-                return caminho, grafo.calcula_custo(caminho, veiculo_atual)
+            if nodo_atual in visited:
+                continue
 
-            open_list.remove(n)
-            closed_list.add(n)
+            visited.add(nodo_atual)
+            print(f"Gulosa: Visitando {nodo_atual}, Caminho atual: {caminho}")
 
-            # Explora os vizinhos do nó atual
-            for m, weight in grafo.getNeighbours(n, veiculo_atual):
-                # Verifica se o vizinho não foi visitado e não está na lista de fechados
-                if m not in open_list and m not in closed_list:
-                    open_list.add(m)
-                    parents[m] = n
+            # Se o destino foi alcançado
+            if nodo_atual == destino:
+                custo_final, pessoas_socorridas = grafo.calcula_custo(caminho, veiculo)
+                if custo_final == float('inf'):
+                    print(f"[DEBUG] Veículo: {veiculo.get_tipo()} NÃO PODE COMPLETAR o caminho: {caminho}.")
+                else:
+                    print(f"[DEBUG] Veículo: {veiculo.get_tipo()} PODE COMPLETAR o caminho: {caminho}. Custo final: {custo_final}")
+                    melhores_caminhos.append((veiculo, caminho, custo_final, pessoas_socorridas))
+                continue
 
-    return None, math.inf
+            # Explorar vizinhos acessíveis
+            vizinhos = [
+                (adjacente, caminho + [adjacente])
+                for adjacente, peso, bloqueada, permitidos in grafo.m_graph[nodo_atual]
+                if adjacente not in visited and veiculo.get_tipo() in permitidos and not bloqueada
+            ]
+            open_list.extend(vizinhos)
+            for adjacente, novo_caminho in vizinhos:
+                print(f"Vizinho {adjacente} adicionado à lista com caminho: {novo_caminho}")
+
+    if melhores_caminhos:
+        melhor_caminho = min(melhores_caminhos, key=lambda x: x[2])  # Ordenar pelo custo
+        veiculo, caminho, custo, pessoas_socorridas = melhor_caminho
+
+        print(f"Melhor caminho: {caminho} com veículo {veiculo.get_tipo()} e custo {custo}")
+
+        # Priorizar transferência para o destino
+        capacidade_restante = veiculo.get_limite_carga()
+        medicamentos_disponiveis = no_origem.get_medicamento()
+
+        # Transferir medicamentos para o destino primeiro
+        medicamentos_para_transferir = min(
+            capacidade_restante,
+            medicamentos_disponiveis,
+            no_destino.populacao
+        )
+        if medicamentos_para_transferir > 0:
+            grafo.transferir_valores(medicamentos_para_transferir, caminho[0], caminho[-1])
+            medicamentos_disponiveis -= medicamentos_para_transferir
+            capacidade_restante -= medicamentos_para_transferir
+
+        # Transferir medicamentos para nós intermediários ordenados pela prioridade
+        for no_intermediario in sorted(caminho[1:-1], key=lambda no: grafo.get_node_by_name(no).calcula_prioridade()):
+            no_intermediario_obj = grafo.get_node_by_name(no_intermediario)
+
+            if no_intermediario_obj.populacao > 0 and capacidade_restante > 0:
+                medicamentos_para_transferir = min(
+                    capacidade_restante,
+                    medicamentos_disponiveis,
+                    no_intermediario_obj.populacao
+                )
+
+                if medicamentos_para_transferir > 0:
+                    grafo.transferir_valores(
+                        medicamentos_para_transferir,
+                        caminho[0],
+                        no_intermediario
+                    )
+                    medicamentos_disponiveis -= medicamentos_para_transferir
+                    capacidade_restante -= medicamentos_para_transferir
+
+        # Atualizar heurísticas após transferir valores
+        grafo.atualizar_heuristicas(no_destino)
+
+        grafo.desenha()
+
+        return {veiculo.get_tipo(): (caminho, custo)}
+
+    print("Nenhum caminho válido encontrado.")
+    return None
 
 # algorithm simulated annealing
 def simulated_annealing(grafo, destino, temperatura_inicial = 10, numero_iteracoes = 10):
