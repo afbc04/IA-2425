@@ -17,7 +17,7 @@ def procura_DFS(grafo, inicio, fim):
     melhores_caminhos = []
 
     for veiculo in veiculos_disponiveis:
-        print(f"Usando veículo: {veiculo.get_tipo()}")
+        print(f"Usando veículo: {veiculo.get_tipo()} (Velocidade: {veiculo.get_velocidade()})")
         stack = [(inicio, [inicio])]  # Pilha para DFS (nó atual, caminho até agora)
         visited = set()
 
@@ -38,6 +38,15 @@ def procura_DFS(grafo, inicio, fim):
                           f"Custo acumulado das arestas ({custo_acumulado_arestas}) excede o combustível disponível "
                           f"({veiculo.get_combustivel_disponivel()}).")
                 else:
+                    # Verificar a velocidade em relação ao tempo do nó destino
+                    destino = grafo.get_node_by_name(fim)
+                    tempo_destino = destino.janela_tempo
+                    if tempo_destino > 0 and (custo_acumulado_arestas / tempo_destino) > veiculo.get_velocidade():
+                        print(f"[DEBUG] Veículo: {veiculo.get_tipo()} NÃO PODE COMPLETAR o caminho: {caminho}. "
+                              f"Razão custo/tempo ({custo_acumulado_arestas / tempo_destino}) excede a velocidade do veículo "
+                              f"({veiculo.get_velocidade()}).")
+                        continue
+
                     custo_final, pessoas_socorridas = grafo.calcula_custo(caminho, veiculo)
                     if custo_final == float('inf'):
                         print(f"[DEBUG] Veículo: {veiculo.get_tipo()} NÃO PODE COMPLETAR o caminho: {caminho}.")
@@ -99,7 +108,6 @@ def procura_DFS(grafo, inicio, fim):
 
     print("Nenhum caminho válido encontrado.")
     return None
-
 
 def procura_BFS(grafo, inicio, fim):
     """
