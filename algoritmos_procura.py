@@ -9,6 +9,11 @@ def procura_DFS(grafo, inicio, fim):
     considerando todos os veículos disponíveis no nó inicial.
     Retorna o melhor caminho com base no custo mais baixo.
     """
+    no_origem = grafo.get_node_by_name(inicio)
+    if no_origem.janela_tempo == 0:
+        print(f"[ERRO] O nó de origem '{inicio}' não pode ser utilizado porque o tempo esgotou.")
+        return None
+        
     veiculos_disponiveis = grafo.get_veiculos_no(inicio)
     if not veiculos_disponiveis:
         print(f"Nó {inicio} não possui veículos disponíveis.")
