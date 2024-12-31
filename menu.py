@@ -3,7 +3,7 @@ from grafo import Grafo
 from no import No
 from veiculo import Veiculo
 from meteorologia import Meteorologia
-from algoritmos_procura import procura_DFS, procura_BFS, procura_aStar, greedy
+from algoritmos_procura import procura_DFS, procura_BFS, procura_aStar, greedy, simulated_annealing
 
 def carregar_caracteristicas_veiculos(ficheiro_caracteristicas="data/caracteristicas_dos_veiculos.json"):
     """
@@ -80,7 +80,8 @@ def mostrar_menu():
     print("2. BFS (Breadth-First Search)")
     print("3. A*")
     print("4. Greedy")
-    print("5. Imprimir Grafo")
+    print("5. Simulated Annealing")
+    print("6. Imprimir Grafo")
     print("0. Sair")
     escolha = input("Opção: ")
     return escolha
@@ -165,6 +166,13 @@ def iniciar_menu():
                 print("Caminho não encontrado com Greedy.")
 
         elif opcao == "5":
+            resultado = simulated_annealing(grafo, destino.getName().upper(), temperatura_inicial = 10, numero_iteracoes = 10)
+            if resultado:
+                print("Caminho:", resultado[0], "Custo:", resultado[1])
+            else:
+                print("Caminho não encontrado com Simulated Annealing.")
+
+        elif opcao == "6":
             grafo.desenha()
 
         elif opcao == "0":
