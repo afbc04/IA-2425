@@ -169,7 +169,8 @@ def iniciar_menu():
         elif opcao == "5":
             resultado = simulated_annealing(grafo, destino.getName().upper(), temperatura_inicial = 10, numero_iteracoes = 10)
             if resultado:
-                print("Caminho:", resultado[0], "Custo:", resultado[1])
+                for veiculo, (caminho, custo) in resultado.items():
+                    print(f"Veículo: {veiculo}, Caminho: {caminho}, Custo: {custo}")
             else:
                 print("Caminho não encontrado com Simulated Annealing.")
 
