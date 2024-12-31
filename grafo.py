@@ -11,6 +11,13 @@ class Grafo:
         self.m_h = {}  # Heurísticas: {nó: valor}
         self.custos_veiculos = {}  # Dicionário global para custos de veículos
 
+        # Atualizar heurísticas com base no nó de maior prioridade
+        no_destino = self.get_no_maior_prioridade()
+        if no_destino:
+            self.atualizar_heuristicas(no_destino)
+        else:
+            print("[INFO] Nenhum nó de maior prioridade disponível no momento.")
+
     def get_node_by_name(self, node_name):
         """
         Retorna o nó pelo nome, ou None se o nó não existir.
@@ -73,18 +80,6 @@ class Grafo:
         print(f"[DEBUG] Aresta não encontrada entre {node1} e {node2}")
         return float('inf')  # Não existe conexão entre os nós
 
-
-
-    def calculaDist(self, node1_name, node2_name):
-        node1 = next((node for node in self.m_nodes if node.getName() == node1_name), None)
-        node2 = next((node for node in self.m_nodes if node.getName() == node2_name), None)
-
-        if node1 and node2:
-            coord1 = node1.get_coordenadas()
-            coord2 = node2.get_coordenadas()
-            return math.sqrt((coord1[0] - coord2[0])**2 + (coord1[1] - coord2[1])**2)
-        return float('inf')
-
     def calcula_acumulado_arestas(self, caminho, veiculo):
         """
         Calcula a soma total das arestas ao longo do caminho e retorna o valor acumulado.
@@ -142,13 +137,46 @@ class Grafo:
 
             return custo_final, pessoas_socorridas
 
+    def atualizar_heuristicas(self, no_destino):
+        """
+        Atualiza a heurística de cada nó no grafo, considerando o nó de maior prioridade como destino.
+        Nós com população igual a 0 recebem heurística infinita.
+        """
+        if no_destino is None:
+            print("[ERRO] Nenhum nó de destino válido para calcular heurísticas.")
+            return
 
-    def calcula_heuristica(self, no):
-        destino = self.get_no_maior_prioridade()
-        if destino is None:
+        self.m_h = {}
+        for no in self.m_nodes:
+            if no.populacao == 0 or no.janela_tempo == 0:  # Nós com população ou tempo esgotado recebem inf
+                heuristica = float('inf')
+            else:
+                heuristica = self.calcula_heuristica(no, no_destino)
+            
+            self.m_h[no.getName()] = heuristica
+            print(f"[DEBUG] Heurística do nó '{no.getName()}': {heuristica:.6f}")
+
+    def calcula_heuristica(self, no_origem, no_destino):
+        """
+        Calcula a heurística de um nó como a combinação da distância euclidiana ao destino
+        multiplicada pela prioridade do próprio nó de origem.
+
+        Fórmula: distância_euclidiana * prioridade_no_origem
+        """
+        x_origem, y_origem = no_origem.x, no_origem.y
+        x_destino, y_destino = no_destino.x, no_destino.y
+
+        # Distância euclidiana entre os nós
+        distancia_euclidiana = ((x_destino - x_origem) ** 2 + (y_destino - y_origem) ** 2) ** 0.5
+
+        # Prioridade do nó de origem
+        prioridade_no_origem = no_origem.calcula_prioridade()
+
+        if prioridade_no_origem == float('inf'):
             return float('inf')
 
-        return self.calculaDist(no.getName(), destino.getName())
+        # Heurística final
+        return distancia_euclidiana * prioridade_no_origem
 
     def get_no_maior_prioridade(self):
         menor_prioridade = float('inf')
@@ -230,12 +258,19 @@ class Grafo:
 
     def desenha(self, destaque_azul=False):
         """
-        Atualiza a visualização do grafo na mesma janela.
+        Atualiza a visualização do grafo.
         """
         plt.ion()  # Ativa o modo interativo
 
         # Limpar a figura atual antes de redesenhar
         plt.clf()
+
+        # Atualizar as heurísticas para todos os nós
+        no_destino = self.get_no_maior_prioridade()
+        if no_destino:
+            self.atualizar_heuristicas(no_destino)
+        else:
+            print("[ERRO] Não foi possível determinar o nó de maior prioridade para calcular heurísticas.")
 
         g = nx.Graph()
 
@@ -256,8 +291,7 @@ class Grafo:
             )
 
         # Identificar o nó de maior prioridade
-        no_maior_prioridade = self.get_no_maior_prioridade()
-        no_destacado = no_maior_prioridade.getName() if no_maior_prioridade else None
+        no_destacado = no_destino.getName() if no_destino else None
 
         # Adicionar arestas ao grafo NetworkX
         edge_colors = []
@@ -316,6 +350,39 @@ class Grafo:
                 verticalalignment="center", horizontalalignment="center",
                 fontsize=9, zorder=3, color="white" if cor == "black" else "black",
             )
+
+        # Adicionar a lista de heurísticas no canto inferior esquerdo
+        heuristicas_texto = "Heurísticas:\n"
+        for no, heuristica in self.m_h.items():
+            heuristicas_texto += f"{no}: {heuristica:.5f}\n"
+
+        plt.text(
+            0.01, 0.01,  # Coordenadas no canto inferior esquerdo
+            heuristicas_texto,
+            fontsize=10,
+            color="black",
+            ha="left",
+            va="bottom",
+            transform=plt.gcf().transFigure,
+            bbox=dict(facecolor="white", alpha=0.7, edgecolor="black"),
+        )
+
+        # Adicionar a lista de prioridades no canto superior esquerdo
+        prioridades_texto = "Prioridades:\n"
+        for no in sorted(self.m_nodes, key=lambda n: n.calcula_prioridade()):
+            prioridade = no.calcula_prioridade()
+            prioridades_texto += f"{no.getName()}: {prioridade:.5f}\n"
+
+        plt.text(
+            0.01, 0.99,  # Coordenadas no canto superior esquerdo
+            prioridades_texto,
+            fontsize=10,
+            color="black",
+            ha="left",
+            va="top",
+            transform=plt.gcf().transFigure,
+            bbox=dict(facecolor="white", alpha=0.7, edgecolor="black"),
+        )
 
         # Ajustar os limites do gráfico
         plt.title("Mapa de Zonas e Conexões", fontsize=16)
