@@ -303,40 +303,39 @@ def greedy(grafo, inicio, destino):
     for veiculo in veiculos_disponiveis:
         print(f"Usando veículo: {veiculo.get_tipo()} (Velocidade: {veiculo.get_velocidade()})")
 
-        # Inicializa a lista de nós a explorar e os visitados
-        open_list = [(inicio, [inicio])]  # [(nó atual, caminho percorrido)]
+        # Inicializa o caminho atual e o nó de partida
+        caminho = [inicio]
+        nodo_atual = inicio
         visited = set()
 
-        while open_list:
-            # Ordena a lista de abertos pela heurística do nó atual
-            open_list.sort(key=lambda x: grafo.m_h[x[0]])
-            nodo_atual, caminho = open_list.pop(0)
-
-            if nodo_atual in visited:
-                continue
-
+        while nodo_atual != destino:
             visited.add(nodo_atual)
             print(f"Gulosa: Visitando {nodo_atual}, Caminho atual: {caminho}")
 
-            # Se o destino foi alcançado
-            if nodo_atual == destino:
-                custo_final, pessoas_socorridas = grafo.calcula_custo(caminho, veiculo)
-                if custo_final == float('inf'):
-                    print(f"[DEBUG] Veículo: {veiculo.get_tipo()} NÃO PODE COMPLETAR o caminho: {caminho}.")
-                else:
-                    print(f"[DEBUG] Veículo: {veiculo.get_tipo()} PODE COMPLETAR o caminho: {caminho}. Custo final: {custo_final}")
-                    melhores_caminhos.append((veiculo, caminho, custo_final, pessoas_socorridas))
-                continue
-
-            # Explorar vizinhos acessíveis
+            # Obter vizinhos acessíveis
             vizinhos = [
-                (adjacente, caminho + [adjacente])
+                (adjacente, grafo.m_h[adjacente])
                 for adjacente, peso, bloqueada, permitidos in grafo.m_graph[nodo_atual]
                 if adjacente not in visited and veiculo.get_tipo() in permitidos and not bloqueada
             ]
-            open_list.extend(vizinhos)
-            for adjacente, novo_caminho in vizinhos:
-                print(f"Vizinho {adjacente} adicionado à lista com caminho: {novo_caminho}")
+
+            if not vizinhos:
+                print(f"[ERRO] Sem vizinhos acessíveis para o nó {nodo_atual}.")
+                break
+
+            # Escolher o vizinho com menor heurística
+            vizinho_escolhido = min(vizinhos, key=lambda x: x[1])[0]
+            caminho.append(vizinho_escolhido)
+            nodo_atual = vizinho_escolhido
+
+        # Verificar se chegou ao destino
+        if nodo_atual == destino:
+            custo_final, pessoas_socorridas = grafo.calcula_custo(caminho, veiculo)
+            if custo_final == float('inf'):
+                print(f"[DEBUG] Veículo: {veiculo.get_tipo()} NÃO PODE COMPLETAR o caminho: {caminho}.")
+            else:
+                print(f"[DEBUG] Veículo: {veiculo.get_tipo()} PODE COMPLETAR o caminho: {caminho}. Custo final: {custo_final}")
+                melhores_caminhos.append((veiculo, caminho, custo_final, pessoas_socorridas))
 
     if melhores_caminhos:
         melhor_caminho = min(melhores_caminhos, key=lambda x: x[2])  # Ordenar pelo custo
@@ -388,6 +387,7 @@ def greedy(grafo, inicio, destino):
 
     print("Nenhum caminho válido encontrado.")
     return None
+
 
 # algorithm simulated annealing
 def simulated_annealing(grafo, destino, temperatura_inicial = 10, numero_iteracoes = 10):
