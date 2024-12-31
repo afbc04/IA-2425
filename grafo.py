@@ -240,10 +240,9 @@ class Grafo:
         
         return True
 
-
     def desenha(self, destaque_azul=False):
         """
-        Visualização do grafo.
+        Atualiza a visualização do grafo na mesma janela.
         """
         plt.ion()  # Ativa o modo interativo
 
@@ -269,7 +268,7 @@ class Grafo:
             )
 
         # Identificar o nó de maior prioridade
-        no_maior_prioridade = self.get_no_maior_prioridade() if not destaque_azul else None
+        no_maior_prioridade = self.get_no_maior_prioridade()
         no_destacado = no_maior_prioridade.getName() if no_maior_prioridade else None
 
         # Adicionar arestas ao grafo NetworkX
@@ -306,19 +305,28 @@ class Grafo:
         rect_width = 0.8  # Largura do retângulo
         rect_height = 0.6  # Altura do retângulo
         for node, (x, y) in pos.items():
+            if destaque_azul:
+                cor = "blue"
+            elif node == no_destacado:
+                cor = "red"
+            elif self.get_node_by_name(node).janela_tempo == 0:  # Nó com tempo 0 fica preto
+                cor = "black"
+            else:
+                cor = "skyblue"
+
             rect = plt.Rectangle(
                 (x - rect_width / 2, y - rect_height / 2),  # Posição inicial (centro menos metade da largura/altura)
                 rect_width,
                 rect_height,
                 edgecolor="black",
-                facecolor="blue" if destaque_azul else ("red" if node == no_destacado else "skyblue"),
+                facecolor=cor,
                 zorder=2,
             )
             ax.add_patch(rect)
             ax.text(
                 x, y, node_labels[node],
                 verticalalignment="center", horizontalalignment="center",
-                fontsize=9, zorder=3, color="black",
+                fontsize=9, zorder=3, color="white" if cor == "black" else "black",
             )
 
         # Ajustar os limites do gráfico
