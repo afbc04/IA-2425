@@ -87,16 +87,31 @@ def mostrar_menu():
 # Função principal do menu
 def iniciar_menu():
     grafo = carregar_grafo()
-    #condicoes_dinamicas = CondicoesDinamicas(grafo)
-    #condicoes_dinamicas.iniciar_alteracoes()
-    #TODO documentado, porque não compila, uma vez que não foram adicionados os veículos
+    todos_com_populacao_zero = False  # Flag para verificar se todos os nós têm população igual a 0
 
     while True:
+        # Verificar se todos os nós têm população igual a 0
+        if all(no.populacao == 0 for no in grafo.m_nodes):
+            if not todos_com_populacao_zero:  # Exibir a mensagem apenas uma vez
+                print("Todos os nós têm população igual a 0. Nenhum algoritmo pode ser executado.")
+                grafo.desenha(destaque_azul=True)  # Atualiza o grafo destacando todos os nós em azul
+                todos_com_populacao_zero = True  # Atualizar a flag para evitar mensagens repetitivas
+            opcao = mostrar_menu()
+            if opcao == "5":
+                grafo.desenha()
+            elif opcao == "0":
+                print("A sair...")
+                break
+            else:
+                print("Opção inválida. Não há operações disponíveis.")
+            continue  # Reinicia o loop para manter o programa ativo
+
         destino = grafo.get_no_maior_prioridade()
         if destino is None:
             print("Não existem nós válidos no grafo.")
             break
 
+        todos_com_populacao_zero = False  # Reset da flag caso haja nós com população > 0
         print(f"\nDestino automaticamente escolhido: {destino.getName()} (prioridade: {destino.calcula_prioridade()})")
         opcao = mostrar_menu()
 
@@ -108,12 +123,9 @@ def iniciar_menu():
                 continue
             resultado = procura_DFS(grafo, inicio.upper(), destino.getName().upper())
             if resultado:
-
                 print("Caminho DFS:")
-
-                for veiculo, (path,custo) in resultado.items():
-                    print("veículo:",veiculo," -> ", path, " Custo:", custo)
-
+                for veiculo, (path, custo) in resultado.items():
+                    print("Veículo:", veiculo, " -> ", path, " Custo:", custo)
             else:
                 print("Caminho não encontrado com DFS.")
 
@@ -121,12 +133,9 @@ def iniciar_menu():
             inicio = input("Nó inicial: ")
             resultado = procura_BFS(grafo, inicio.upper(), destino.getName().upper())
             if resultado:
-                
                 print("Caminho BFS:")
-
-                for veiculo, (path,custo) in resultado.items():
-                    print("veículo:",veiculo," -> ", path, " Custo:", custo)
-
+                for veiculo, (path, custo) in resultado.items():
+                    print("Veículo:", veiculo, " -> ", path, " Custo:", custo)
             else:
                 print("Caminho não encontrado com BFS.")
 
@@ -155,5 +164,3 @@ def iniciar_menu():
 
         else:
             print("Opção inválida. Tente novamente.")
-
-
