@@ -56,6 +56,9 @@ class No:
         Calcula a prioridade da zona com base na população, na janela de tempo restante e no impacto meteorológico.
         Quanto menor o valor, maior a prioridade. Se for 0, é a mais prioritária.
         """
+        if self.populacao == 0:
+            return float('inf') 
+
         if self.janela_tempo == 0:
             return 0  # Prioridade máxima para janela esgotada
 

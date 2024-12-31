@@ -43,6 +43,38 @@ def procura_DFS(grafo, inicio, fim):
                         print(f"[DEBUG] Veículo: {veiculo.get_tipo()} NÃO PODE COMPLETAR o caminho: {caminho}.")
                     else:
                         print(f"[DEBUG] Veículo: {veiculo.get_tipo()} PODE COMPLETAR o caminho: {caminho}. Custo final: {custo_final}")
+
+                        # Primeiramente, socorrer o nó de destino
+                        grafo.transferir_valores(pessoas_socorridas, caminho[0], fim)
+                        medicamentos_remanescentes = pessoas_socorridas - min(
+                            pessoas_socorridas,
+                            grafo.get_node_by_name(fim).populacao
+                        )
+
+                        # Distribuir para os outros nós intermediários
+                        if medicamentos_remanescentes > 0:
+                            nos_intermediarios = sorted(
+                                caminho[1:-1],  # Exclui origem e destino
+                                key=lambda no: grafo.get_node_by_name(no).calcula_prioridade()
+                            )
+                            for no_intermediario in nos_intermediarios:
+                                if medicamentos_remanescentes <= 0:
+                                    break
+                                
+                                # Determinar a quantidade a ser transferida
+                                populacao_intermediaria = grafo.get_node_by_name(no_intermediario).populacao
+                                medicamentos_para_transferir = min(medicamentos_remanescentes, populacao_intermediaria)
+                                
+                                if medicamentos_para_transferir > 0:
+                                    grafo.transferir_valores(
+                                        medicamentos_para_transferir,
+                                        caminho[0],
+                                        no_intermediario
+                                    )
+                                    medicamentos_remanescentes -= medicamentos_para_transferir
+
+                                grafo.desenha()
+
                         melhores_caminhos.append((veiculo, caminho, custo_final))
                 continue
 
@@ -63,16 +95,11 @@ def procura_DFS(grafo, inicio, fim):
         veiculo, caminho, custo = melhor_caminho
 
         print(f"Melhor caminho: {caminho} com veículo {veiculo.get_tipo()} e custo {custo}")
-
-        # Transferir medicamentos
-        no_origem = caminho[0]
-        no_destino = caminho[-1]
-        grafo.transferir_valores(pessoas_socorridas, no_origem, no_destino)
-
         return {veiculo.get_tipo(): (caminho, custo)}
 
     print("Nenhum caminho válido encontrado.")
     return None
+
 
 def procura_BFS(grafo, inicio, fim):
     """

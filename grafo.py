@@ -135,6 +135,11 @@ class Grafo:
             # Número de pessoas socorridas
             pessoas_socorridas = min(medicamentos_disponiveis, populacao_por_assistir, limite_carga)
 
+        # Tratar casos onde 'pessoas_socorridas' seja zero
+        if pessoas_socorridas == 0:
+            print(f"[ERRO] NINGUÉM FOI SOCORRIDO, NÓ ORIGEM SEM MEDICAMENTOS: {caminho}.")
+            return float('inf'), 0
+
         # Calcular o custo final ajustado
         custo_veiculo = veiculo.get_custo()
         custo_final = custo_total_arestas * (custo_veiculo / pessoas_socorridas)
@@ -236,11 +241,14 @@ class Grafo:
         return True
 
 
-    def desenha(self):
+    def desenha(self, destaque_azul=False):
         """
-        Gera uma visualização do grafo.
+        Visualização do grafo.
         """
         plt.ion()  # Ativa o modo interativo
+
+        # Limpar a figura atual antes de redesenhar
+        plt.clf()
 
         g = nx.Graph()
 
@@ -261,7 +269,7 @@ class Grafo:
             )
 
         # Identificar o nó de maior prioridade
-        no_maior_prioridade = self.get_no_maior_prioridade()
+        no_maior_prioridade = self.get_no_maior_prioridade() if not destaque_azul else None
         no_destacado = no_maior_prioridade.getName() if no_maior_prioridade else None
 
         # Adicionar arestas ao grafo NetworkX
@@ -275,7 +283,7 @@ class Grafo:
                     edge_labels[(node.getName(), adjacente)] = f"{peso} ({', '.join(permitidos)})"
 
         # Criar a figura do grafo
-        plt.figure(figsize=(12, 8))
+        plt.figure(1)  # Usa a mesma figura
 
         # Desenhar as arestas
         nx.draw_networkx_edges(
@@ -303,7 +311,7 @@ class Grafo:
                 rect_width,
                 rect_height,
                 edgecolor="black",
-                facecolor="red" if node == no_destacado else "skyblue",
+                facecolor="blue" if destaque_azul else ("red" if node == no_destacado else "skyblue"),
                 zorder=2,
             )
             ax.add_patch(rect)
@@ -319,5 +327,5 @@ class Grafo:
         plt.xlim(min(x for x, y in pos.values()) - 1, max(x for x, y in pos.values()) + 1)
         plt.ylim(min(y for x, y in pos.values()) - 1, max(y for x, y in pos.values()) + 1)
 
-        plt.show(block=False)  # Exibe o grafo sem bloquear o programa
+        plt.draw()  # Atualiza o gráfico
         plt.pause(0.1)
