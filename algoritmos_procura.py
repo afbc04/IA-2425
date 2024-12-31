@@ -429,7 +429,7 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
     melhores_caminhos = []
 
     for veiculo in veiculos_disponiveis:
-        print(f"Tentando Simulated Annealing com o veículo: {veiculo.get_tipo()}")
+        print(f"Testar Simulated Annealing com o veículo: {veiculo.get_tipo()}")
 
         atual = no_origem  # Começa no nó inicial
         caminho_atual = [no_origem.getName()]
@@ -453,6 +453,30 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
                 print(f"Nó {atual.getName()} não possui vizinhos acessíveis para o veículo {veiculo.get_tipo()}.")
                 break
 
+            # Distribuição de medicamentos por prioridade calculada
+            medicamentos_disponiveis = min(
+            no_origem.get_medicamento(),
+            veiculo.get_limite_carga()
+            )
+                            
+            # Criar lista de nós que estão no caminho
+            nos_caminho = []
+            for no_nome in caminho_atual[1:]:
+                no = grafo.get_node_by_name(no_nome)
+                if no.janela_tempo > 0 and no.populacao > 0:
+                    nos_caminho.append(no)
+                            
+            # Ordena os nós por prioridade
+            nos_caminho.sort(key=lambda x: x.calcula_prioridade())
+                            
+            #Distribui, se possível, medicamentos pelos nos
+            for no in nos_caminho:
+                if medicamentos_disponiveis > 0:
+                    qtd = min(no.populacao, medicamentos_disponiveis)
+                    if grafo.transferir_valores(qtd, no_origem.getName(), no.getName()):
+                        medicamentos_disponiveis -= qtd
+            grafo.desenha()           
+            
             # Escolher próximo nó baseado na heurística (calculaDist)
             candidato_nome, peso = min(
             vizinhos, key=lambda v: grafo.calcula_heuristica(grafo.get_node_by_name(v[0]), grafo.get_node_by_name(destino)))
