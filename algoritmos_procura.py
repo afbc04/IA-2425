@@ -390,53 +390,106 @@ def greedy(grafo, inicio, destino):
 
 
 # algorithm simulated annealing
-def simulated_annealing(grafo, destino, temperatura_inicial = 10, numero_iteracoes = 10):
+def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes=10):
+    """
+    Simulated Annealing para encontrar o melhor caminho em um grafo considerando veículos.
 
+    Args:
+        grafo: O grafo representando os nós e arestas.
+        destino: O nó de destino.
+        temperatura_inicial: A temperatura inicial para o algoritmo.
+        numero_iteracoes: Número de iterações a executar.
+
+    Returns:
+        Um dicionário contendo o veículo usado, o caminho encontrado e o custo do caminho.
+    """
+
+    # Escolher um nó inicial aleatório
     nos_disponiveis = [no for no in grafo.m_nodes if no.getName() != destino]
-
     if not nos_disponiveis:
-        return None, float('inf')
+        print("Nenhum nó inicial disponível.")
+        return None
 
-    atual = random.choice(nos_disponiveis)
-    print(f"\nPonto inicial escolhido: {atual.getName()}")
+    no_origem = random.choice(nos_disponiveis)
+    print(f"Ponto inicial aleatório escolhido: {no_origem.getName()}")
 
-    # guardamos a solução atual de forma a poder comparar com as próximas solucoes
-    melhor = atual    # avalia o ponto inicial usando a função objetivo
-    melhor_avaliacao = grafo.calculaDist(atual.getName(), destino)
-    atual_avaliacao = melhor_avaliacao
-    #definos uma lista de scores
-    #resultados = list()
-    # ciclo para correr o algortimos em cada uma das iterações
-    for i in range(numero_iteracoes):
-       
-        vizinhos = grafo.getNeighbours(atual.getName(), veiculo = None)
-        if not vizinhos:
-           return None, float('inf')
+    if no_origem.janela_tempo == 0:
+        print(f"[ERRO] O nó de origem '{no_origem.getName()}' não pode ser utilizado porque o tempo esgotou.")
+        return None
+
+    if no_origem.get_medicamento() == 0:
+        print(f"[ERRO] NINGUÉM FOI SOCORRIDO, NÓ ORIGEM SEM MEDICAMENTOS: '{no_origem.getName()}'")
+        return None
+
+    veiculos_disponiveis = grafo.get_veiculos_no(no_origem.getName())
+    if not veiculos_disponiveis:
+        print(f"Nó {no_origem.getName()} não possui veículos disponíveis.")
+        return None
+
+    melhores_caminhos = []
+
+    for veiculo in veiculos_disponiveis:
+        print(f"Tentando Simulated Annealing com o veículo: {veiculo.get_tipo()}")
+
+        atual = no_origem  # Começa no nó inicial
+        caminho_atual = [no_origem.getName()]
+        custo_atual = 0
+        melhor_custo = float('inf')
+        melhor_caminho = []
+
+        for i in range(numero_iteracoes):
+            # Encerrar se o nó atual for o destino
+            if atual.getName() == destino:
+                print(f"Destino {destino} alcançado na iteração {i}.")
+                break
+
+            vizinhos = [
+                (adjacente, peso)
+                for adjacente, peso in grafo.getNeighbours(atual.getName(), veiculo.get_tipo())
+                if adjacente not in caminho_atual
+            ]
+
+            if not vizinhos:
+                print(f"Nó {atual.getName()} não possui vizinhos acessíveis para o veículo {veiculo.get_tipo()}.")
+                break
+
+            # Escolher próximo nó baseado na heurística (calculaDist)
+            candidato_nome, peso = min(
+            vizinhos, key=lambda v: grafo.calcula_heuristica(grafo.get_node_by_name(v[0]), grafo.get_node_by_name(destino)))
+
+            candidato = grafo.get_node_by_name(candidato_nome)
+
+            custo_temporario, _ = grafo.calcula_custo(caminho_atual + [candidato.getName()], veiculo)
+
+            if custo_temporario == float('inf') or custo_temporario > veiculo.get_combustivel_disponivel():
+                print(f"[DEBUG] Veículo {veiculo.get_tipo()} não pode acessar {candidato.getName()} com o caminho {caminho_atual + [candidato.getName()]}.")
+                continue
             
-        candidato_nome, peso = random.choice(vizinhos)
-        candidato = next(no for no in grafo.m_nodes if no.getName() == candidato_nome)
 
-        candidato_avaliacao = grafo.calculaDist(candidato.getName(), destino)
+            candidato_avaliacao = grafo.calcula_heuristica(candidato, grafo.get_node_by_name(destino))
+            candidato_atual = grafo.calcula_heuristica(atual, grafo.get_node_by_name(destino))
 
-        #if candidato_avaliacao < melhor_avaliacao:
-            #melhor, melhor_avaliacao = candidato, candidato_avaliacao
-            # guarda na lista de scores
-            #resultados.append(melhor_avaliacao)
-            #print('> Iteracao: %d, f(%s) = %.5f' % (i, melhor, melhor_avaliacao))
-        #calcula a diferença entre a avaliação do candidato e do ponto atual
-        diferenca = candidato_avaliacao - atual_avaliacao
-        # calcular a tempaatura para a respetiva iteracao tendo em conta a temperatura inicial
-        t = temperatura_inicial / float(i + 1)
-        # calcular a probabilidade de aceitação.
-        probabilidade_aceitacao = np.exp(-diferenca / t) if t > 0 else 0
-        # aceitamos o novo ponto como a solução atual se ele tiver uma melhor avaliação da função objetivo (a diferença é negativa)
-        # ou se a função objetivo for pior, mas decidirmos aceitá-la probabilisticamente.
-        if diferenca < 0 or random.random() < probabilidade_aceitacao:
-            # guardar o novo ponto atual
-            atual = candidato
-            atual_avaliacao = candidato_avaliacao
-        if candidato_avaliacao < melhor_avaliacao:
-            melhor = candidato
-            melhor_avaliacao = candidato_avaliacao
+            diferenca = candidato_avaliacao - candidato_atual
+            temperatura = temperatura_inicial / float(i + 1)
+            probabilidade_aceitacao = np.exp(-diferenca / temperatura) if temperatura > 0 else 0
 
-    return [melhor, melhor_avaliacao]
+            if diferenca < 0 or random.random() < probabilidade_aceitacao:
+                atual = candidato
+                caminho_atual.append(candidato.getName())
+                custo_atual = custo_temporario
+
+            if custo_atual < melhor_custo:
+                melhor_custo = custo_atual
+                melhor_caminho = list(caminho_atual)
+
+        if melhor_caminho:
+            melhores_caminhos.append((veiculo, melhor_caminho, melhor_custo))
+
+    if melhores_caminhos:
+        melhor_resultado = min(melhores_caminhos, key=lambda x: x[2])
+        veiculo, caminho, custo = melhor_resultado
+        print(f"Melhor caminho encontrado: {caminho} com veículo {veiculo.get_tipo()} e custo {custo}")
+        return {veiculo.get_tipo(): (caminho, custo)}
+
+    print("Nenhum caminho válido encontrado.")
+    return None
