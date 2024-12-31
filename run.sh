@@ -16,7 +16,7 @@ source venv/bin/activate
 
 # Instala os pacotes listados no requirements.txt
 echo "Instalando dependências do requirements.txt..."
-pip install -r requirements.txt
+pip install -r requisitos.txt
 
 # Executa o projeto
 echo "Iniciando o projeto..."
