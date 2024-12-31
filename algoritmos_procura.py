@@ -3,6 +3,11 @@ from queue import Queue
 from collections import deque
 from grafo import Grafo  
 
+import math
+from queue import Queue
+from collections import deque
+from grafo import Grafo
+
 def procura_DFS(grafo, inicio, fim):
     """
     Realiza a busca em profundidade (DFS) para encontrar o melhor caminho
@@ -13,7 +18,11 @@ def procura_DFS(grafo, inicio, fim):
     if no_origem.janela_tempo == 0:
         print(f"[ERRO] O nó de origem '{inicio}' não pode ser utilizado porque o tempo esgotou.")
         return None
-        
+
+    if no_origem.get_medicamento() == 0:
+        print(f"[ERRO] NINGUÉM FOI SOCORRIDO, NÓ ORIGEM SEM MEDICAMENTOS: '{inicio}'")
+        return None
+
     veiculos_disponiveis = grafo.get_veiculos_no(inicio)
     if not veiculos_disponiveis:
         print(f"Nó {inicio} não possui veículos disponíveis.")
@@ -36,60 +45,24 @@ def procura_DFS(grafo, inicio, fim):
 
             # Se o destino foi alcançado
             if nodo_atual == fim:
-                # Verificar se o combustível do veículo é suficiente
                 custo_acumulado_arestas = grafo.calcula_acumulado_arestas(caminho, veiculo)
                 if custo_acumulado_arestas == float('inf') or custo_acumulado_arestas > veiculo.get_combustivel_disponivel():
-                    print(f"[DEBUG] Veículo: {veiculo.get_tipo()} NÃO PODE COMPLETAR o caminho: {caminho}. "
-                          f"Custo acumulado das arestas ({custo_acumulado_arestas}) excede o combustível disponível "
-                          f"({veiculo.get_combustivel_disponivel()}).")
+                    print(f"[DEBUG] Veículo: {veiculo.get_tipo()} NÃO PODE COMPLETAR o caminho por falta de combustível: {caminho}. ")
                 else:
-                    # Verificar a velocidade em relação ao tempo do nó destino
                     destino = grafo.get_node_by_name(fim)
                     tempo_destino = destino.janela_tempo
                     if tempo_destino > 0 and (custo_acumulado_arestas / tempo_destino) > veiculo.get_velocidade():
-                        print(f"[DEBUG] Veículo: {veiculo.get_tipo()} NÃO PODE COMPLETAR o caminho: {caminho}. "
-                              f"Razão custo/tempo ({custo_acumulado_arestas / tempo_destino}) excede a velocidade do veículo "
-                              f"({veiculo.get_velocidade()}).")
+                        print(f"[DEBUG] Veículo: {veiculo.get_tipo()} NÃO PODE COMPLETAR o caminho por velocidade insuficiente: {caminho}. ")
                         continue
 
                     custo_final, pessoas_socorridas = grafo.calcula_custo(caminho, veiculo)
+
                     if custo_final == float('inf'):
                         print(f"[DEBUG] Veículo: {veiculo.get_tipo()} NÃO PODE COMPLETAR o caminho: {caminho}.")
                     else:
                         print(f"[DEBUG] Veículo: {veiculo.get_tipo()} PODE COMPLETAR o caminho: {caminho}. Custo final: {custo_final}")
 
-                        # Primeiramente, socorrer o nó de destino
-                        grafo.transferir_valores(pessoas_socorridas, caminho[0], fim)
-                        medicamentos_remanescentes = pessoas_socorridas - min(
-                            pessoas_socorridas,
-                            grafo.get_node_by_name(fim).populacao
-                        )
-
-                        # Distribuir para os outros nós intermediários
-                        if medicamentos_remanescentes > 0:
-                            nos_intermediarios = sorted(
-                                caminho[1:-1],  # Exclui origem e destino
-                                key=lambda no: grafo.get_node_by_name(no).calcula_prioridade()
-                            )
-                            for no_intermediario in nos_intermediarios:
-                                if medicamentos_remanescentes <= 0:
-                                    break
-                                
-                                # Determinar a quantidade a ser transferida
-                                populacao_intermediaria = grafo.get_node_by_name(no_intermediario).populacao
-                                medicamentos_para_transferir = min(medicamentos_remanescentes, populacao_intermediaria)
-                                
-                                if medicamentos_para_transferir > 0:
-                                    grafo.transferir_valores(
-                                        medicamentos_para_transferir,
-                                        caminho[0],
-                                        no_intermediario
-                                    )
-                                    medicamentos_remanescentes -= medicamentos_para_transferir
-
-                                grafo.desenha()
-
-                        melhores_caminhos.append((veiculo, caminho, custo_final))
+                        melhores_caminhos.append((veiculo, caminho, custo_final, pessoas_socorridas))
                 continue
 
             # Adicionar vizinhos acessíveis à pilha
@@ -98,21 +71,54 @@ def procura_DFS(grafo, inicio, fim):
                 for adjacente, peso, bloqueada, permitidos in grafo.m_graph[nodo_atual]
                 if adjacente not in visited and veiculo.get_tipo() in permitidos and not bloqueada
             ]
-            # Adicionar os vizinhos na ordem inversa para respeitar DFS
             for adjacente, novo_caminho in reversed(vizinhos):
                 stack.append((adjacente, novo_caminho))
                 print(f"Vizinho {adjacente} adicionado à pilha com caminho: {novo_caminho}")
 
-    # Escolher o melhor caminho (menor custo) entre todos os veículos
     if melhores_caminhos:
         melhor_caminho = min(melhores_caminhos, key=lambda x: x[2])  # Ordenar pelo custo
-        veiculo, caminho, custo = melhor_caminho
+        veiculo, caminho, custo, pessoas_socorridas = melhor_caminho
 
         print(f"Melhor caminho: {caminho} com veículo {veiculo.get_tipo()} e custo {custo}")
+
+        # Transferir valores apenas para o melhor veículo
+        grafo.transferir_valores(pessoas_socorridas, caminho[0], fim)
+
+        capacidade_restante = veiculo.get_limite_carga() - pessoas_socorridas
+
+        nos_intermediarios = sorted(
+            caminho[1:-1],
+            key=lambda no: grafo.get_node_by_name(no).calcula_prioridade()
+        )
+
+        for no_intermediario in nos_intermediarios:
+            if capacidade_restante <= 0:
+                break
+
+            no_intermediario_obj = grafo.get_node_by_name(no_intermediario)
+            if no_intermediario_obj.populacao == 0:
+                continue
+
+            medicamentos_para_transferir = min(
+                capacidade_restante,
+                no_intermediario_obj.populacao
+            )
+
+            if medicamentos_para_transferir > 0:
+                grafo.transferir_valores(
+                    medicamentos_para_transferir,
+                    caminho[0],
+                    no_intermediario
+                )
+                capacidade_restante -= medicamentos_para_transferir
+
+        grafo.desenha()
+
         return {veiculo.get_tipo(): (caminho, custo)}
 
     print("Nenhum caminho válido encontrado.")
     return None
+
 
 def procura_BFS(grafo, inicio, fim):
     """

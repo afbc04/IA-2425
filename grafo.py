@@ -103,7 +103,6 @@ class Grafo:
                 return float('inf')  # Caminho inválido para este veículo
 
             custo_total_arestas += peso
-            print(f"Aresta {node1} -> {node2}, Peso: {peso}, Custo acumulado: {custo_total_arestas}")
 
         return custo_total_arestas
 
@@ -115,10 +114,9 @@ class Grafo:
         - Custo do veículo.
         - Número de pessoas socorridas (respeitando o limite de carga do veículo).
         """
-        # Calcular o acumulado das arestas
         custo_total_arestas = self.calcula_acumulado_arestas(caminho, veiculo)
         if custo_total_arestas == float('inf'):
-            return float('inf')  # Caminho inválido para este veículo
+            return float('inf')
 
         origem = self.get_node_by_name(caminho[0])
         destino = self.get_node_by_name(caminho[-1])
@@ -128,26 +126,21 @@ class Grafo:
             populacao_por_assistir = destino.populacao
             limite_carga = veiculo.get_limite_carga()
 
-            # Debug adicional para validar os valores antes do cálculo
             print(f"[DEBUG] Medicamentos em {caminho[0]}: {medicamentos_disponiveis}, "
                 f"População em {caminho[-1]}: {populacao_por_assistir}, Limite do veículo: {limite_carga}")
 
-            # Número de pessoas socorridas
             pessoas_socorridas = min(medicamentos_disponiveis, populacao_por_assistir, limite_carga)
 
-        # Tratar casos onde 'pessoas_socorridas' seja zero
-        if pessoas_socorridas == 0:
-            print(f"[ERRO] NINGUÉM FOI SOCORRIDO, NÓ ORIGEM SEM MEDICAMENTOS: {caminho}.")
-            return float('inf'), 0
+            if pessoas_socorridas == 0:
+                return float('inf'), 0
 
-        # Calcular o custo final ajustado
-        custo_veiculo = veiculo.get_custo()
-        custo_final = custo_total_arestas * (custo_veiculo / pessoas_socorridas)
-        print(f"[DEBUG] Veículo: {veiculo.get_tipo()}, Soma das arestas: {custo_total_arestas}, "
-            f"Custo do veículo: {custo_veiculo}, Pessoas socorridas: {pessoas_socorridas}, "
-            f"Custo final ajustado: {custo_final}")
+            custo_veiculo = veiculo.get_custo()
+            custo_final = custo_total_arestas * (custo_veiculo / pessoas_socorridas)
+            print(f"[DEBUG] Veículo: {veiculo.get_tipo()}, Soma das arestas: {custo_total_arestas}, "
+                f"Custo do veículo: {custo_veiculo}, Pessoas socorridas: {pessoas_socorridas}, "
+                f"Custo final ajustado: {custo_final}")
 
-        return custo_final, pessoas_socorridas
+            return custo_final, pessoas_socorridas
 
 
     def calcula_heuristica(self, no):
@@ -210,7 +203,6 @@ class Grafo:
             )
 
     def transferir_valores(grafo, valor, no_origem, no_destino):
-     
         origem = grafo.get_node_by_name(no_origem)
         destino = grafo.get_node_by_name(no_destino)
 
@@ -218,23 +210,19 @@ class Grafo:
             print(f"Erro: Não foi possível encontrar os nós '{no_origem}' ou '{no_destino}'.")
             return False
 
-        # Verificar se há medicamentos suficientes no nó de origem
-        if origem.get_medicamento() < valor:
-            print(f"Erro: O nó de origem '{no_origem}' não tem medicamentos suficientes. "
-                f"Disponível: {origem.get_medicamento()}, Necessário: {valor}.")
-            return False
+        # Determinar a quantidade que pode ser transferida
+        quantidade_transferir = min(origem.get_medicamento(), valor, destino.populacao)
 
-        # Verificar se há população suficiente no nó de destino
-        if destino.populacao < valor:
-            print(f"Erro: O nó de destino '{no_destino}' não tem população suficiente. "
-                f"Disponível: {destino.populacao}, Necessário: {valor}.")
+        if quantidade_transferir <= 0:
+            print(f"Transferência impossível entre '{no_origem}' e '{no_destino}'. "
+                f"Medicamentos disponíveis: {origem.get_medicamento()}, População no destino: {destino.populacao}.")
             return False
 
         # Realizar a transferência
-        origem.set_medicamento(origem.get_medicamento() - valor)
-        destino.populacao -= valor
+        origem.set_medicamento(origem.get_medicamento() - quantidade_transferir)
+        destino.populacao -= quantidade_transferir
 
-        print(f"Transferidos {valor} medicamentos de '{no_origem}' para '{no_destino}'.")
+        print(f"Transferidos {quantidade_transferir} medicamentos de '{no_origem}' para '{no_destino}'.")
         print(f"Medicamentos restantes no nó de origem '{no_origem}': {origem.get_medicamento()}.")
         print(f"População restante no nó de destino '{no_destino}': {destino.populacao}.")
         
