@@ -1,6 +1,9 @@
 import math
 from queue import Queue
 from collections import deque
+import random
+
+import numpy as np
 from grafo import Grafo  
 
 def procura_DFS(grafo, inicio, fim):
@@ -319,3 +322,55 @@ def greedy(grafo, start, end):
                     parents[m] = n
 
     return None, math.inf
+
+# algorithm simulated annealing
+def simulated_annealing(grafo, destino, temperatura_inicial = 10, numero_iteracoes = 10):
+
+    nos_disponiveis = [no for no in grafo.m_nodes if no.getName() != destino]
+
+    if not nos_disponiveis:
+        return None, float('inf')
+
+    atual = random.choice(nos_disponiveis)
+    print(f"\nPonto inicial escolhido: {atual.getName()}")
+
+    # guardamos a solução atual de forma a poder comparar com as próximas solucoes
+    melhor = atual    # avalia o ponto inicial usando a função objetivo
+    melhor_avaliacao = grafo.calculaDist(atual.getName(), destino)
+    atual_avaliacao = melhor_avaliacao
+    #definos uma lista de scores
+    #resultados = list()
+    # ciclo para correr o algortimos em cada uma das iterações
+    for i in range(numero_iteracoes):
+       
+        vizinhos = grafo.getNeighbours(atual.getName(), veiculo = None)
+        if not vizinhos:
+           return None, float('inf')
+            
+        candidato_nome, peso = random.choice(vizinhos)
+        candidato = next(no for no in grafo.m_nodes if no.getName() == candidato_nome)
+
+        candidato_avaliacao = grafo.calculaDist(candidato.getName(), destino)
+
+        #if candidato_avaliacao < melhor_avaliacao:
+            #melhor, melhor_avaliacao = candidato, candidato_avaliacao
+            # guarda na lista de scores
+            #resultados.append(melhor_avaliacao)
+            #print('> Iteracao: %d, f(%s) = %.5f' % (i, melhor, melhor_avaliacao))
+        #calcula a diferença entre a avaliação do candidato e do ponto atual
+        diferenca = candidato_avaliacao - atual_avaliacao
+        # calcular a tempaatura para a respetiva iteracao tendo em conta a temperatura inicial
+        t = temperatura_inicial / float(i + 1)
+        # calcular a probabilidade de aceitação.
+        probabilidade_aceitacao = np.exp(-diferenca / t) if t > 0 else 0
+        # aceitamos o novo ponto como a solução atual se ele tiver uma melhor avaliação da função objetivo (a diferença é negativa)
+        # ou se a função objetivo for pior, mas decidirmos aceitá-la probabilisticamente.
+        if diferenca < 0 or random.random() < probabilidade_aceitacao:
+            # guardar o novo ponto atual
+            atual = candidato
+            atual_avaliacao = candidato_avaliacao
+        if candidato_avaliacao < melhor_avaliacao:
+            melhor = candidato
+            melhor_avaliacao = candidato_avaliacao
+
+    return [melhor, melhor_avaliacao]
