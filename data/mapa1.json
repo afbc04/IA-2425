@@ -1,11 +1,11 @@
 {
     "nos": [
-        {"nome": "A", "populacao": 0, "tempo": 15, "x": 3, "y": 3, "medicamento": 1200, "meteorologia": {"chuva": 1, "tempestade": 0, "vento": 3, "nevoeiro": 2}, "veiculos": ["barco", "carro"]},
+        {"nome": "A", "populacao": 0, "tempo": 15, "x": 3, "y": 3, "medicamento": 12000, "meteorologia": {"chuva": 1, "tempestade": 0, "vento": 3, "nevoeiro": 2}, "veiculos": ["barco", "carro"]},
         {"nome": "B", "populacao": 0, "tempo": 12, "x": 1, "y": 2, "medicamento": 1100, "meteorologia": {"chuva": 0, "tempestade": 1, "vento": 2, "nevoeiro": 1}, "veiculos": ["barco"]},
         {"nome": "C", "populacao": 10, "tempo": 10, "x": 1, "y": 0, "medicamento": 0, "meteorologia": {"chuva": 2, "tempestade": 0, "vento": 4, "nevoeiro": 0}, "veiculos": ["carro", "aviao"]},
         {"nome": "D", "populacao": 10, "tempo": 10, "x": 1, "y": -2, "medicamento": 0, "meteorologia": {"chuva": 3, "tempestade": 0, "vento": 1, "nevoeiro": 1}, "veiculos": ["barco"]},
         {"nome": "E", "populacao": 10, "tempo": 20, "x": 5, "y": 2, "medicamento": 0, "meteorologia": {"chuva": 0, "tempestade": 2, "vento": 3, "nevoeiro": 2}, "veiculos": ["carro", "aviao"]},
-        {"nome": "F", "populacao": 200, "tempo": 0, "x": 5, "y": 0, "medicamento": 0, "meteorologia": {"chuva": 1, "tempestade": 1, "vento": 0, "nevoeiro": 3}, "veiculos": ["barco"]},
+        {"nome": "F", "populacao": 200, "tempo": 4, "x": 5, "y": 0, "medicamento": 0, "meteorologia": {"chuva": 1, "tempestade": 1, "vento": 0, "nevoeiro": 3}, "veiculos": ["barco"]},
         {"nome": "G", "populacao": 1000, "tempo": 3, "x": 5, "y": -2, "medicamento": 0, "meteorologia": {"chuva": 1, "tempestade": 1, "vento": 0, "nevoeiro": 3}, "veiculos": ["barco"]},
         {"nome": "H", "populacao": 1000, "tempo": 3, "x": 3, "y": 0.9, "medicamento": 0, "meteorologia": {"chuva": 1, "tempestade": 1, "vento": 0, "nevoeiro": 3}, "veiculos": ["barco"]},
         {"nome": "I", "populacao": 1000, "tempo": 3, "x": 3, "y": -1.3, "medicamento": 0, "meteorologia": {"chuva": 1, "tempestade": 1, "vento": 0, "nevoeiro": 3}, "veiculos": ["barco"]}
@@ -19,6 +19,6 @@
         {"origem": "F", "destino": "G", "peso": 8, "bloqueada": false, "permitidos": ["barco", "carro"]},
         {"origem": "D", "destino": "G", "peso": 8, "bloqueada": false, "permitidos": ["barco", "carro"]},
         {"origem": "A", "destino": "H", "peso": 12, "bloqueada": false, "permitidos": ["aviao", "barco", "carro"]},
-        {"origem": "H", "destino": "I", "peso": 12, "bloqueada": true, "permitidos": ["aviao", "barco", "carro"]}
+        {"origem": "H", "destino": "I", "peso": 12, "bloqueada": false, "permitidos": ["aviao", "barco", "carro"]}
     ]
 }
