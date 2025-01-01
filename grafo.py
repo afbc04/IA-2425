@@ -258,7 +258,8 @@ class Grafo:
 
     def desenha(self, destaque_azul=False):
         """
-        Atualiza a visualização do grafo.
+        Atualiza a visualização do grafo, incluindo informações adicionais como janela de tempo,
+        com retângulos maiores para os nós.
         """
         plt.ion()  # Ativa o modo interativo
 
@@ -274,7 +275,7 @@ class Grafo:
 
         g = nx.Graph()
 
-        # Adicionar nós ao grafo NetworkX com coordenadas, entre outros
+        # Adicionar nós ao grafo NetworkX com coordenadas e informações
         pos = {}
         node_labels = {}
         for node in self.m_nodes:
@@ -283,10 +284,12 @@ class Grafo:
             vehicles = ', '.join([veiculo.get_tipo() for veiculo in node.get_veiculos()])
             medicamentos = node.get_medicamento()  # Obtém o número de medicamentos corretamente
             populacao = node.populacao  # Obtém a população do nó
+            janela = node.janela_tempo  # Obtém a janela de tempo do nó
             node_labels[node.getName()] = (
                 f"{node.getName()}\n"
                 f"População: {populacao}\n"
                 f"Medicamentos: {medicamentos}\n"
+                f"Janela: {janela}\n"
                 f"Veículos: {vehicles}"
             )
 
@@ -324,8 +327,8 @@ class Grafo:
 
         # Adicionar retângulos como nós
         ax = plt.gca()
-        rect_width = 0.8  # Largura do retângulo
-        rect_height = 0.6  # Altura do retângulo
+        rect_width = 1.2  # Aumentar largura do retângulo
+        rect_height = 0.8  # Aumentar altura do retângulo
         for node, (x, y) in pos.items():
             if destaque_azul:
                 cor = "blue"
