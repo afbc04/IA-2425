@@ -207,13 +207,14 @@ class Grafo:
         """
         self.custos_veiculos = custos
 
-    def atualizar_medicamentos_e_populacao(grafo):
+    def atualizar_medicamentos_e_populacao(self):
         """
         Ajusta os valores de medicamentos e população para cada nó.
         Se o número de medicamentos é suficiente para atender parte da população,
         os medicamentos são subtraídos e a população restante é ajustada.
+        Quando a população de um nó é 0, a janela_tempo é ajustada para 24.
         """
-        for no in grafo.m_nodes:
+        for no in self.m_nodes:
             populacao = no.populacao
             medicamentos = no.get_medicamento()
 
@@ -226,8 +227,14 @@ class Grafo:
                 no.populacao = populacao - medicamentos
                 no.set_medicamento(0)
 
+            # Ajustar janela_tempo para 24 se a população for 0
+            if no.populacao == 0:
+                no.janela_tempo = 24
+
             print(
-                f"Nó {no.getName()}: População atualizada = {no.populacao}, Medicamentos restantes = {no.get_medicamento()}"
+                f"Nó {no.getName()}: População atualizada = {no.populacao}, "
+                f"Medicamentos restantes = {no.get_medicamento()}, "
+                f"Janela de tempo = {no.janela_tempo}"
             )
 
     def transferir_valores(grafo, valor, no_origem, no_destino):
