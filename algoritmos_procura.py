@@ -628,6 +628,7 @@ def hill_climbing(grafo, destino, max_restarts, max_iteracoes):
             print(f"\nA testar {veiculo.get_tipo()}")
             
             caminho_atual = [no_origem.getName()]
+            ultimo_no = no_origem
             distancia_atual = grafo.calcula_heuristica(no_origem, destino_node)
             
             for iteracao in range(max_iteracoes):
@@ -649,12 +650,12 @@ def hill_climbing(grafo, destino, max_restarts, max_iteracoes):
                         no_anterior = no
                     
                     if tempo_total <= destino_node.janela_tempo:
-                        custo_final = grafo.calcula_custo(caminho_atual, veiculo)
+                        custo_final, _ = grafo.calcula_custo(caminho_atual, veiculo)
                         
                         if custo_final < melhor_custo_global:
                             melhor_caminho_global = caminho_atual.copy()
                             melhor_custo_global = custo_final
-                            melhor_veiculo_global = veiculo
+                            melhor_veiculo_global = veiculo.get_tipo()
                             print(f"\nNovo melhor caminho encontrado!")
                             print(f"Caminho: {' -> '.join(caminho_atual)}")
                             print(f"Tempo total: {tempo_total:.2f}")
@@ -666,7 +667,7 @@ def hill_climbing(grafo, destino, max_restarts, max_iteracoes):
                                 veiculo.get_limite_carga()
                             )
                             
-                            # Criar lista de nós que estão no caminho
+                            # Cria lista de nós que estão no caminho
                             nos_caminho = []
                             for no_nome in caminho_atual[1:]:
                                 no = grafo.get_node_by_name(no_nome)
@@ -689,8 +690,7 @@ def hill_climbing(grafo, destino, max_restarts, max_iteracoes):
                 for vizinho, peso, bloqueada, permitidos in grafo.m_graph[ultimo_no]:
                     if (vizinho not in caminho_atual and 
                         veiculo.get_tipo() in permitidos and 
-                        not bloqueada and
-                        grafo.get_node_by_name(vizinho).janela_tempo > 0):
+                        not bloqueada):
                         todos_vizinhos.append((vizinho, peso))
                 
                 melhor_vizinho = None
