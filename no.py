@@ -1,8 +1,7 @@
 from meteorologia import Meteorologia
 
 class No:
-    def __init__(self, name, id=-1, populacao=0, janela_tempo=24, meteorologia=None, x=0, y=0, veiculos=None, medicamento=0):
-        self.m_id = id
+    def __init__(self, name, populacao=0, janela_tempo=24, meteorologia=None, x=0, y=0, veiculos=None, medicamento=0):
         self.m_name = str(name)
         self.x = x
         self.y = y
@@ -17,12 +16,6 @@ class No:
 
     def __repr__(self):
         return f"no {self.m_name}"
-
-    def setId(self, id):
-        self.m_id = id
-
-    def getId(self):
-        return self.m_id
 
     def getName(self):
         return self.m_name
