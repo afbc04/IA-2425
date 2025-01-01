@@ -1,3 +1,4 @@
+import os
 import json
 from grafo import Grafo
 from no import No
@@ -18,19 +19,47 @@ def carregar_caracteristicas_veiculos(ficheiro_caracteristicas="data/caracterist
         print(f"[ERRO] O ficheiro '{ficheiro_caracteristicas}' contém JSON inválido.")
     return {}
 
-def carregar_grafo(ficheiro_grafo="data/grafo2.json", ficheiro_caracteristicas="data/caracteristicas_dos_veiculos.json"):
+
+def selecionar_mapa(pasta="data"):
+    """
+    Lista os ficheiros disponíveis na pasta e permite ao utilizador escolher um.
+    """
+    ficheiros = [f for f in os.listdir(pasta) if f.endswith(".json") and "caracteristicas" not in f]
+    if not ficheiros:
+        print(f"[ERRO] Nenhum ficheiro de mapa encontrado na pasta '{pasta}'.")
+        return None
+
+    print("\nMapas disponíveis:")
+    for i, ficheiro in enumerate(ficheiros, 1):
+        print(f"{i}. {ficheiro}")
+
+    while True:
+        escolha = input("Escolha o número do mapa a carregar: ")
+        if escolha.isdigit() and 1 <= int(escolha) <= len(ficheiros):
+            return os.path.join(pasta, ficheiros[int(escolha) - 1])
+        print("Opção inválida. Tente novamente.")
+
+
+def carregar_grafo(ficheiro_grafo, ficheiro_caracteristicas="data/caracteristicas_dos_veiculos.json"):
     """
     Carrega o grafo e as características dos veículos a partir dos ficheiros JSON.
     """
-    with open(ficheiro_grafo, "r") as f:
-        dados = json.load(f)
+    try:
+        with open(ficheiro_grafo, "r") as f:
+            dados = json.load(f)
+    except FileNotFoundError:
+        print(f"[ERRO] O ficheiro '{ficheiro_grafo}' não foi encontrado.")
+        return None
+    except json.JSONDecodeError:
+        print(f"[ERRO] O ficheiro '{ficheiro_grafo}' contém JSON inválido.")
+        return None
 
     caracteristicas_veiculos = carregar_caracteristicas_veiculos(ficheiro_caracteristicas)
 
     grafo = Grafo(directed=False)
 
     for no_data in dados["nos"]:
-        nome = no_data["nome"]
+        nome = no_data["nome"].strip().upper()
         populacao = no_data["populacao"]
         tempo = no_data["tempo"]
         x = no_data.get("x", 0)
@@ -73,8 +102,11 @@ def carregar_grafo(ficheiro_grafo="data/grafo2.json", ficheiro_caracteristicas="
 
     return grafo
 
-# Função para mostrar o menu e executar o algoritmo escolhido
+
 def mostrar_menu():
+    """
+    Exibe o menu de opções para o utilizador.
+    """
     print("\nEscolha uma opção:")
     print("1. DFS (Depth-First Search)")
     print("2. BFS (Breadth-First Search)")
@@ -87,18 +119,29 @@ def mostrar_menu():
     escolha = input("Opção: ")
     return escolha
 
-# Função principal do menu
+
 def iniciar_menu():
-    grafo = carregar_grafo()
-    todos_com_populacao_zero = False  # Flag para verificar se todos os nós têm população igual a 0
+    """
+    Inicia o menu principal, permitindo a seleção do mapa e a execução dos algoritmos.
+    """
+    ficheiro_grafo = selecionar_mapa()
+    if not ficheiro_grafo:
+        print("[ERRO] Não foi possível selecionar um mapa.")
+        return
+
+    grafo = carregar_grafo(ficheiro_grafo)
+    if not grafo:
+        print("[ERRO] Não foi possível carregar o grafo.")
+        return
+
+    todos_com_populacao_zero = False
 
     while True:
-        # Verificar se todos os nós têm população igual a 0
         if all(no.populacao == 0 for no in grafo.m_nodes):
-            if not todos_com_populacao_zero:  # Exibir a mensagem apenas uma vez
+            if not todos_com_populacao_zero:
                 print("Todos os nós têm população igual a 0. Nenhum algoritmo pode ser executado.")
-                grafo.desenha(destaque_azul=True)  # Atualiza o grafo destacando todos os nós em azul
-                todos_com_populacao_zero = True  # Atualizar a flag para evitar mensagens repetitivas
+                grafo.desenha(destaque_azul=True)
+                todos_com_populacao_zero = True
             opcao = mostrar_menu()
             if opcao == "5":
                 grafo.desenha()
@@ -107,7 +150,7 @@ def iniciar_menu():
                 break
             else:
                 print("Opção inválida. Não há operações disponíveis.")
-            continue  # Reinicia o loop para manter o programa ativo
+            continue
 
         destino = grafo.get_no_maior_prioridade()
         if destino is None:
@@ -122,7 +165,7 @@ def iniciar_menu():
                 print("Opção inválida. Tente novamente.")
             continue
 
-        todos_com_populacao_zero = False  # Reset da flag caso haja nós com população > 0
+        todos_com_populacao_zero = False
         print(f"\nDestino automaticamente escolhido: {destino.getName()} (prioridade: {destino.calcula_prioridade()})")
         opcao = mostrar_menu()
 
@@ -169,13 +212,13 @@ def iniciar_menu():
                 print("Caminho não encontrado com Greedy.")
 
         elif opcao == "5":
-            resultado = simulated_annealing(grafo, destino.getName().upper(), temperatura_inicial = 10, numero_iteracoes = 10)
+            resultado = simulated_annealing(grafo, destino.getName().upper(), temperatura_inicial=10, numero_iteracoes=10)
             if resultado:
                 for veiculo, (caminho, custo) in resultado.items():
                     print(f"Veículo: {veiculo}, Caminho: {caminho}, Custo: {custo}")
             else:
                 print("Caminho não encontrado com Simulated Annealing.")
-        
+
         elif opcao == "6":
             veiculo, caminho, custo = hill_climbing(grafo, destino.getName().upper(), max_restarts=6, max_iteracoes=8)
             if caminho:
