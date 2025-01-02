@@ -18,27 +18,27 @@ class Grafo:
         else:
             print("[INFO] Nenhum nó de maior prioridade disponível no momento.")
 
-    def get_node_by_name(self, node_name):
+    def get_node_by_name(self, nome_no):
         """
         Retorna o nó pelo nome, ou None se o nó não existir.
         """
         for node in self.m_nodes:
-            if node.getName() == node_name:
+            if node.getNome() == nome_no:
                 return node
         return None
 
-    def _get_or_create_node(self, node_name):
+    def _get_or_create_node(self, nome_no):
         """
         Obtém um nó existente ou cria um novo nó se ele não existir.
         """
         for node in self.m_nodes:
-            if node.getName() == node_name:
+            if node.getNome() == nome_no:
                 return node
 
-        new_node = No(node_name)
+        new_node = No(nome_no)
         new_node.setId(len(self.m_nodes))
         self.m_nodes.append(new_node)
-        self.m_graph[node_name] = []
+        self.m_graph[nome_no] = []
         return new_node
 
     def add_edge(self, node1, node2, peso, blocked=False, permitidos=None):
@@ -153,8 +153,8 @@ class Grafo:
             else:
                 heuristica = self.calcula_heuristica(no, no_destino)
             
-            self.m_h[no.getName()] = heuristica
-            print(f"[DEBUG] Heurística do nó '{no.getName()}': {heuristica:.6f}")
+            self.m_h[no.getNome()] = heuristica
+            print(f"[DEBUG] Heurística do nó '{no.getNome()}': {heuristica:.6f}")
 
     def calcula_heuristica(self, no_origem, no_destino):
         """
@@ -190,12 +190,12 @@ class Grafo:
 
         return no_maior_prioridade
 
-    def get_veiculos_no(self, no_name):
+    def get_veiculos_no(self, no_nome):
         """
         Retorna os veículos associados a um nó específico no grafo, ordenados por custo.
         """
         for node in self.m_nodes:
-            if node.getName() == no_name:
+            if node.getNome() == no_nome:
                 veiculos = node.get_veiculos()
                 veiculos.sort(key=lambda v: v.get_custo())  # Ordenar por custo
                 return veiculos
@@ -232,7 +232,7 @@ class Grafo:
                 no.janela_tempo = 24
 
             print(
-                f"Nó {no.getName()}: População atualizada = {no.populacao}, "
+                f"Nó {no.getNome()}: População atualizada = {no.populacao}, "
                 f"Medicamentos restantes = {no.get_medicamento()}, "
                 f"Janela de tempo = {no.janela_tempo}"
             )
@@ -286,14 +286,14 @@ class Grafo:
         pos = {}
         node_labels = {}
         for node in self.m_nodes:
-            g.add_node(node.getName())
-            pos[node.getName()] = node.get_coordenadas()  # Usa as coordenadas do JSON
+            g.add_node(node.getNome())
+            pos[node.getNome()] = node.get_coordenadas()  # Usa as coordenadas do JSON
             vehicles = ', '.join([veiculo.get_tipo() for veiculo in node.get_veiculos()])
             medicamentos = node.get_medicamento()  # Obtém o número de medicamentos corretamente
             populacao = node.populacao  # Obtém a população do nó
             janela = node.janela_tempo  # Obtém a janela de tempo do nó
-            node_labels[node.getName()] = (
-                f"{node.getName()}\n"
+            node_labels[node.getNome()] = (
+                f"{node.getNome()}\n"
                 f"População: {populacao}\n"
                 f"Medicamentos: {medicamentos}\n"
                 f"Janela: {janela}\n"
@@ -301,17 +301,17 @@ class Grafo:
             )
 
         # Identificar o nó de maior prioridade
-        no_destacado = no_destino.getName() if no_destino else None
+        no_destacado = no_destino.getNome() if no_destino else None
 
         # Adicionar arestas ao grafo NetworkX
         edge_colors = []
         edge_labels = {}
         for node in self.m_nodes:
-            for adjacente, peso, bloqueada, permitidos in self.m_graph[node.getName()]:
-                if not g.has_edge(node.getName(), adjacente):
-                    g.add_edge(node.getName(), adjacente)
+            for adjacente, peso, bloqueada, permitidos in self.m_graph[node.getNome()]:
+                if not g.has_edge(node.getNome(), adjacente):
+                    g.add_edge(node.getNome(), adjacente)
                     edge_colors.append("red" if bloqueada else "black")
-                    edge_labels[(node.getName(), adjacente)] = f"{peso} ({', '.join(permitidos)})"
+                    edge_labels[(node.getNome(), adjacente)] = f"{peso} ({', '.join(permitidos)})"
 
         # Criar a figura do grafo
         plt.figure(1)  # Usa a mesma figura
@@ -381,7 +381,7 @@ class Grafo:
         prioridades_texto = "Prioridades:\n"
         for no in sorted(self.m_nodes, key=lambda n: n.calcula_prioridade()):
             prioridade = no.calcula_prioridade()
-            prioridades_texto += f"{no.getName()}: {prioridade:.5f}\n"
+            prioridades_texto += f"{no.getNome()}: {prioridade:.5f}\n"
 
         plt.text(
             0.01, 0.99,  # Coordenadas no canto superior esquerdo

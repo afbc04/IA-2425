@@ -1,8 +1,8 @@
 from meteorologia import Meteorologia
 
 class No:
-    def __init__(self, name, populacao=0, janela_tempo=24, meteorologia=None, x=0, y=0, veiculos=None, medicamento=0):
-        self.m_name = str(name)
+    def __init__(self, nome, populacao=0, janela_tempo=24, meteorologia=None, x=0, y=0, veiculos=None, medicamento=0):
+        self.nome = str(nome)
         self.x = x
         self.y = y
         self.populacao = populacao        
@@ -12,13 +12,13 @@ class No:
         self.medicamento = medicamento
 
     def __str__(self):
-        return f"no {self.m_name}"
+        return f"no {self.nome}"
 
     def __repr__(self):
-        return f"no {self.m_name}"
+        return f"no {self.nome}"
 
-    def getName(self):
-        return self.m_name
+    def getNome(self):
+        return self.nome
     
     def get_coordenadas(self):
         return self.x, self.y
@@ -59,6 +59,17 @@ class No:
 
         # Prioridade calculada: Menor valor significa maior prioridade
         return ((self.janela_tempo) / (self.populacao + impacto_meteorologico))
+
+    def incrementar_medicamentos(self, quantidade):
+        """
+        Incrementa a quantidade de medicamentos no nó.
+        """
+        if quantidade < 0:
+            print(f"[ERRO] Não é possível adicionar uma quantidade negativa de medicamentos.")
+            return
+
+        self.medicamento += quantidade
+        print(f"[INFO] Incrementados {quantidade} medicamentos no nó '{self.nome}'. Total agora: {self.medicamento}")
 
     def __eq__(self, other):
         return self.m_name == other.m_name

@@ -208,7 +208,7 @@ def iniciar_menu():
             continue
 
         todos_com_populacao_zero = False
-        print(f"\nDestino automaticamente escolhido: {destino.getName()} (prioridade: {destino.calcula_prioridade()})")
+        print(f"\nDestino automaticamente escolhido: {destino.getNome()} (prioridade: {destino.calcula_prioridade()})")
         opcao = menu_func()
 
         if opcao == "1":
@@ -217,7 +217,7 @@ def iniciar_menu():
             if not veiculos_disponiveis:
                 print("O nó inicial não possui veículos disponíveis.")
                 continue
-            resultado = procura_DFS(grafo, inicio.upper(), destino.getName().upper())
+            resultado = procura_DFS(grafo, inicio.upper(), destino.getNome().upper())
             if resultado:
                 print("Caminho DFS:")
                 for veiculo, (path, custo) in resultado.items():
@@ -227,7 +227,7 @@ def iniciar_menu():
 
         elif opcao == "2":
             inicio = input("Nó inicial: ")
-            resultado = procura_BFS(grafo, inicio.upper(), destino.getName().upper())
+            resultado = procura_BFS(grafo, inicio.upper(), destino.getNome().upper())
             if resultado:
                 print("Caminho BFS:")
                 for veiculo, (path, custo) in resultado.items():
@@ -237,7 +237,7 @@ def iniciar_menu():
 
         elif opcao == "3":
             inicio = input("Nó inicial: ")
-            resultado = procura_aStar(grafo, inicio.upper(), destino.getName().upper())
+            resultado = procura_aStar(grafo, inicio.upper(), destino.getNome().upper())
             if resultado:
                 print("Caminho A*:", resultado[0], "Custo:", resultado[1])
             else:
@@ -245,7 +245,7 @@ def iniciar_menu():
 
         elif opcao == "4":
             inicio = input("Nó inicial: ")
-            resultado = greedy(grafo, inicio.upper(), destino.getName().upper())
+            resultado = greedy(grafo, inicio.upper(), destino.getNome().upper())
             if resultado:
                 for veiculo, (path, custo) in resultado.items():
                     print(f"Veículo: {veiculo}, Caminho: {path}, Custo: {custo}")
@@ -253,7 +253,7 @@ def iniciar_menu():
                 print("Caminho não encontrado com Greedy.")
 
         elif opcao == "5":
-            resultado = simulated_annealing(grafo, destino.getName().upper(), temperatura_inicial=10, numero_iteracoes=10)
+            resultado = simulated_annealing(grafo, destino.getNome().upper(), temperatura_inicial=10, numero_iteracoes=10)
             if resultado:
                 print("Caminho:", resultado[0], "Custo:", resultado[1])
             else:
@@ -269,6 +269,7 @@ def iniciar_menu():
             if no_obj:
                 no_obj.incrementar_medicamentos(quantidade)
                 print(f"Medicamentos fabricados com sucesso no nó {no}.")
+                grafo.desenha()
             else:
                 print(f"Nó {no} não encontrado.")
 

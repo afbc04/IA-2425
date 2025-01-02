@@ -350,25 +350,25 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
     """
 
     # Escolher um nó inicial aleatório
-    nos_disponiveis = [no for no in grafo.m_nodes if no.getName() != destino]
+    nos_disponiveis = [no for no in grafo.m_nodes if no.getNome() != destino]
     if not nos_disponiveis:
         print("Nenhum nó inicial disponível.")
         return None
 
     no_origem = random.choice(nos_disponiveis)
-    print(f"Ponto inicial aleatório escolhido: {no_origem.getName()}")
+    print(f"Ponto inicial aleatório escolhido: {no_origem.getNome()}")
 
     if no_origem.janela_tempo == 0:
-        print(f"[ERRO] O nó de origem '{no_origem.getName()}' não pode ser utilizado porque o tempo esgotou.")
+        print(f"[ERRO] O nó de origem '{no_origem.getNome()}' não pode ser utilizado porque o tempo esgotou.")
         return None
 
     if no_origem.get_medicamento() == 0:
-        print(f"[ERRO] NINGUÉM FOI SOCORRIDO, NÓ ORIGEM SEM MEDICAMENTOS: '{no_origem.getName()}'")
+        print(f"[ERRO] NINGUÉM FOI SOCORRIDO, NÓ ORIGEM SEM MEDICAMENTOS: '{no_origem.getNome()}'")
         return None
 
-    veiculos_disponiveis = grafo.get_veiculos_no(no_origem.getName())
+    veiculos_disponiveis = grafo.get_veiculos_no(no_origem.getNome())
     if not veiculos_disponiveis:
-        print(f"Nó {no_origem.getName()} não possui veículos disponíveis.")
+        print(f"Nó {no_origem.getNome()} não possui veículos disponíveis.")
         return None
 
     melhores_caminhos = []
@@ -377,25 +377,25 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
         print(f"Testar Simulated Annealing com o veículo: {veiculo.get_tipo()}")
 
         atual = no_origem  # Começa no nó inicial
-        caminho_atual = [no_origem.getName()]
+        caminho_atual = [no_origem.getNome()]
         custo_atual = 0
         melhor_custo = float('inf')
         melhor_caminho = []
 
         for i in range(numero_iteracoes):
             # Encerrar se o nó atual for o destino
-            if atual.getName() == destino:
+            if atual.getNome() == destino:
                 print(f"Destino {destino} alcançado na iteração {i}.")
                 break
 
             vizinhos = [
                 (adjacente, peso)
-                for adjacente, peso in grafo.getNeighbours(atual.getName(), veiculo.get_tipo())
+                for adjacente, peso in grafo.getNeighbours(atual.getNome(), veiculo.get_tipo())
                 if adjacente not in caminho_atual
             ]
 
             if not vizinhos:
-                print(f"Nó {atual.getName()} não possui vizinhos acessíveis para o veículo {veiculo.get_tipo()}.")
+                print(f"Nó {atual.getNome()} não possui vizinhos acessíveis para o veículo {veiculo.get_tipo()}.")
                 break
 
             # Distribuição de medicamentos por prioridade calculada
@@ -418,7 +418,7 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
             for no in nos_caminho:
                 if medicamentos_disponiveis > 0:
                     qtd = min(no.populacao, medicamentos_disponiveis)
-                    if grafo.transferir_valores(qtd, no_origem.getName(), no.getName()):
+                    if grafo.transferir_valores(qtd, no_origem.getNome(), no.getNome()):
                         medicamentos_disponiveis -= qtd
             grafo.desenha()           
             
@@ -428,10 +428,10 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
 
             candidato = grafo.get_node_by_name(candidato_nome)
 
-            custo_temporario, _ = grafo.calcula_custo(caminho_atual + [candidato.getName()], veiculo)
+            custo_temporario, _ = grafo.calcula_custo(caminho_atual + [candidato.getNome()], veiculo)
 
             if custo_temporario == float('inf') or custo_temporario > veiculo.get_combustivel_disponivel():
-                print(f"[DEBUG] Veículo {veiculo.get_tipo()} não pode acessar {candidato.getName()} com o caminho {caminho_atual + [candidato.getName()]}.")
+                print(f"[DEBUG] Veículo {veiculo.get_tipo()} não pode acessar {candidato.getNome()} com o caminho {caminho_atual + [candidato.getNome()]}.")
                 continue
             
 
@@ -444,7 +444,7 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
 
             if diferenca < 0 or random.random() < probabilidade_aceitacao:
                 atual = candidato
-                caminho_atual.append(candidato.getName())
+                caminho_atual.append(candidato.getNome())
                 custo_atual = custo_temporario
 
             if custo_atual < melhor_custo:
@@ -475,15 +475,15 @@ def hill_climbing(grafo, destino, max_restarts, max_iteracoes):
         print(f"\n{'=' * 30}")
         print(f"Tentativa {tentativa+1} de {max_restarts}")
         
-        todos_nos = [no for no in grafo.m_nodes if no.getName()!=destino]
+        todos_nos = [no for no in grafo.m_nodes if no.getNome()!=destino]
             
         no_origem = random.choice(todos_nos)
-        print(f"Ponto inicial escolhido: {no_origem.getName()} (Medicamentos: {no_origem.get_medicamento()})")
+        print(f"Ponto inicial escolhido: {no_origem.getNome()} (Medicamentos: {no_origem.get_medicamento()})")
 
         if no_origem.janela_tempo==0:
             continue
 
-        veiculos_disponiveis = grafo.get_veiculos_no(no_origem.getName())
+        veiculos_disponiveis = grafo.get_veiculos_no(no_origem.getNome())
         if not veiculos_disponiveis:
             continue
 
@@ -494,7 +494,7 @@ def hill_climbing(grafo, destino, max_restarts, max_iteracoes):
                 
             print(f"\nA testar {veiculo.get_tipo()}")
             
-            caminho_atual = [no_origem.getName()]
+            caminho_atual = [no_origem.getNome()]
             ultimo_no = no_origem
             distancia_atual = grafo.calcula_heuristica(no_origem, destino_node)
             
@@ -548,7 +548,7 @@ def hill_climbing(grafo, destino, max_restarts, max_iteracoes):
                             for no in nos_caminho:
                                 if medicamentos_disponiveis > 0:
                                     qtd = min(no.populacao, medicamentos_disponiveis)
-                                    if grafo.transferir_valores(qtd, no_origem.getName(), no.getName()):
+                                    if grafo.transferir_valores(qtd, no_origem.getNome(), no.getNome()):
                                         medicamentos_disponiveis -= qtd
                             grafo.desenha()
                     break
