@@ -519,41 +519,38 @@ def hill_climbing(grafo, destino, max_restarts, max_iteracoes):
                         print(f"[DEBUG] Veículo: {veiculo.get_tipo()} NÃO PODE COMPLETAR o caminho por velocidade insuficiente: {caminho_atual}.")
                         continue
                     
-                    if tempo_destino <= destino_node.janela_tempo:
-                        custo_final, pessoas_socorridas = grafo.calcula_custo(caminho_atual, veiculo)
+                    
+                    custo_final, pessoas_socorridas = grafo.calcula_custo(caminho_atual, veiculo)
                         
-                        if custo_final < melhor_custo_global:
-                            melhor_caminho_global = caminho_atual.copy()
-                            melhor_custo_global = custo_final
-                            melhor_pessoas_socorridas = pessoas_socorridas
-                            melhor_veiculo_global = veiculo
-                            print(f"\nNovo melhor caminho encontrado!")
-                            print(f"Caminho: {' -> '.join(caminho_atual)}")
-                            print(f"Custo: {custo_final}")
+                    if custo_final < melhor_custo_global:
+                        melhor_caminho_global = caminho_atual.copy()
+                        melhor_custo_global = custo_final
+                        melhor_pessoas_socorridas = pessoas_socorridas
+                        melhor_veiculo_global = veiculo
+                        print(f"\nNovo melhor caminho encontrado!")
+                        print(f"Caminho: {' -> '.join(caminho_atual)}")
+                        print(f"Custo: {custo_final}")
                             
-                            # Distribuição de medicamentos por prioridade calculada
-                            medicamentos_disponiveis = min(
-                                no_origem.get_medicamento(),
-                                veiculo.get_limite_carga()
-                            )
+                        # Distribuição de medicamentos por prioridade calculada
+                        medicamentos_disponiveis = min(no_origem.get_medicamento(), veiculo.get_limite_carga())
                             
-                            # Cria lista de nós que estão no caminho
-                            nos_caminho = []
-                            for no_nome in caminho_atual[1:]:
-                                no = grafo.get_node_by_name(no_nome)
-                                if no.janela_tempo > 0 and no.populacao > 0:
-                                    nos_caminho.append(no)
+                        # Cria lista de nós que estão no caminho
+                        nos_caminho = []
+                        for no_nome in caminho_atual[1:]:
+                            no = grafo.get_node_by_name(no_nome)
+                            if no.janela_tempo > 0 and no.populacao > 0:
+                                nos_caminho.append(no)
                             
-                            # Ordena os nós por prioridade
-                            nos_caminho.sort(key=lambda x: x.calcula_prioridade())
+                        # Ordena os nós por prioridade
+                        nos_caminho.sort(key=lambda x: x.calcula_prioridade())
                             
-                            #Distribui, se possível, medicamentos pelos nos
-                            for no in nos_caminho:
-                                if medicamentos_disponiveis > 0:
-                                    qtd = min(no.populacao, medicamentos_disponiveis)
-                                    if grafo.transferir_valores(qtd, no_origem.getNome(), no.getNome()):
-                                        medicamentos_disponiveis -= qtd
-                            grafo.desenha()
+                        #Distribui, se possível, medicamentos pelos nos
+                        for no in nos_caminho:
+                            if medicamentos_disponiveis > 0:
+                                qtd = min(no.populacao, medicamentos_disponiveis)
+                                if grafo.transferir_valores(qtd, no_origem.getNome(), no.getNome()):
+                                    medicamentos_disponiveis -= qtd
+                        grafo.desenha()
                     break
                 
                 todos_vizinhos = []
