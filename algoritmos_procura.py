@@ -207,6 +207,120 @@ def procura_BFS(grafo, inicio, fim):
     print("Nenhum caminho válido encontrado.")
     return None
 
+def procura_Iterativa(grafo, inicio, fim, max_profundidade):
+    
+    veiculos_disponiveis = grafo.get_veiculos_no(inicio)
+    if not veiculos_disponiveis:
+        print(f"Nó {inicio} não possui veículos disponíveis.")
+        return None
+
+    caminhos = {}
+
+    #Fazer procura por veículo
+    for veiculo in veiculos_disponiveis:
+        
+        #Aumentar a profundidade iterativamente
+        for profundidade in range(max_profundidade + 1):
+
+            resultado = procura_Iterativa_aux(grafo, inicio, fim, veiculo.get_tipo(), profundidade)
+
+            #Encontrou a solução, retorna-a
+            if resultado:
+                print("Solução encontrada")
+                caminhos[(veiculo.get_tipo(),profundidade)] = resultado
+                break
+    
+    if caminhos:
+        return caminhos
+        #for k,v in caminhos.items():
+        #    #if isinstance(k,tuple) and len(k) == 2:
+        #    tipo, profundidade = k
+        #    print("Chave: (",tipo," , ",profundidade,")")
+        #    print("Valor: ",v)
+    else:
+        print("[ERRO] Não foi achado solução :/")
+        return None 
+
+def procura_Iterativa_aux(grafo, inicio, fim, veiculoAtual, limite):
+    """
+    Realiza a busca em profundidade (Iterativa) para encontrar o melhor caminho.
+    """
+    start_time = time.time()
+    no_origem = grafo.get_node_by_name(inicio)
+    if no_origem.janela_tempo == 0:
+        print(f"[ERRO] O nó de origem '{inicio}' não pode ser utilizado porque o tempo esgotou.")
+        return None
+
+    if no_origem.get_medicamento() == 0:
+        print(f"[ERRO] NINGUÉM FOI SOCORRIDO, NÓ ORIGEM SEM MEDICAMENTOS: '{inicio}'")
+        return None
+
+    veiculos_disponiveis = grafo.get_veiculos_no(inicio)
+    if not veiculos_disponiveis:
+        print(f"Nó {inicio} não possui veículos disponíveis.")
+        return None
+
+    melhores_caminhos = []
+
+    for veiculo in veiculos_disponiveis:
+        
+        if veiculoAtual != veiculo.get_tipo():
+            continue
+        
+        print(f"Usando veículo: {veiculo.get_tipo()} (Velocidade: {veiculo.get_velocidade()})")
+        stack = [(inicio, [inicio])]  # Pilha para DFS (nó atual, caminho até agora)
+        visited = set()
+
+        while stack and limite > 0:
+            nodo_atual, caminho = stack.pop()
+            limite = limite - 1
+            if nodo_atual in visited:
+                continue
+
+            visited.add(nodo_atual)
+            print(f"DFS: Visitando {nodo_atual}, Caminho atual: {caminho}")
+
+            if nodo_atual == fim:
+                custo_acumulado_arestas = grafo.calcula_acumulado_arestas(caminho, veiculo)
+                if custo_acumulado_arestas == float('inf') or custo_acumulado_arestas > veiculo.get_combustivel_disponivel():
+                    print(f"[DEBUG] Veículo: {veiculo.get_tipo()} NÃO PODE COMPLETAR o caminho por falta de combustível: {caminho}.")
+                    continue
+
+                destino = grafo.get_node_by_name(fim)
+                tempo_destino = destino.janela_tempo
+                if tempo_destino > 0 and (custo_acumulado_arestas / tempo_destino) > veiculo.get_velocidade():
+                    print(f"[DEBUG] Veículo: {veiculo.get_tipo()} NÃO PODE COMPLETAR o caminho por velocidade insuficiente: {caminho}.")
+                    continue
+
+                custo_final, pessoas_socorridas = grafo.calcula_custo(caminho, veiculo)
+
+                if custo_final != float('inf'):
+                    melhores_caminhos.append((veiculo, caminho, custo_final, pessoas_socorridas, custo_acumulado_arestas))
+                continue
+
+            vizinhos = [
+                (adjacente, caminho + [adjacente])
+                for adjacente, peso, bloqueada, permitidos in grafo.m_graph[nodo_atual]
+                if adjacente not in visited and veiculo.get_tipo() in permitidos and not bloqueada
+            ]
+            for adjacente, novo_caminho in reversed(vizinhos):
+                stack.append((adjacente, novo_caminho))
+
+    end_time = time.time()
+    if melhores_caminhos:
+        melhor_caminho = min(melhores_caminhos, key=lambda x: x[2])  # Ordenar pelo custo
+        veiculo, caminho, custo, pessoas_socorridas, distancia = melhor_caminho
+
+        print(f"Melhor caminho: {caminho} com veículo {veiculo.get_tipo()} e custo {custo}")
+        print(f"Pessoas socorridas: {pessoas_socorridas}")
+        print(f"Distância percorrida: {distancia}")
+        print(f"Tempo de execução: {end_time - start_time:.6f} segundos")
+
+        return {veiculo.get_tipo(): (caminho, custo)}
+
+    print("Nenhum caminho válido encontrado.")
+    return None
+
 def procura_aStar(grafo, inicio, fim):
     """
     Realiza a busca A* para encontrar o melhor caminho com base na soma do custo acumulado e da heurística,
