@@ -250,12 +250,20 @@ def procura_Iterativa(grafo, inicio, fim, max_profundidade):
                 break
     
     if caminhos:
-        return caminhos
-        #for k,v in caminhos.items():
-        #    #if isinstance(k,tuple) and len(k) == 2:
-        #    tipo, profundidade = k
-        #    print("Chave: (",tipo," , ",profundidade,")")
-        #    print("Valor: ",v)
+        #return caminhos
+    
+        melhores_caminhos = []
+        for k,v in caminhos.items():
+            melhores_caminhos.append(v)    
+        
+        melhor_caminho = min(melhores_caminhos, key=lambda x: x[2])  # Ordenar pelo custo
+        veiculo, caminho, custo, pessoas_socorridas, distancia, end_time, start_time = melhor_caminho
+
+        print(f"Melhor caminho: {caminho} com veículo {veiculo.get_tipo()} e custo {custo}")
+        print(f"Distância percorrida: {distancia}")
+        print(f"Tempo de execução: {end_time - start_time:.6f} segundos")
+        return {veiculo.get_tipo(): (caminho,custo)}
+
     else:
         print("[ERRO] Não foi achado solução :/")
         return None 
@@ -286,7 +294,6 @@ def procura_Iterativa_aux(grafo, inicio, fim, veiculoAtual, limite):
         if veiculoAtual != veiculo.get_tipo():
             continue
         
-        print(f"Usando veículo: {veiculo.get_tipo()} (Velocidade: {veiculo.get_velocidade()})")
         stack = [(inicio, [inicio])]  # Pilha para DFS (nó atual, caminho até agora)
         visited = set()
 
@@ -297,7 +304,6 @@ def procura_Iterativa_aux(grafo, inicio, fim, veiculoAtual, limite):
                 continue
 
             visited.add(nodo_atual)
-            print(f"DFS: Visitando {nodo_atual}, Caminho atual: {caminho}")
 
             if nodo_atual == fim:
                 custo_acumulado_arestas = grafo.calcula_acumulado_arestas(caminho, veiculo)
@@ -329,15 +335,8 @@ def procura_Iterativa_aux(grafo, inicio, fim, veiculoAtual, limite):
     if melhores_caminhos:
         melhor_caminho = min(melhores_caminhos, key=lambda x: x[2])  # Ordenar pelo custo
         veiculo, caminho, custo, pessoas_socorridas, distancia = melhor_caminho
+        return (veiculo, caminho, custo_final, pessoas_socorridas, custo_acumulado_arestas,end_time,start_time)
 
-        print(f"Melhor caminho: {caminho} com veículo {veiculo.get_tipo()} e custo {custo}")
-        print(f"Pessoas socorridas: {pessoas_socorridas}")
-        print(f"Distância percorrida: {distancia}")
-        print(f"Tempo de execução: {end_time - start_time:.6f} segundos")
-
-        return {veiculo.get_tipo(): (caminho, custo)}
-
-    print("Nenhum caminho válido encontrado.")
     return None
 
 def procura_aStar(grafo, inicio, fim):

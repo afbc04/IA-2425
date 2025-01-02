@@ -231,8 +231,8 @@ def iniciar_menu():
             resultado = procura_Iterativa(grafo, inicio.upper(), destino.getNome().upper(),profundidade)
             if resultado:
                 print("Caminhos Iterativos:")
-                for (veiculo,prof),caminho in resultado.items():
-                    print("Veículo:", veiculo, " Profundidade: ",prof," -> ", caminho)
+                for veiculo, (path, custo) in resultado.items():
+                    print("Veículo:", veiculo, " -> ", path, " Custo:", custo)
             else:
                 print("Caminho não encontrado com Iterativo.")
                 
