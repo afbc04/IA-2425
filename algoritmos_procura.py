@@ -285,6 +285,40 @@ def procura_Iterativa(grafo, inicio, fim, max_profundidade):
         print(f"Melhor caminho: {caminho} com veículo {veiculo.get_tipo()} e custo {custo}")
         print(f"Distância percorrida: {distancia}")
         print(f"Tempo de execução: {end_time - start_time:.6f} segundos")
+        
+        # Transferir valores apenas para o melhor veículo
+        grafo.transferir_valores(pessoas_socorridas, caminho[0], fim)
+
+        capacidade_restante = veiculo.get_limite_carga() - pessoas_socorridas
+
+        nos_intermediarios = sorted(
+            caminho[1:-1],
+            key=lambda no: grafo.get_node_by_name(no).calcula_prioridade()
+        )
+
+        for no_intermediario in nos_intermediarios:
+            if capacidade_restante <= 0:
+                break
+
+            no_intermediario_obj = grafo.get_node_by_name(no_intermediario)
+            if no_intermediario_obj.populacao == 0:
+                continue
+
+            medicamentos_para_transferir = min(
+                capacidade_restante,
+                no_intermediario_obj.populacao
+            )
+
+            if medicamentos_para_transferir > 0:
+                grafo.transferir_valores(
+                    medicamentos_para_transferir,
+                    caminho[0],
+                    no_intermediario
+                )
+                capacidade_restante -= medicamentos_para_transferir
+
+        grafo.desenha()
+        
         return {veiculo.get_tipo(): (caminho,custo)}
 
     else:
