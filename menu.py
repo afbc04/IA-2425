@@ -1,5 +1,6 @@
 import os
 import json
+import time
 from grafo import Grafo
 from no import No
 from veiculo import Veiculo
@@ -264,14 +265,24 @@ def iniciar_menu():
 
         elif opcao == "7" and tipo_experiencia == "dinamica":
             no = input("Indique o nó onde quer fabricar medicamentos: ").strip()
-            quantidade = int(input("Indique a quantidade de medicamentos a fabricar: "))
-            no_obj = grafo.get_node_by_name(no.upper())
-            if no_obj:
-                no_obj.incrementar_medicamentos(quantidade)
-                print(f"Medicamentos fabricados com sucesso no nó {no}.")
-                grafo.desenha()
-            else:
-                print(f"Nó {no} não encontrado.")
+            try:
+                quantidade = int(input("Indique a quantidade de medicamentos a fabricar, (em 1s são fabricados 100 medicamentos): "))
+                no_obj = grafo.get_node_by_name(no.upper())
+                if no_obj:
+                    print(f"Fabricando {quantidade} medicamentos no nó {no}...")
+                    # Calcular o tempo de espera
+                    tempo_espera = (quantidade // 100) + (1 if quantidade % 100 != 0 else 0)
+                    for i in range(tempo_espera):
+                        print(f"Progresso: {i + 1}/{tempo_espera} segundos...")
+                        time.sleep(1)  # Espera de 1 segundo por iteração
+
+                    no_obj.incrementar_medicamentos(quantidade)
+                    print(f"Medicamentos fabricados com sucesso no nó {no}.")
+                    grafo.desenha()  # Atualizar o grafo após fabricar medicamentos
+                else:
+                    print(f"Nó {no} não encontrado.")
+            except ValueError:
+                print("[ERRO] Quantidade inválida. Por favor, insira um número inteiro.")
 
         elif opcao == "0":
             print("A sair...")
