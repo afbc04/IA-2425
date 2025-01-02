@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from veiculo import Veiculo
 from meteorologia import Meteorologia
 from condicoesDinamicas import executar_alteracoes_dinamicas
-from algoritmos_procura import procura_DFS, procura_BFS, procura_aStar, greedy, simulated_annealing
+from algoritmos_procura import procura_DFS, procura_BFS, procura_aStar, greedy, simulated_annealing, hill_climbing
 
 def carregar_caracteristicas_veiculos(ficheiro_caracteristicas="data/caracteristicas_dos_veiculos.json"):
     """
@@ -148,7 +148,8 @@ def mostrar_menu_estatico():
     print("3. A*")
     print("4. Greedy")
     print("5. Simulated Annealing")
-    print("6. Imprimir Grafo")
+    print("6. Hill-Climbing")
+    print("7. Imprimir Grafo")
     print("0. Sair")
     return input("Opção: ").strip()
 
@@ -162,9 +163,10 @@ def mostrar_menu_dinamico():
     print("3. A*")
     print("4. Greedy")
     print("5. Simulated Annealing")
-    print("6. Imprimir Grafo")
-    print("7. Fabricar medicamentos")
-    print("8. Executar alterações dinâmicas")
+    print("6. Hill-Climbing")
+    print("7. Imprimir Grafo")
+    print("8. Fabricar medicamentos")
+    print("9. Executar alterações dinâmicas")
     print("0. Sair")
     return input("Opção: ").strip()
 
@@ -242,10 +244,18 @@ def iniciar_menu():
                 print("Caminho não encontrado com Simulated Annealing.")
 
         elif opcao == "6":
+            resultado = hill_climbing(grafo, destino.getNome().upper(), max_restarts=6, max_iteracoes=10)
+            if resultado:
+                for veiculo, (path, custo) in resultado.items():
+                    print(f"Veículo: {veiculo}, Caminho: {path}, Custo: {custo}")
+            else:
+                print("Caminho não encontrado com Hill-Climbing.")
+
+        elif opcao == "7":
             grafo.desenha()
             plt.pause(0.01)
 
-        elif opcao == "7" and tipo_experiencia == "dinamica":
+        elif opcao == "8" and tipo_experiencia == "dinamica":
             no = input("Indique o nó onde quer fabricar medicamentos: ").strip()
             quantidade = int(input("Indique a quantidade de medicamentos a fabricar: "))
             no_obj = grafo.get_node_by_name(no.upper())
@@ -256,7 +266,7 @@ def iniciar_menu():
             else:
                 print(f"Nó {no} não encontrado.")
 
-        elif opcao == "8":
+        elif opcao == "9":
             try:
                 vezes = int(input("Quantas alterações dinâmicas deseja realizar? "))
                 if vezes > 0:

@@ -465,9 +465,12 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
 
 
 def hill_climbing(grafo, destino, max_restarts, max_iteracoes):
+    start_time = time.time()
     melhor_caminho_global = None
     melhor_custo_global = float('inf')
     melhor_veiculo_global = None
+    melhor_pessoas_socorridas = 0
+    melhor_distancia = 0
     
     destino_node = grafo.get_node_by_name(destino)
     
@@ -502,30 +505,30 @@ def hill_climbing(grafo, destino, max_restarts, max_iteracoes):
                 ultimo_no = caminho_atual[-1]
                 ultimo_no_obj = grafo.get_node_by_name(ultimo_no)
 
-                print(f"Iteração {iteracao}: Explorando a partir de {ultimo_no}")
+                print(f"Iteração {iteracao}: Explorar a partir de {ultimo_no}")
                 
                 if ultimo_no == destino:
-                    tempo_total = 0
-                    no_anterior = None
+
+                    custo_acumulado = grafo.calcula_acumulado_arestas(caminho_atual, veiculo)
+                    if custo_acumulado==float('inf') or custo_acumulado>veiculo.get_combustivel_disponivel():
+                        print(f"[DEBUG] Veículo: {veiculo.get_tipo()} NÃO PODE COMPLETAR o caminho por falta de combustível: {caminho_atual}.")
+                        continue
+
+                    tempo_destino = destino_node.janela_tempo
+                    if tempo_destino > 0 and (custo_acumulado / tempo_destino) > veiculo.get_velocidade():
+                        print(f"[DEBUG] Veículo: {veiculo.get_tipo()} NÃO PODE COMPLETAR o caminho por velocidade insuficiente: {caminho_atual}.")
+                        continue
                     
-                    for no in caminho_atual:
-                        if no_anterior:
-                            for viz, peso, _, _ in grafo.m_graph[no_anterior]:
-                                if viz == no:
-                                    tempo_total += peso / veiculo.get_velocidade()
-                                    break
-                        no_anterior = no
-                    
-                    if tempo_total <= destino_node.janela_tempo:
-                        custo_final, _ = grafo.calcula_custo(caminho_atual, veiculo)
+                    if tempo_destino <= destino_node.janela_tempo:
+                        custo_final, pessoas_socorridas = grafo.calcula_custo(caminho_atual, veiculo)
                         
                         if custo_final < melhor_custo_global:
                             melhor_caminho_global = caminho_atual.copy()
                             melhor_custo_global = custo_final
-                            melhor_veiculo_global = veiculo.get_tipo()
+                            melhor_pessoas_socorridas = pessoas_socorridas
+                            melhor_veiculo_global = veiculo
                             print(f"\nNovo melhor caminho encontrado!")
                             print(f"Caminho: {' -> '.join(caminho_atual)}")
-                            print(f"Tempo total: {tempo_total:.2f}")
                             print(f"Custo: {custo_final}")
                             
                             # Distribuição de medicamentos por prioridade calculada
@@ -566,7 +569,7 @@ def hill_climbing(grafo, destino, max_restarts, max_iteracoes):
                 for vizinho, _ in todos_vizinhos:
                     vizinho_obj = grafo.get_node_by_name(vizinho)
                     dist = grafo.calcula_heuristica(vizinho_obj, destino_node)
-                    if dist < menor_distancia:
+                    if dist < menor_distancia or (menor_distancia==dist):
                         melhor_vizinho = vizinho
                         menor_distancia = dist
                 
@@ -575,8 +578,17 @@ def hill_climbing(grafo, destino, max_restarts, max_iteracoes):
                     distancia_atual = menor_distancia
                 else:
                     break     
-
+    end_time = time.time()
     if melhor_caminho_global is None:
-        return None, None, float('inf')
+        return None
+    else:
+        melhor_distancia = grafo.calcula_acumulado_arestas(melhor_caminho_global, melhor_veiculo_global)
+        print(f"Melhor caminho: {melhor_caminho_global}")
+        print(f"Veículo: {melhor_veiculo_global.get_tipo()}")
+        print(f"Custo total: {melhor_custo_global}")
+        print(f"Pessoas socorridas: {melhor_pessoas_socorridas}")
+        print(f"Distância percorrida: {melhor_distancia}")
+        print(f"Tempo de execução: {end_time - start_time:.2f} segundos")
         
-    return melhor_veiculo_global, melhor_caminho_global, melhor_custo_global
+    
+    return {melhor_veiculo_global.get_tipo(): (melhor_caminho_global, melhor_custo_global)}
