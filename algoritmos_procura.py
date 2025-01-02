@@ -336,25 +336,15 @@ def greedy(grafo, inicio, fim):
 
 # algorithm simulated annealing
 def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes=10):
-    """
-    Simulated Annealing para encontrar o melhor caminho em um grafo considerando veículos.
+    start_time = time.time()
 
-    Args:
-        grafo: O grafo representando os nós e arestas.
-        destino: O nó de destino.
-        temperatura_inicial: A temperatura inicial para o algoritmo.
-        numero_iteracoes: Número de iterações a executar.
-
-    Returns:
-        Um dicionário contendo o veículo usado, o caminho encontrado e o custo do caminho.
-    """
-
-    # Escolher um nó inicial aleatório
-    nos_disponiveis = [no for no in grafo.m_nodes if no.getNome() != destino]
+    # Filtra nós disponíveis (exceto o destino)
+    nos_disponiveis = [no for no in grafo.m_nodes if no.getName() != destino]
     if not nos_disponiveis:
         print("Nenhum nó inicial disponível.")
         return None
 
+    # Escolher um nó inicial aleatório
     no_origem = random.choice(nos_disponiveis)
     print(f"Ponto inicial aleatório escolhido: {no_origem.getNome()}")
 
@@ -374,13 +364,14 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
     melhores_caminhos = []
 
     for veiculo in veiculos_disponiveis:
-        print(f"Testar Simulated Annealing com o veículo: {veiculo.get_tipo()}")
+        print(f"Testando Simulated Annealing com o veículo: {veiculo.get_tipo()}")
 
-        atual = no_origem  # Começa no nó inicial
-        caminho_atual = [no_origem.getNome()]
+        atual = no_origem
+        caminho_atual = [no_origem.getName()]
         custo_atual = 0
         melhor_custo = float('inf')
         melhor_caminho = []
+        pessoas_socorridas = 0
 
         for i in range(numero_iteracoes):
             # Encerrar se o nó atual for o destino
@@ -388,6 +379,7 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
                 print(f"Destino {destino} alcançado na iteração {i}.")
                 break
 
+            # Obter vizinhos acessíveis
             vizinhos = [
                 (adjacente, peso)
                 for adjacente, peso in grafo.getNeighbours(atual.getNome(), veiculo.get_tipo())
@@ -398,47 +390,33 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
                 print(f"Nó {atual.getNome()} não possui vizinhos acessíveis para o veículo {veiculo.get_tipo()}.")
                 break
 
-            # Distribuição de medicamentos por prioridade calculada
-            medicamentos_disponiveis = min(
-            no_origem.get_medicamento(),
-            veiculo.get_limite_carga()
-            )
-                            
-            # Criar lista de nós que estão no caminho
-            nos_caminho = []
-            for no_nome in caminho_atual[1:]:
-                no = grafo.get_node_by_name(no_nome)
-                if no.janela_tempo > 0 and no.populacao > 0:
-                    nos_caminho.append(no)
-                            
-            # Ordena os nós por prioridade
-            nos_caminho.sort(key=lambda x: x.calcula_prioridade())
-                            
-            #Distribui, se possível, medicamentos pelos nos
-            for no in nos_caminho:
-                if medicamentos_disponiveis > 0:
-                    qtd = min(no.populacao, medicamentos_disponiveis)
-                    if grafo.transferir_valores(qtd, no_origem.getNome(), no.getNome()):
-                        medicamentos_disponiveis -= qtd
-            grafo.desenha()           
-            
-            # Escolher próximo nó baseado na heurística (calculaDist)
+            # Escolher próximo nó baseado na heurística
             candidato_nome, peso = min(
-            vizinhos, key=lambda v: grafo.calcula_heuristica(grafo.get_node_by_name(v[0]), grafo.get_node_by_name(destino)))
-
+                vizinhos,
+                key=lambda v: grafo.calcula_heuristica(
+                    grafo.get_node_by_name(v[0]), grafo.get_node_by_name(destino)
+                )
+            )
             candidato = grafo.get_node_by_name(candidato_nome)
 
-            custo_temporario, _ = grafo.calcula_custo(caminho_atual + [candidato.getNome()], veiculo)
+            # Calcular custo temporário
+            custo_temporario, pessoas_socorridas_temp = grafo.calcula_custo(
+                caminho_atual + [candidato.getName()], veiculo
+            )
 
+            # Verificar combustível e velocidade
             if custo_temporario == float('inf') or custo_temporario > veiculo.get_combustivel_disponivel():
-                print(f"[DEBUG] Veículo {veiculo.get_tipo()} não pode acessar {candidato.getNome()} com o caminho {caminho_atual + [candidato.getNome()]}.")
+                print(f"[DEBUG] Veículo {veiculo.get_tipo()} não pode acessar {candidato.getName()}.")
                 continue
-            
+            if candidato.janela_tempo > 0 and (custo_temporario / candidato.janela_tempo) > veiculo.get_velocidade():
+                print(f"[DEBUG] Veículo {veiculo.get_tipo()} não pode acessar {candidato.getName()} devido à velocidade.")
+                continue
 
+            # Calcular probabilidade de aceitação
             candidato_avaliacao = grafo.calcula_heuristica(candidato, grafo.get_node_by_name(destino))
-            candidato_atual = grafo.calcula_heuristica(atual, grafo.get_node_by_name(destino))
+            atual_avaliacao = grafo.calcula_heuristica(atual, grafo.get_node_by_name(destino))
+            diferenca = candidato_avaliacao - atual_avaliacao
 
-            diferenca = candidato_avaliacao - candidato_atual
             temperatura = temperatura_inicial / float(i + 1)
             probabilidade_aceitacao = np.exp(-diferenca / temperatura) if temperatura > 0 else 0
 
@@ -446,22 +424,48 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
                 atual = candidato
                 caminho_atual.append(candidato.getNome())
                 custo_atual = custo_temporario
+                pessoas_socorridas = pessoas_socorridas_temp
 
+            # Atualizar melhor caminho
             if custo_atual < melhor_custo:
                 melhor_custo = custo_atual
                 melhor_caminho = list(caminho_atual)
 
         if melhor_caminho:
-            melhores_caminhos.append((veiculo, melhor_caminho, melhor_custo))
+            melhores_caminhos.append((veiculo, melhor_caminho, melhor_custo, pessoas_socorridas))
 
+    # Determinar melhor resultado
+    end_time = time.time()
     if melhores_caminhos:
         melhor_resultado = min(melhores_caminhos, key=lambda x: x[2])
-        veiculo, caminho, custo = melhor_resultado
-        print(f"Melhor caminho encontrado: {caminho} com veículo {veiculo.get_tipo()} e custo {custo}")
+        veiculo, caminho, custo, pessoas_socorridas = melhor_resultado
+
+        # Realizar distribuição de medicamentos após determinar o melhor caminho
+        medicamentos_disponiveis = min(no_origem.get_medicamento(), veiculo.get_limite_carga())
+        nos_caminho = [
+            grafo.get_node_by_name(no_nome)
+            for no_nome in caminho[1:]
+            if grafo.get_node_by_name(no_nome).janela_tempo > 0
+            and grafo.get_node_by_name(no_nome).populacao > 0
+        ]
+        nos_caminho.sort(key=lambda x: x.calcula_prioridade())
+        for no in nos_caminho:
+            if medicamentos_disponiveis > 0:
+                qtd = min(no.populacao, medicamentos_disponiveis)
+                if grafo.transferir_valores(qtd, no_origem.getName(), no.getName()):
+                    medicamentos_disponiveis -= qtd
+
+        print(f"Melhor caminho: {caminho}")
+        print(f"Veículo: {veiculo.get_tipo()}")
+        print(f"Custo total: {custo}")
+        print(f"Pessoas socorridas: {pessoas_socorridas}")
+        print(f"Tempo de execução: {end_time - start_time:.6f} segundos")
+
         return {veiculo.get_tipo(): (caminho, custo)}
 
     print("Nenhum caminho válido encontrado.")
     return None
+
 
 
 def hill_climbing(grafo, destino, max_restarts, max_iteracoes):
