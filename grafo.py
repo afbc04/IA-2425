@@ -347,7 +347,7 @@ class Grafo:
         # Adicionar retângulos como nós
         ax = plt.gca()
         rect_width = 1.2  # Aumentar largura do retângulo
-        rect_height = 0.8  # Aumentar altura do retângulo
+        rect_height = 1.1  # Aumentar altura do retângulo
         for node, (x, y) in pos.items():
             if destaque_azul:
                 cor = "blue"
