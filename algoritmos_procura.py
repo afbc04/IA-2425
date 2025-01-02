@@ -625,7 +625,7 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
                 pessoas_socorridas = pessoas_socorridas_temp
 
             # Atualizar melhor caminho
-            if custo_atual < melhor_custo:
+            if custo_atual < melhor_custo and destino in caminho_atual:
                 melhor_custo = custo_atual
                 melhor_caminho = list(caminho_atual)
 
