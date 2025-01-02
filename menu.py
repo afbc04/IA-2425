@@ -4,7 +4,7 @@ from grafo import Grafo
 from no import No
 from veiculo import Veiculo
 from meteorologia import Meteorologia
-from algoritmos_procura import procura_DFS, procura_BFS, procura_aStar, greedy, simulated_annealing, hill_climbing
+from algoritmos_procura import procura_DFS, procura_BFS, procura_aStar, greedy, simulated_annealing
 
 def carregar_caracteristicas_veiculos(ficheiro_caracteristicas="data/caracteristicas_dos_veiculos.json"):
     """
@@ -19,47 +19,19 @@ def carregar_caracteristicas_veiculos(ficheiro_caracteristicas="data/caracterist
         print(f"[ERRO] O ficheiro '{ficheiro_caracteristicas}' contém JSON inválido.")
     return {}
 
-
-def selecionar_mapa(pasta="data"):
-    """
-    Lista os ficheiros disponíveis na pasta e permite ao utilizador escolher um.
-    """
-    ficheiros = [f for f in os.listdir(pasta) if f.endswith(".json") and "caracteristicas" not in f]
-    if not ficheiros:
-        print(f"[ERRO] Nenhum ficheiro de mapa encontrado na pasta '{pasta}'.")
-        return None
-
-    print("\nMapas disponíveis:")
-    for i, ficheiro in enumerate(ficheiros, 1):
-        print(f"{i}. {ficheiro}")
-
-    while True:
-        escolha = input("Escolha o número do mapa a carregar: ")
-        if escolha.isdigit() and 1 <= int(escolha) <= len(ficheiros):
-            return os.path.join(pasta, ficheiros[int(escolha) - 1])
-        print("Opção inválida. Tente novamente.")
-
-
-def carregar_grafo(ficheiro_grafo, ficheiro_caracteristicas="data/caracteristicas_dos_veiculos.json"):
+def carregar_grafo(ficheiro_grafo="data/grafo2.json", ficheiro_caracteristicas="data/caracteristicas_dos_veiculos.json"):
     """
     Carrega o grafo e as características dos veículos a partir dos ficheiros JSON.
     """
-    try:
-        with open(ficheiro_grafo, "r") as f:
-            dados = json.load(f)
-    except FileNotFoundError:
-        print(f"[ERRO] O ficheiro '{ficheiro_grafo}' não foi encontrado.")
-        return None
-    except json.JSONDecodeError:
-        print(f"[ERRO] O ficheiro '{ficheiro_grafo}' contém JSON inválido.")
-        return None
+    with open(ficheiro_grafo, "r") as f:
+        dados = json.load(f)
 
     caracteristicas_veiculos = carregar_caracteristicas_veiculos(ficheiro_caracteristicas)
 
     grafo = Grafo(directed=False)
 
     for no_data in dados["nos"]:
-        nome = no_data["nome"].strip().upper()
+        nome = no_data["nome"]
         populacao = no_data["populacao"]
         tempo = no_data["tempo"]
         x = no_data.get("x", 0)
@@ -102,10 +74,65 @@ def carregar_grafo(ficheiro_grafo, ficheiro_caracteristicas="data/caracteristica
 
     return grafo
 
-
-def mostrar_menu():
+def listar_mapas_disponiveis(pasta="data"):
     """
-    Exibe o menu de opções para o utilizador.
+    Lista os mapas disponíveis na pasta especificada, excluindo ficheiros que contenham 'caracteristicas' no nome.
+    """
+    try:
+        arquivos = [
+            f for f in os.listdir(pasta)
+            if f.endswith(".json") and "caracteristicas" not in f.lower()
+        ]
+        if not arquivos:
+            print(f"[ERRO] Nenhum mapa disponível na pasta '{pasta}'.")
+            return []
+        return arquivos
+    except FileNotFoundError:
+        print(f"[ERRO] Pasta '{pasta}' não encontrada.")
+        return []
+
+def selecionar_mapa():
+    """
+    Pergunta ao utilizador qual mapa deseja carregar, listando os disponíveis.
+    """
+    mapas = listar_mapas_disponiveis()
+    if not mapas:
+        return None  # Nenhum mapa disponível
+
+    print("Mapas disponíveis:")
+    for i, mapa in enumerate(mapas, start=1):
+        print(f"{i}. {mapa}")
+
+    while True:
+        try:
+            opcao = int(input("Selecione o número do mapa que deseja carregar: ").strip())
+            if 1 <= opcao <= len(mapas):
+                return f"data/{mapas[opcao - 1]}"
+            else:
+                print("[ERRO] Opção inválida. Escolha um número da lista.")
+        except ValueError:
+            print("[ERRO] Entrada inválida. Por favor, insira um número.")
+
+def selecionar_tipo_experiencia():
+    """
+    Pergunta ao utilizador se deseja uma experiência estática ou dinâmica.
+    """
+    while True:
+        print("\nSelecione o tipo de experiência:")
+        print("1. Estática")
+        print("2. Dinâmica")
+        opcao = input("Opção: ").strip()
+
+        if opcao == "1":
+            return "estatica"
+        elif opcao == "2":
+            return "dinamica"
+        else:
+            print("[ERRO] Opção inválida. Por favor, escolha 1 ou 2.")
+
+def mostrar_menu_dinamico():
+    """
+    Mostra o menu dinâmico e retorna a opção escolhida.
     """
     print("\nEscolha uma opção:")
     print("1. DFS (Depth-First Search)")
@@ -113,26 +140,41 @@ def mostrar_menu():
     print("3. A*")
     print("4. Greedy")
     print("5. Simulated Annealing")
-    print("6. Hill-Climbing")
-    print("7. Imprimir Grafo")
+    print("6. Imprimir Grafo")
+    print("7. Fabricar medicamentos")
     print("0. Sair")
-    escolha = input("Opção: ")
-    return escolha
+    return input("Opção: ").strip()
 
+def mostrar_menu_estatico():
+    """
+    Mostra o menu estático e retorna a opção escolhida.
+    """
+    print("\nEscolha uma opção:")
+    print("1. DFS (Depth-First Search)")
+    print("2. BFS (Breadth-First Search)")
+    print("3. A*")
+    print("4. Greedy")
+    print("5. Simulated Annealing")
+    print("6. Imprimir Grafo")
+    print("0. Sair")
+    return input("Opção: ").strip()
 
 def iniciar_menu():
-    """
-    Inicia o menu principal, permitindo a seleção do mapa e a execução dos algoritmos.
-    """
-    ficheiro_grafo = selecionar_mapa()
-    if not ficheiro_grafo:
-        print("[ERRO] Não foi possível selecionar um mapa.")
+    ficheiro_mapa = selecionar_mapa()
+    if not ficheiro_mapa:
+        print("[ERRO] Nenhum mapa disponível. Encerrando o programa.")
         return
 
-    grafo = carregar_grafo(ficheiro_grafo)
-    if not grafo:
-        print("[ERRO] Não foi possível carregar o grafo.")
-        return
+    tipo_experiencia = selecionar_tipo_experiencia()
+
+    grafo = carregar_grafo(ficheiro_grafo=ficheiro_mapa)
+
+    if tipo_experiencia == "estatica":
+        print("\nModo Estático selecionado. Nenhuma alteração será permitida.")
+        menu_func = mostrar_menu_estatico
+    else:
+        print("\nModo Dinâmico selecionado. Alterações serão permitidas.")
+        menu_func = mostrar_menu_dinamico
 
     todos_com_populacao_zero = False
 
@@ -142,8 +184,8 @@ def iniciar_menu():
                 print("Todos os nós têm população igual a 0. Nenhum algoritmo pode ser executado.")
                 grafo.desenha(destaque_azul=True)
                 todos_com_populacao_zero = True
-            opcao = mostrar_menu()
-            if opcao == "5":
+            opcao = menu_func()
+            if opcao == "6":
                 grafo.desenha()
             elif opcao == "0":
                 print("A sair...")
@@ -155,8 +197,8 @@ def iniciar_menu():
         destino = grafo.get_no_maior_prioridade()
         if destino is None:
             print("Todos os nós foram processados. Escolha uma ação.")
-            opcao = mostrar_menu()
-            if opcao == "5":
+            opcao = menu_func()
+            if opcao == "6":
                 grafo.desenha()
             elif opcao == "0":
                 print("A sair...")
@@ -167,7 +209,7 @@ def iniciar_menu():
 
         todos_com_populacao_zero = False
         print(f"\nDestino automaticamente escolhido: {destino.getName()} (prioridade: {destino.calcula_prioridade()})")
-        opcao = mostrar_menu()
+        opcao = menu_func()
 
         if opcao == "1":
             inicio = input("Nó inicial: ")
@@ -197,8 +239,7 @@ def iniciar_menu():
             inicio = input("Nó inicial: ")
             resultado = procura_aStar(grafo, inicio.upper(), destino.getName().upper())
             if resultado:
-                for veiculo, (caminho, custo) in resultado.items():
-                    print(f"Veículo: {veiculo}, Caminho: {caminho}, Custo: {custo}")
+                print("Caminho A*:", resultado[0], "Custo:", resultado[1])
             else:
                 print("Caminho não encontrado com A*.")
 
@@ -214,20 +255,22 @@ def iniciar_menu():
         elif opcao == "5":
             resultado = simulated_annealing(grafo, destino.getName().upper(), temperatura_inicial=10, numero_iteracoes=10)
             if resultado:
-                for veiculo, (caminho, custo) in resultado.items():
-                    print(f"Veículo: {veiculo}, Caminho: {caminho}, Custo: {custo}")
+                print("Caminho:", resultado[0], "Custo:", resultado[1])
             else:
                 print("Caminho não encontrado com Simulated Annealing.")
 
         elif opcao == "6":
-            veiculo, caminho, custo = hill_climbing(grafo, destino.getName().upper(), max_restarts=6, max_iteracoes=8)
-            if caminho:
-                print("Veículo:", veiculo, "\nCaminho:", caminho, "Custo:", custo)
-            else:
-                print("Caminho não encontrado com Hill-Climbing.")
-
-        elif opcao == "7":
             grafo.desenha()
+
+        elif opcao == "7" and tipo_experiencia == "dinamica":
+            no = input("Indique o nó onde quer fabricar medicamentos: ").strip()
+            quantidade = int(input("Indique a quantidade de medicamentos a fabricar: "))
+            no_obj = grafo.get_node_by_name(no.upper())
+            if no_obj:
+                no_obj.incrementar_medicamentos(quantidade)
+                print(f"Medicamentos fabricados com sucesso no nó {no}.")
+            else:
+                print(f"Nó {no} não encontrado.")
 
         elif opcao == "0":
             print("A sair...")
