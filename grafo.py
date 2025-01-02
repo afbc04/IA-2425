@@ -28,6 +28,17 @@ class Grafo:
                 return node
         return None
 
+    def ajustar_janelas_de_tempo(self):
+        """
+        Reduz a janela de tempo em 1 para todos os nós com população > 0.
+        A janela de tempo não pode ser menor que 0.
+        """
+        for no in self.m_nodes:
+            if no.populacao > 0:
+                no.janela_tempo = max(0, no.janela_tempo - 1)
+                print(f"[AJUSTE] Janela de tempo do nó {no.getNome()} ajustada para {no.janela_tempo}.")
+
+
     def _get_or_create_node(self, nome_no):
         """
         Obtém um nó existente ou cria um novo nó se ele não existir.

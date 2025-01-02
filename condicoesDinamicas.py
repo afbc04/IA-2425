@@ -6,6 +6,7 @@ def alterar_dinamicamente(grafo, queue):
     """
     Realiza alterações dinâmicas no grafo e coloca mensagens na fila.
     Utiliza veículos da lista global `grafo.veiculos_carregados`.
+    Aplica uma redução de janela de tempo para nós com população > 0 após cada alteração.
     """
     alteracao = random.choice(["estrada", "veiculo", "populacao"])
     mensagem = ""
@@ -57,6 +58,9 @@ def alterar_dinamicamente(grafo, queue):
 
     if mensagem:
         queue.append(mensagem)
+
+    # Reduzir as janelas de tempo após cada alteração dinâmica
+    grafo.ajustar_janelas_de_tempo()
 
 def executar_alteracoes_dinamicas(grafo, vezes):
     """

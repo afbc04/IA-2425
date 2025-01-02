@@ -60,16 +60,20 @@ class No:
         # Prioridade calculada: Menor valor significa maior prioridade
         return ((self.janela_tempo) / (self.populacao + impacto_meteorologico))
 
-    def incrementar_medicamentos(self, quantidade):
+    def incrementar_medicamentos(self, quantidade, grafo):
         """
-        Incrementa a quantidade de medicamentos no nó.
+        Adiciona medicamentos ao nó e ajusta as janelas de tempo globalmente.
+        Reduz 1 unidade da janela para cada 100 medicamentos fabricados, arredondando para cima.
         """
-        if quantidade < 0:
-            print(f"[ERRO] Não é possível adicionar uma quantidade negativa de medicamentos.")
-            return
-
         self.medicamento += quantidade
-        print(f"[INFO] Incrementados {quantidade} medicamentos no nó '{self.nome}'. Total agora: {self.medicamento}")
+
+        # Determinar o número de reduções (arredondado para cima)
+        reducoes = (quantidade + 99) // 100  # Divide e arredonda para cima
+
+        # Ajustar janelas de tempo globalmente
+        for _ in range(reducoes):
+            grafo.ajustar_janelas_de_tempo()
+        print(f"[FABRICAÇÃO] {quantidade} medicamentos fabricados no nó {self.nome}.")
 
     def __eq__(self, other):
         return self.m_name == other.m_name

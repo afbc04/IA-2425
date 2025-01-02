@@ -250,8 +250,9 @@ def iniciar_menu():
             quantidade = int(input("Indique a quantidade de medicamentos a fabricar: "))
             no_obj = grafo.get_node_by_name(no.upper())
             if no_obj:
-                no_obj.incrementar_medicamentos(quantidade)
+                no_obj.incrementar_medicamentos(quantidade, grafo)
                 print(f"Medicamentos fabricados com sucesso no nó {no}.")
+                print("Janelas de tempo ajustadas para todos os nós com população > 0.")
             else:
                 print(f"Nó {no} não encontrado.")
 
