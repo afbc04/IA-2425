@@ -1,72 +1,72 @@
 import random
 import time
-from meteorologia import Meteorologia
-from threading import Thread
+from grafo import Grafo
 
-class CondicoesDinamicas:
-    def __init__(self, grafo):
-        self.grafo = grafo
-    
+def alterar_dinamicamente(grafo, queue):
+    """
+    Realiza alterações dinâmicas no grafo e coloca mensagens na fila.
+    Utiliza veículos da lista global `grafo.veiculos_carregados`.
+    """
+    alteracao = random.choice(["estrada", "veiculo", "populacao"])
+    mensagem = ""
 
-    def iniciar_alteracoes(self):
-        def loop_alteracoes():
-            while True:
-                self.escolhe_condicao_a_alterar()
-                time.sleep(20)
-        
-        thread_alteracoes_dinam = Thread(target=loop_alteracoes, daemon=True)
-        thread_alteracoes_dinam.start()
+    if alteracao == "estrada":
+        no = random.choice(grafo.m_nodes)
+        if grafo.m_graph[no.getNome()]:
+            vizinho = random.choice(grafo.m_graph[no.getNome()])
+            nome_vizinho = vizinho[0]
+            bloqueada = vizinho[2]
+            nova_estrada = (vizinho[0], vizinho[1], not bloqueada, vizinho[3])
+            grafo.m_graph[no.getNome()] = [
+                nova_estrada if v[0] == nome_vizinho else v
+                for v in grafo.m_graph[no.getNome()]
+            ]
+            mensagem = (
+                f"[DINÂMICO] A estrada entre {no.getNome()} e {nome_vizinho} "
+                f"ficou {'bloqueada' if not bloqueada else 'livre'}."
+            )
 
+    elif alteracao == "veiculo":
+        no = random.choice(grafo.m_nodes)
+        if grafo.m_graph[no.getNome()]:
+            vizinho = random.choice(grafo.m_graph[no.getNome()])
+            nome_vizinho = vizinho[0]
+            veiculos = vizinho[3]  # Veículos associados à aresta como strings
 
-    #define se vai alterar uma condição meteorológica ou o estado de um caminho
-    def escolhe_condicao_a_alterar(self):
-        if random.randint(1,10) > 1 and self.grafo.m_nodes:
-            self.alterar_meteo_no()
-        else:
-            self.alterar_estado_caminho()
-
-    
-    def alterar_meteo_no(self):
-        #escolhe nó no qual vai alterar condição
-        no_a_alterar = random.choice(self.grafo.m_nodes)
- 
-        #escolhe a condição a alterar e o seu novo valor
-        lista_cond_meteo = ["chuva", "tempestade", "vento", "nevoeiro"]
-        cond_a_alterar = random.choices(lista_cond_meteo, [0.3, 0.1, 0.3, 0.3], k=1)[0]
-
-        novo_valor_cond = random.randint(1,10)
-
-        setattr(no_a_alterar.meteorologia, cond_a_alterar, novo_valor_cond)
-        #print("\nMeteorologia alterada: " + no_a_alterar.getName() + "\nCondição: " + cond_a_alterar + "\nNovo valor: " + str(novo_valor_cond))
-
-    
-    def alterar_estado_caminho(self):
-        #escolhe um nó de origem aleatório
-        no_origem = random.choice(self.grafo.m_nodes)
-        no_destino = None
-        peso = None
-        bloqueada = None
-
-        #procura os nós adjacentes ao nó de origem
-        adjacentes = self.grafo.m_graph[no_origem.m_name]
-        if adjacentes:
-            #escolhe aleatoriamente um nó adjacente ao nó origem
-            no_destino, peso, bloqueada = random.choice(adjacentes)
-            self.update_estado_caminho(no_origem.m_name, no_destino, peso, not bloqueada)
-
-
-    def update_estado_caminho(self, nome_no_origem, nome_no_destino, peso, novo_estado):
-        
-        #atualiza estado no caminho
-        def atualizar(nome_no, nome_adjacente):
-            lista = []
-            for adj, peso, estado in self.grafo.m_graph[nome_no]:
-                if adj == nome_adjacente:
-                    lista.append((adj, peso, novo_estado))
+            if random.choice([True, False]):  # Decidir se vai adicionar ou remover
+                # Adicionar um veículo da lista global
+                veiculo_adicionado = random.choice(grafo.veiculos_carregados)
+                veiculos.append(veiculo_adicionado)
+                mensagem = f"[DINÂMICO] Veículo '{veiculo_adicionado}' adicionado à estrada entre {no.getNome()} e {nome_vizinho}."
+            else:
+                # Remover um veículo, se existir algum
+                if veiculos:
+                    veiculo_removido = veiculos.pop(random.randint(0, len(veiculos) - 1))
+                    mensagem = f"[DINÂMICO] Veículo '{veiculo_removido}' removido da estrada entre {no.getNome()} e {nome_vizinho}."
                 else:
-                    lista.append((adj, peso, estado))
-            self.grafo.m_graph[nome_no] = lista
+                    mensagem = f"[DINÂMICO] Nenhum veículo para remover na estrada entre {no.getNome()} e {nome_vizinho}."
 
-        atualizar(nome_no_origem, nome_no_destino)
-        if not self.grafo.m_directed:
-            atualizar(nome_no_destino, nome_no_origem)
+    elif alteracao == "populacao":
+        no = random.choice(grafo.m_nodes)
+        alteracao_pop = random.randint(-10, 50)
+        nova_populacao = max(0, no.populacao + alteracao_pop)
+        mensagem = (
+            f"[DINÂMICO] População do nó {no.getNome()} alterada de {no.populacao} para {nova_populacao}."
+        )
+        no.populacao = nova_populacao
+
+    if mensagem:
+        queue.append(mensagem)
+
+def executar_alteracoes_dinamicas(grafo, vezes):
+    """
+    Executa alterações dinâmicas no grafo um número de vezes especificado pelo utilizador.
+    """
+    queue = []
+    for _ in range(vezes):
+        alterar_dinamicamente(grafo, queue)
+        time.sleep(1)
+
+    print("\n[RESULTADO] Alterações dinâmicas realizadas:")
+    for mensagem in queue:
+        print(mensagem)

@@ -10,6 +10,7 @@ class Grafo:
         self.m_graph = {}  # Representação do grafo: {nó: [(vizinho, peso, bloqueada)]}
         self.m_h = {}  # Heurísticas: {nó: valor}
         self.custos_veiculos = {}  # Dicionário global para custos de veículos
+        self.veiculos_carregados = [] 
 
         # Atualizar heurísticas com base no nó de maior prioridade
         no_destino = self.get_no_maior_prioridade()

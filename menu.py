@@ -1,10 +1,13 @@
 import os
 import json
 import time
+import random
 from grafo import Grafo
 from no import No
+import matplotlib.pyplot as plt
 from veiculo import Veiculo
 from meteorologia import Meteorologia
+from condicoesDinamicas import executar_alteracoes_dinamicas
 from algoritmos_procura import procura_DFS, procura_BFS, procura_aStar, greedy, simulated_annealing
 
 def carregar_caracteristicas_veiculos(ficheiro_caracteristicas="data/caracteristicas_dos_veiculos.json"):
@@ -50,13 +53,17 @@ def carregar_grafo(ficheiro_grafo="data/grafo2.json", ficheiro_caracteristicas="
         for tipo in no_data.get("veiculos", []):
             if tipo in caracteristicas_veiculos:
                 veiculo_data = caracteristicas_veiculos[tipo]
-                veiculos.append(Veiculo(
+                veiculo = Veiculo(
                     tipo=tipo,
                     custo=veiculo_data["custo"],
                     combustivel_disponivel=veiculo_data["combustivel_disponivel"],
                     limite_carga=veiculo_data["limite_carga"],
                     velocidade=veiculo_data["velocidade"]
-                ))
+                )
+                veiculos.append(veiculo)
+                # Adicionar veículo à lista global de veículos carregados
+                if veiculo.get_tipo() not in grafo.veiculos_carregados:
+                    grafo.veiculos_carregados.append(veiculo.get_tipo())
             else:
                 print(f"[AVISO] O veículo '{tipo}' não tem características definidas no ficheiro '{ficheiro_caracteristicas}'.")
 
@@ -131,21 +138,6 @@ def selecionar_tipo_experiencia():
         else:
             print("[ERRO] Opção inválida. Por favor, escolha 1 ou 2.")
 
-def mostrar_menu_dinamico():
-    """
-    Mostra o menu dinâmico e retorna a opção escolhida.
-    """
-    print("\nEscolha uma opção:")
-    print("1. DFS (Depth-First Search)")
-    print("2. BFS (Breadth-First Search)")
-    print("3. A*")
-    print("4. Greedy")
-    print("5. Simulated Annealing")
-    print("6. Imprimir Grafo")
-    print("7. Fabricar medicamentos")
-    print("0. Sair")
-    return input("Opção: ").strip()
-
 def mostrar_menu_estatico():
     """
     Mostra o menu estático e retorna a opção escolhida.
@@ -160,6 +152,22 @@ def mostrar_menu_estatico():
     print("0. Sair")
     return input("Opção: ").strip()
 
+def mostrar_menu_dinamico():
+    """
+    Mostra o menu dinâmico e retorna a opção escolhida.
+    """
+    print("\nEscolha uma opção:")
+    print("1. DFS (Depth-First Search)")
+    print("2. BFS (Breadth-First Search)")
+    print("3. A*")
+    print("4. Greedy")
+    print("5. Simulated Annealing")
+    print("6. Imprimir Grafo")
+    print("7. Fabricar medicamentos")
+    print("8. Executar alterações dinâmicas")
+    print("0. Sair")
+    return input("Opção: ").strip()
+
 def iniciar_menu():
     ficheiro_mapa = selecionar_mapa()
     if not ficheiro_mapa:
@@ -167,51 +175,24 @@ def iniciar_menu():
         return
 
     tipo_experiencia = selecionar_tipo_experiencia()
-
     grafo = carregar_grafo(ficheiro_grafo=ficheiro_mapa)
 
-    if tipo_experiencia == "estatica":
-        print("\nModo Estático selecionado. Nenhuma alteração será permitida.")
-        menu_func = mostrar_menu_estatico
-    else:
-        print("\nModo Dinâmico selecionado. Alterações serão permitidas.")
-        menu_func = mostrar_menu_dinamico
-
-    todos_com_populacao_zero = False
+    if not grafo.m_nodes:
+        print("[ERRO] O grafo não possui nós. Verifique os ficheiros de entrada.")
+        return
 
     while True:
-        if all(no.populacao == 0 for no in grafo.m_nodes):
-            if not todos_com_populacao_zero:
-                print("Todos os nós têm população igual a 0. Nenhum algoritmo pode ser executado.")
-                grafo.desenha(destaque_azul=True)
-                todos_com_populacao_zero = True
-            opcao = menu_func()
-            if opcao == "6":
-                grafo.desenha()
-            elif opcao == "0":
-                print("A sair...")
-                break
-            else:
-                print("Opção inválida. Não há operações disponíveis.")
-            continue
-
         destino = grafo.get_no_maior_prioridade()
-        if destino is None:
-            print("Todos os nós foram processados. Escolha uma ação.")
-            opcao = menu_func()
-            if opcao == "6":
-                grafo.desenha()
-            elif opcao == "0":
-                print("A sair...")
-                break
-            else:
-                print("Opção inválida. Tente novamente.")
-            continue
+        if destino:
+            print(f"\nDestino automaticamente escolhido: {destino.getNome()} (prioridade: {destino.calcula_prioridade()})")
+        else:
+            print("[INFO] Nenhum nó de maior prioridade disponível no momento.")
 
-        todos_com_populacao_zero = False
-        print(f"\nDestino automaticamente escolhido: {destino.getNome()} (prioridade: {destino.calcula_prioridade()})")
+        # Selecionar o menu correto
+        menu_func = mostrar_menu_estatico if tipo_experiencia == "estatica" else mostrar_menu_dinamico
         opcao = menu_func()
 
+        # Processar opções do menu
         if opcao == "1":
             inicio = input("Nó inicial: ")
             veiculos_disponiveis = grafo.get_veiculos_no(inicio.upper())
@@ -262,27 +243,27 @@ def iniciar_menu():
 
         elif opcao == "6":
             grafo.desenha()
+            plt.pause(0.01)
 
         elif opcao == "7" and tipo_experiencia == "dinamica":
             no = input("Indique o nó onde quer fabricar medicamentos: ").strip()
-            try:
-                quantidade = int(input("Indique a quantidade de medicamentos a fabricar, (em 1s são fabricados 100 medicamentos): "))
-                no_obj = grafo.get_node_by_name(no.upper())
-                if no_obj:
-                    print(f"Fabricando {quantidade} medicamentos no nó {no}...")
-                    # Calcular o tempo de espera
-                    tempo_espera = (quantidade // 100) + (1 if quantidade % 100 != 0 else 0)
-                    for i in range(tempo_espera):
-                        print(f"Progresso: {i + 1}/{tempo_espera} segundos...")
-                        time.sleep(1)  # Espera de 1 segundo por iteração
+            quantidade = int(input("Indique a quantidade de medicamentos a fabricar: "))
+            no_obj = grafo.get_node_by_name(no.upper())
+            if no_obj:
+                no_obj.incrementar_medicamentos(quantidade)
+                print(f"Medicamentos fabricados com sucesso no nó {no}.")
+            else:
+                print(f"Nó {no} não encontrado.")
 
-                    no_obj.incrementar_medicamentos(quantidade)
-                    print(f"Medicamentos fabricados com sucesso no nó {no}.")
-                    grafo.desenha()  # Atualizar o grafo após fabricar medicamentos
+        elif opcao == "8":
+            try:
+                vezes = int(input("Quantas alterações dinâmicas deseja realizar? "))
+                if vezes > 0:
+                    executar_alteracoes_dinamicas(grafo, vezes)
                 else:
-                    print(f"Nó {no} não encontrado.")
+                    print("[ERRO] O número deve ser maior que 0.")
             except ValueError:
-                print("[ERRO] Quantidade inválida. Por favor, insira um número inteiro.")
+                print("[ERRO] Entrada inválida. Por favor, insira um número inteiro.")
 
         elif opcao == "0":
             print("A sair...")
