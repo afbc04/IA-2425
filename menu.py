@@ -223,7 +223,8 @@ def iniciar_menu():
             inicio = input("Nó inicial: ")
             resultado = procura_aStar(grafo, inicio.upper(), destino.getNome().upper())
             if resultado:
-                print("Caminho A*:", resultado[0], "Custo:", resultado[1])
+                for veiculo, (path, custo) in resultado.items():
+                    print(f"Veículo: {veiculo}, Caminho: {path}, Custo: {custo}")
             else:
                 print("Caminho não encontrado com A*.")
 
