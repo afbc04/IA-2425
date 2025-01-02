@@ -418,6 +418,7 @@ def greedy(grafo, inicio, fim):
     print("Nenhum caminho válido encontrado.")
     return None
 
+# algorithm simulated annealing
 def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes=10):
     start_time = time.time()
 
@@ -537,7 +538,7 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
                 qtd = min(no.populacao, medicamentos_disponiveis)
                 if grafo.transferir_valores(qtd, no_origem.getNome(), no.getNome()):
                     medicamentos_disponiveis -= qtd
-
+        grafo.desenha()
         print(f"Melhor caminho: {caminho}")
         print(f"Veículo: {veiculo.get_tipo()}")
         print(f"Custo total: {custo}")
