@@ -73,6 +73,8 @@ class No:
         # Ajustar janelas de tempo globalmente
         for _ in range(reducoes):
             grafo.ajustar_janelas_de_tempo()
+            grafo.atualizar_medicamentos_e_populacao()
+
         print(f"[FABRICAÇÃO] {quantidade} medicamentos fabricados no nó {self.nome}.")
 
     def __eq__(self, other):

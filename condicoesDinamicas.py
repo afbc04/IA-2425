@@ -61,6 +61,7 @@ def alterar_dinamicamente(grafo, queue):
 
     # Reduzir as janelas de tempo após cada alteração dinâmica
     grafo.ajustar_janelas_de_tempo()
+    grafo.atualizar_medicamentos_e_populacao()
 
 def executar_alteracoes_dinamicas(grafo, vezes):
     """
@@ -69,7 +70,6 @@ def executar_alteracoes_dinamicas(grafo, vezes):
     queue = []
     for _ in range(vezes):
         alterar_dinamicamente(grafo, queue)
-        time.sleep(1)
 
     print("\n[RESULTADO] Alterações dinâmicas realizadas:")
     for mensagem in queue:
