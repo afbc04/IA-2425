@@ -1,0 +1,15 @@
+{
+  "nos": [
+    { "nome": "A", "populacao": 100, "tempo": 10, "medicamento": 300, "x": 0, "y": 0, "meteorologia": { "chuva": 0, "tempestade": 0, "vento": 0, "nevoeiro": 0 }, "veiculos": ["carro", "barco", "aviao"] },
+    { "nome": "B", "populacao": 80, "tempo": 10, "medicamento": 150, "x": 0, "y": -3, "meteorologia": { "chuva": 0, "tempestade": 0, "vento": 0, "nevoeiro": 0 }, "veiculos": ["carro", "barco", "aviao"] },
+    { "nome": "C", "populacao": 120, "tempo": 10, "medicamento": 100, "x": 0, "y": -6, "meteorologia": { "chuva": 0, "tempestade": 0, "vento": 0, "nevoeiro": 0 }, "veiculos": ["carro", "barco", "aviao"] },
+    { "nome": "D", "populacao": 150, "tempo": 10, "medicamento": 50, "x": 3, "y": -6, "meteorologia": { "chuva": 0, "tempestade": 0, "vento": 0, "nevoeiro": 0 }, "veiculos": ["carro", "barco", "aviao"] },
+    { "nome": "E", "populacao": 200, "tempo": 10, "medicamento": 0, "x": 3, "y": -3, "meteorologia": { "chuva": 0, "tempestade": 0, "vento": 0, "nevoeiro": 0 }, "veiculos": ["carro", "barco", "aviao"] }
+  ],
+  "arestas": [
+    { "origem": "A", "destino": "B", "peso": 1, "bloqueada": false, "permitidos": ["carro", "barco", "aviao"] },
+    { "origem": "B", "destino": "C", "peso": 1, "bloqueada": false, "permitidos": ["carro", "barco", "aviao"] },
+    { "origem": "C", "destino": "D", "peso": 1, "bloqueada": false, "permitidos": ["carro", "barco", "aviao"] },
+    { "origem": "D", "destino": "E", "peso": 1, "bloqueada": false, "permitidos": ["carro", "barco", "aviao"] }
+  ]
+}
