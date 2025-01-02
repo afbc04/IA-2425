@@ -335,6 +335,7 @@ def greedy(grafo, inicio, fim):
     return None
 
 # algorithm simulated annealing
+# algorithm simulated annealing
 def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes=10):
     start_time = time.time()
 
@@ -346,19 +347,19 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
 
     # Escolher um nó inicial aleatório
     no_origem = random.choice(nos_disponiveis)
-    print(f"Ponto inicial aleatório escolhido: {no_origem.getNome()}")
+    print(f"Ponto inicial aleatório escolhido: {no_origem.getName()}")
 
     if no_origem.janela_tempo == 0:
-        print(f"[ERRO] O nó de origem '{no_origem.getNome()}' não pode ser utilizado porque o tempo esgotou.")
+        print(f"[ERRO] O nó de origem '{no_origem.getName()}' não pode ser utilizado porque o tempo esgotou.")
         return None
 
     if no_origem.get_medicamento() == 0:
-        print(f"[ERRO] NINGUÉM FOI SOCORRIDO, NÓ ORIGEM SEM MEDICAMENTOS: '{no_origem.getNome()}'")
+        print(f"[ERRO] NINGUÉM FOI SOCORRIDO, NÓ ORIGEM SEM MEDICAMENTOS: '{no_origem.getName()}'")
         return None
 
-    veiculos_disponiveis = grafo.get_veiculos_no(no_origem.getNome())
+    veiculos_disponiveis = grafo.get_veiculos_no(no_origem.getName())
     if not veiculos_disponiveis:
-        print(f"Nó {no_origem.getNome()} não possui veículos disponíveis.")
+        print(f"Nó {no_origem.getName()} não possui veículos disponíveis.")
         return None
 
     melhores_caminhos = []
@@ -375,19 +376,19 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
 
         for i in range(numero_iteracoes):
             # Encerrar se o nó atual for o destino
-            if atual.getNome() == destino:
+            if atual.getName() == destino:
                 print(f"Destino {destino} alcançado na iteração {i}.")
                 break
 
             # Obter vizinhos acessíveis
             vizinhos = [
                 (adjacente, peso)
-                for adjacente, peso in grafo.getNeighbours(atual.getNome(), veiculo.get_tipo())
+                for adjacente, peso in grafo.getNeighbours(atual.getName(), veiculo.get_tipo())
                 if adjacente not in caminho_atual
             ]
 
             if not vizinhos:
-                print(f"Nó {atual.getNome()} não possui vizinhos acessíveis para o veículo {veiculo.get_tipo()}.")
+                print(f"Nó {atual.getName()} não possui vizinhos acessíveis para o veículo {veiculo.get_tipo()}.")
                 break
 
             # Escolher próximo nó baseado na heurística
@@ -422,7 +423,7 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
 
             if diferenca < 0 or random.random() < probabilidade_aceitacao:
                 atual = candidato
-                caminho_atual.append(candidato.getNome())
+                caminho_atual.append(candidato.getName())
                 custo_atual = custo_temporario
                 pessoas_socorridas = pessoas_socorridas_temp
 
