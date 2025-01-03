@@ -773,7 +773,7 @@ def greedy(grafo, inicio, destino):
     return None
 
 # algorithm simulated annealing
-def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes=10):
+def simulated_annealing(grafo, inicio, destino, temperatura_inicial=10, numero_iteracoes=10):
     start_time = time.time()
 
     # Filtra nós disponíveis (exceto o destino)
@@ -786,11 +786,10 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
     origem_tentativas = numero_iteracoes
 
     while origem_tentativas > 0 and no_origem is None:
-
-        origem_tentativas = origem_tentativas - 1
-        # Escolher um nó inicial aleatório
-        no_origem = random.choice(nos_disponiveis)
-        print(f"Ponto inicial aleatório escolhido: {no_origem.getNome()}")
+        origem_tentativas -= 1
+        # Escolher um nó inicial
+        no_origem = grafo.get_node_by_name(inicio)
+        print(f"Ponto inicial escolhido: {no_origem.getNome()}")
 
         if no_origem.janela_tempo == 0:
             print(f"[ERRO] O nó de origem '{no_origem.getNome()}' não pode ser utilizado porque o tempo esgotou.")
@@ -807,10 +806,9 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
             print(f"Nó {no_origem.getNome()} não possui veículos disponíveis.")
             no_origem = None
             continue
-        
+
     if no_origem is None:
         return None
-    
 
     melhores_caminhos = []
 
@@ -823,6 +821,7 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
         melhor_custo = float('inf')
         melhor_caminho = []
         pessoas_socorridas = 0
+        
 
         for i in range(numero_iteracoes):
             # Encerrar se o nó atual for o destino
@@ -851,9 +850,7 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
             candidato = grafo.get_node_by_name(candidato_nome)
 
             # Calcular custo temporário
-            custo_temporario, pessoas_socorridas_temp = grafo.calcula_custo(
-                caminho_atual + [candidato.getNome()], veiculo
-            )
+            custo_temporario, pessoas_socorridas_temp = grafo.calcula_custo(caminho_atual + [candidato.getNome()], veiculo)
 
             # Verificar combustível e velocidade
             if custo_temporario == float('inf') or custo_temporario > veiculo.get_combustivel_disponivel():
@@ -871,7 +868,11 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
             temperatura = temperatura_inicial / float(i + 1)
             probabilidade_aceitacao = np.exp(-diferenca / temperatura) if temperatura > 0 else 0
 
+            # Imprimir o nó visitado
+            print(f"Nó atual: {atual.getNome()}, Visitando nó candidato: {candidato.getNome()}")
+
             if diferenca < 0 or random.random() < probabilidade_aceitacao:
+                print(f"[ACEITO] Movendo para {candidato.getNome()} com custo {custo_temporario}")
                 atual = candidato
                 caminho_atual.append(candidato.getNome())
                 custo_atual = custo_temporario
@@ -906,10 +907,12 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
                 if grafo.transferir_valores(qtd, no_origem.getNome(), no.getNome()):
                     medicamentos_disponiveis -= qtd
         grafo.desenha()
+        melhor_distancia = grafo.calcula_acumulado_arestas(caminho, veiculo)
         print(f"Melhor caminho: {caminho}")
         print(f"Veículo: {veiculo.get_tipo()}")
         print(f"Custo total: {custo}")
         print(f"Pessoas socorridas: {pessoas_socorridas}")
+        print(f"Distância percorrida: {melhor_distancia}")
         print(f"Tempo de execução: {end_time - start_time:.6f} segundos")
 
         return (caminho, custo)
