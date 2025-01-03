@@ -781,24 +781,27 @@ def greedy(grafo, inicio, destino):
     return None
 
 # algorithm simulated annealing
-def simulated_annealing(grafo, inicio, destino, temperatura_inicial=10, numero_iteracoes=10):
+def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes=10):
     start_time = time.time()
 
-    # Filtra nós disponíveis (exceto o destino)
-    nos_disponiveis = [no for no in grafo.m_nodes if no.getNome() != destino]
-    if not nos_disponiveis:
-        print("Nenhum nó inicial disponível.")
-        return None
-
     no_origem = None
-    origem_tentativas = numero_iteracoes
+    escolhidos_nodoOrigem = set()
 
-    while origem_tentativas > 0 and no_origem is None:
-        origem_tentativas -= 1
+    while no_origem is None:
         # Escolher um nó inicial
-        no_origem = grafo.get_node_by_name(inicio)
-        print(f"Ponto inicial escolhido: {no_origem.getNome()}")
+        
+        nos_disponiveis = [no for no in grafo.m_nodes if no.getNome() != destino and no.getNome() not in escolhidos_nodoOrigem]
+            
+            
+        if not nos_disponiveis:
+            print("Nenhum nó inicial disponível.")
+            return None
+                
 
+        no_origem = random.choice(nos_disponiveis)
+        escolhidos_nodoOrigem.add(no_origem.getNome())
+        print(f"Ponto inicial aleatório escolhido: {no_origem.getNome()}")
+        
         if no_origem.janela_tempo == 0:
             print(f"[ERRO] O nó de origem '{no_origem.getNome()}' não pode ser utilizado porque o tempo esgotou.")
             no_origem = None
