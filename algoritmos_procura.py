@@ -853,8 +853,9 @@ def simulated_annealing(grafo, inicio, destino, temperatura_inicial=10, numero_i
             )
             candidato = grafo.get_node_by_name(candidato_nome)
 
+            _, pessoas_socorridas_temp = grafo.calcula_custo(caminho_atual + [candidato.getNome()], veiculo)
             # Calcular custo temporário
-            custo_temporario, pessoas_socorridas_temp = grafo.calcula_custo(caminho_atual + [candidato.getNome()], veiculo)
+            custo_temporario = grafo.calcula_acumulado_arestas(caminho_atual + [candidato.getNome()], veiculo)
             #destino_no = grafo.get_node_by_name(destino)
             # Verificar combustível e velocidade
             if custo_temporario == float('inf') or custo_temporario > veiculo.get_combustivel_disponivel():
