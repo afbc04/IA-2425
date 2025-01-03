@@ -212,7 +212,8 @@ def iniciar_menu():
         opcao = menu_func()
 
         # Processar opções do menu
-        if opcao == "1":
+        if opcao == "1" and destino is not None:
+            
             inicio = input("Nó inicial: ")
             veiculos_disponiveis = grafo.get_veiculos_no(inicio.upper())
             if not veiculos_disponiveis:
@@ -226,7 +227,7 @@ def iniciar_menu():
             else:
                 print("Caminho não encontrado com DFS.")
 
-        elif opcao == "2":
+        elif opcao == "2" and destino is not None:
             inicio = input("Nó inicial: ")
             resultado = procura_BFS(grafo, inicio.upper(), destino.getNome().upper())
             if resultado:
@@ -236,7 +237,7 @@ def iniciar_menu():
             else:
                 print("Caminho não encontrado com BFS.")
 
-        elif opcao == "3":
+        elif opcao == "3" and destino is not None:
             inicio = input("Nó inicial: ")
             profundidade = int(input("Profundidade máxima: "))
             veiculos_disponiveis = grafo.get_veiculos_no(inicio.upper())
@@ -251,7 +252,7 @@ def iniciar_menu():
             else:
                 print("Caminho não encontrado com Iterativo.")
 
-        elif opcao == "4":
+        elif opcao == "4" and destino is not None:
             inicio = input("Nó inicial: ")
             veiculos_disponiveis = grafo.get_veiculos_no(inicio.upper())
             if not veiculos_disponiveis:
@@ -265,7 +266,7 @@ def iniciar_menu():
             else:
                 print("Caminho não encontrado com Iterativo.")
                 
-        elif opcao == "5":
+        elif opcao == "5" and destino is not None:
             inicio = input("Nó inicial: ")
             resultado = procura_aStar(grafo, inicio.upper(), destino.getNome().upper())
             
@@ -279,7 +280,7 @@ def iniciar_menu():
             else:
                 print(f"[ERRO] Resultado inesperado: {resultado}")
 
-        elif opcao == "6":
+        elif opcao == "6" and destino is not None:
             inicio = input("Nó inicial: ")
             resultado = greedy(grafo, inicio.upper(), destino.getNome().upper())
             if resultado:
@@ -288,14 +289,14 @@ def iniciar_menu():
             else:
                 print("Caminho não encontrado com Greedy.")
 
-        elif opcao == "7":
+        elif opcao == "7" and destino is not None:
             resultado = simulated_annealing(grafo, destino.getNome().upper(), temperatura_inicial=10, numero_iteracoes=10)
             if resultado:
                 print("Caminho:", resultado[0], "Custo:", resultado[1])
             else:
                 print("Caminho não encontrado com Simulated Annealing.")
 
-        elif opcao == "8":
+        elif opcao == "8" and destino is not None:
             resultado = hill_climbing(grafo, destino.getNome().upper(), max_restarts=6, max_iteracoes=10)
             if resultado:
                 for veiculo, (path, custo) in resultado.items():
