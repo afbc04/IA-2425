@@ -1,5 +1,5 @@
 {
-    "carro": {"custo": 1, "limite_carga": 500, "combustivel_disponivel": 20, "velocidade": 50},
-    "barco": {"custo": 3, "limite_carga": 1000, "combustivel_disponivel": 60, "velocidade": 0},
+    "carro": {"custo": 1, "limite_carga": 500, "combustivel_disponivel": 100, "velocidade": 50},
+    "barco": {"custo": 3, "limite_carga": 1000, "combustivel_disponivel": 60, "velocidade": 70},
     "aviao": {"custo": 5, "limite_carga": 1500, "combustivel_disponivel": 500, "velocidade": 200}
 }
