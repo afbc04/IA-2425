@@ -24,7 +24,7 @@ def carregar_caracteristicas_veiculos(ficheiro_caracteristicas="data/caracterist
         print(f"[ERRO] O ficheiro '{ficheiro_caracteristicas}' contém JSON inválido.")
     return {}
 
-def carregar_grafo(ficheiro_grafo="data/grafo2.json", ficheiro_caracteristicas="data/caracteristicas_dos_veiculos.json"):
+def carregar_grafo(ficheiro_grafo, ficheiro_caracteristicas="data/caracteristicas_dos_veiculos.json"):
     """
     Carrega o grafo e as características dos veículos a partir dos ficheiros JSON.
     """
