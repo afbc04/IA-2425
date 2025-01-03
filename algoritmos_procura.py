@@ -33,7 +33,8 @@ def procura_DFS(grafo, inicio, fim):
     melhores_caminhos = []
 
     for veiculo in veiculos_disponiveis:
-        print(f"[AVISO] Veículo {veiculo.get_tipo()} ignorado devido à velocidade ser 0.")
+        if veiculo.get_velocidade() == 0:
+            print(f"[AVISO] Veículo {veiculo.get_tipo()} ignorado devido à velocidade ser 0.")
             continue
 
         print(f"Usando veículo: {veiculo.get_tipo()} (Velocidade: {veiculo.get_velocidade()})")
@@ -155,7 +156,8 @@ def procura_BFS(grafo, inicio, fim):
     melhores_caminhos = []
 
     for veiculo in veiculos_disponiveis:
-        print(f"[AVISO] Veículo {veiculo.get_tipo()} ignorado devido à velocidade ser 0.")
+        if veiculo.get_velocidade() == 0:
+            print(f"[AVISO] Veículo {veiculo.get_tipo()} ignorado devido à velocidade ser 0.")
             continue
 
         print(f"Usando veículo: {veiculo.get_tipo()} (Velocidade: {veiculo.get_velocidade()})")
@@ -550,7 +552,8 @@ def procura_aStar(grafo, inicio, fim):
     melhores_caminhos = []
 
     for veiculo in veiculos_disponiveis:
-        print(f"[AVISO] Veículo {veiculo.get_tipo()} ignorado devido à velocidade ser 0.")
+        if veiculo.get_velocidade() == 0:
+            print(f"[AVISO] Veículo {veiculo.get_tipo()} ignorado devido à velocidade ser 0.")
             continue
 
         print(f"Usando veículo: {veiculo.get_tipo()} (Velocidade: {veiculo.get_velocidade()}, Combustível: {veiculo.get_combustivel_disponivel()})")
@@ -677,7 +680,8 @@ def greedy(grafo, inicio, destino):
     melhores_caminhos = []
 
     for veiculo in veiculos_disponiveis:
-        print(f"[AVISO] Veículo {veiculo.get_tipo()} ignorado devido à velocidade ser 0.")
+        if veiculo.get_velocidade() == 0:
+            print(f"[AVISO] Veículo {veiculo.get_tipo()} ignorado devido à velocidade ser 0.")
             continue
 
         print(f"Usando veículo: {veiculo.get_tipo()} (Velocidade: {veiculo.get_velocidade()})")
