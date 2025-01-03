@@ -337,6 +337,9 @@ def procura_Iterativa_aux(grafo, inicio, fim, veiculoAtual, limite):
     """
     Realiza a busca em profundidade (Iterativa) para encontrar o melhor caminho.
     """
+    
+    profundidade = limite
+    
     start_time = time.time()
     no_origem = grafo.get_node_by_name(inicio)
     if no_origem.janela_tempo == 0:
@@ -359,6 +362,7 @@ def procura_Iterativa_aux(grafo, inicio, fim, veiculoAtual, limite):
         if veiculoAtual != veiculo.get_tipo():
             continue
         
+        print(f"Usando veículo: {veiculo.get_tipo()} (Velocidade: {veiculo.get_velocidade()})")
         stack = [(inicio, [inicio])]  # Pilha para DFS (nó atual, caminho até agora)
         visited = set()
 
@@ -369,6 +373,8 @@ def procura_Iterativa_aux(grafo, inicio, fim, veiculoAtual, limite):
                 continue
 
             visited.add(nodo_atual)
+            print(f"Iterativo: Visitando {nodo_atual}, Profundidade: {profundidade}, Caminho atual: {caminho}")
+
 
             if nodo_atual == fim:
                 custo_acumulado_arestas = grafo.calcula_acumulado_arestas(caminho, veiculo)
@@ -395,6 +401,7 @@ def procura_Iterativa_aux(grafo, inicio, fim, veiculoAtual, limite):
             ]
             for adjacente, novo_caminho in reversed(vizinhos):
                 stack.append((adjacente, novo_caminho))
+                print(f"Vizinho {adjacente} adicionado à pilha com caminho: {novo_caminho}")
 
     end_time = time.time()
     if melhores_caminhos:
