@@ -287,6 +287,7 @@ class Grafo:
 
         # Atualizar as heurísticas para todos os nós
         no_destino = self.get_no_maior_prioridade()
+
         if no_destino:
             self.atualizar_heuristicas(no_destino)
         else:
@@ -348,7 +349,8 @@ class Grafo:
         rect_width = 1.2  # Aumentar largura do retângulo
         rect_height = 1  # Aumentar altura do retângulo
         for node, (x, y) in pos.items():
-            if todos_nos_vazios:
+
+            if no_destino is None:
                 cor = "yellow"
             elif node == no_destino.getNome():
                 cor = "red"
