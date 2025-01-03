@@ -255,11 +255,16 @@ def iniciar_menu():
         elif opcao == "5":
             inicio = input("Nó inicial: ")
             resultado = procura_aStar(grafo, inicio.upper(), destino.getNome().upper())
-            if resultado:
-                for veiculo, (path, custo) in resultado.items():
-                    print(f"Veículo: {veiculo}, Caminho: {path}, Custo: {custo}")
+            
+            if isinstance(resultado, dict):
+                for veiculo, valores in resultado.items():
+                    if isinstance(valores, tuple) and len(valores) == 2:
+                        path, custo = valores
+                        print(f"Veículo: {veiculo}, Caminho: {path}, Custo: {custo}")
+                    else:
+                        print(f"[ERRO] Formato inesperado nos valores: {valores}")
             else:
-                print("Caminho não encontrado com A*.")
+                print(f"[ERRO] Resultado inesperado: {resultado}")
 
         elif opcao == "6":
             inicio = input("Nó inicial: ")
