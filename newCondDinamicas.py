@@ -36,7 +36,7 @@ class CondicoesDinamicas:
             self.prod_medicamentos()
         else:
             self.alterar_estado_caminho()
-        print("[DEBUG] Pressione \"8\" para atualizar o grafo")
+        print("[DEBUG] Pressione \"9\" para atualizar o grafo")
         
         print("\n" + "-" * 50)  # Add separator line
         destino = self.grafo.get_no_maior_prioridade()
@@ -67,14 +67,12 @@ class CondicoesDinamicas:
         setattr(no_a_alterar.meteorologia, cond_a_alterar, novo_valor_cond)
         self.grafo.ajustar_janelas_de_tempo()
         print(f"\n[DEBUG]Meteorologia alterada em: {no_a_alterar.getNome()}\nCondição: {cond_a_alterar}\nNovo valor: {novo_valor_cond}")
-        #print("[DEBUG] Pressione \"8\" para atualizar o grafo")
 
 
     def prod_medicamentos(self):
         no_prod = random.choice(self.grafo.m_nodes)
         quant = random.randint(1,300)
         no_prod.incrementar_medicamentos(quant, self.grafo)
-        #print("[DEBUG] Pressione \"8\" para atualizar o grafo")
 
     
     def alterar_estado_caminho(self):
@@ -95,7 +93,6 @@ class CondicoesDinamicas:
             print(f"[DEBUG] Origem: {no_origem.getNome()}")
             print(f"[DEBUG] Destino: {no_destino}")
             print(f"[DEBUG] Novo estado: {'Bloqueado' if novo_estado else 'Desbloqueado'}")
-            #print("[DEBUG] Pressione \"8\" para atualizar o grafo")
     
     
     def update_estado_caminho(self, nome_no_origem, nome_no_destino, novo_estado):
