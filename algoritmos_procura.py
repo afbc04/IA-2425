@@ -860,15 +860,15 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
             )
             candidato = grafo.get_node_by_name(candidato_nome)
 
-            _, pessoas_socorridas_temp = grafo.calcula_custo(caminho_atual + [candidato.getNome()], veiculo)
+            custo_temporario, pessoas_socorridas_temp = grafo.calcula_custo(caminho_atual + [candidato.getNome()], veiculo)
             # Calcular custo temporário
-            custo_temporario = grafo.calcula_acumulado_arestas(caminho_atual + [candidato.getNome()], veiculo)
+            custo_acumulado = grafo.calcula_acumulado_arestas(caminho_atual + [candidato.getNome()], veiculo)
             #destino_no = grafo.get_node_by_name(destino)
             # Verificar combustível e velocidade
-            if custo_temporario == float('inf') or custo_temporario > veiculo.get_combustivel_disponivel():
+            if custo_acumulado == float('inf') or custo_acumulado > veiculo.get_combustivel_disponivel():
                 print(f"[DEBUG] Veículo {veiculo.get_tipo()} não pode acessar {candidato.getNome()}.")
                 continue
-            if candidato.janela_tempo > 0 and (custo_temporario / candidato.janela_tempo) > veiculo.get_velocidade():
+            if candidato.janela_tempo > 0 and (custo_acumulado / candidato.janela_tempo) > veiculo.get_velocidade():
                 print(f"[DEBUG] Veículo {veiculo.get_tipo()} não pode acessar {candidato.getNome()} devido à velocidade.")
                 continue
 
