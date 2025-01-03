@@ -443,7 +443,7 @@ def procura_CustoUniforme(grafo, inicio, fim):
             visitados[nodo_atual] = custo_atual
 
             caminho = caminho + [nodo_atual]
-            print(f"Dijkstra: Visitando {nodo_atual}, Custo acumulado: {custo_atual}, Caminho: {caminho}")
+            print(f"Custo uniforme: Visitando {nodo_atual}, Custo acumulado: {custo_atual}, Caminho: {caminho}")
 
             if nodo_atual == fim:
                 custo_acumulado_arestas = custo_atual
