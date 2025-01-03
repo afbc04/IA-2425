@@ -514,7 +514,7 @@ def procura_CustoUniforme(grafo, inicio, fim):
         return {veiculo.get_tipo(): (caminho, custo)}
 
     print("Nenhum caminho válido encontrado.")
-    return none
+    return None
 
 def procura_aStar(grafo, inicio, fim):
     """
