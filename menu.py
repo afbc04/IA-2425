@@ -289,7 +289,8 @@ def iniciar_menu():
                 print("Caminho não encontrado com Greedy.")
 
         elif opcao == "7":
-            resultado = simulated_annealing(grafo, destino.getNome().upper(), temperatura_inicial=10, numero_iteracoes=10)
+            inicio = input("Nó inicial: ")
+            resultado = simulated_annealing(grafo, inicio.upper(), destino.getNome().upper(), temperatura_inicial=10, numero_iteracoes=10)
             if resultado:
                 print("Caminho:", resultado[0], "Custo:", resultado[1])
             else:
