@@ -523,10 +523,13 @@ def procura_aStar(grafo, inicio, fim):
       - Heurística (h) do grafo.m_h, como no algoritmo Greedy.
       - Custo acumulado das arestas (g).
     """
+
     start_time = time.time()
 
     no_origem = grafo.get_node_by_name(inicio)
     no_destino = grafo.get_node_by_name(fim)
+
+    grafo.atualizar_heuristicas(no_destino)
 
     if no_origem.janela_tempo == 0:
         print(f"[ERRO] O nó de origem '{inicio}' não pode ser utilizado porque o tempo esgotou.")
@@ -662,10 +665,11 @@ def greedy(grafo, inicio, destino):
     Realiza a busca gulosa para encontrar o melhor caminho considerando todos os veículos disponíveis no nó inicial.
     Prioriza a transferência para o destino e, com os medicamentos restantes, socorre outros nós do caminho por prioridade.
     """
-    # Atualizar heurísticas antes de começar a busca
-    grafo.atualizar_heuristicas(grafo.get_node_by_name(destino))
 
     start_time = time.time()
+    
+    # Atualizar heurísticas antes de começar a busca
+    grafo.atualizar_heuristicas(grafo.get_node_by_name(destino))
 
     no_origem = grafo.get_node_by_name(inicio)
     no_destino = grafo.get_node_by_name(destino)

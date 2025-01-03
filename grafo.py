@@ -161,7 +161,7 @@ class Grafo:
         self.m_h = {}
         for no in self.m_nodes:
             if no.populacao == 0 or no.janela_tempo == 0:  # Nós com população ou tempo esgotado recebem inf
-                heuristica = float('inf')
+                heuristica = 5
             else:
                 heuristica = self.calcula_heuristica(no, no_destino)
             
