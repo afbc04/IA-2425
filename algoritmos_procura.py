@@ -788,7 +788,7 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
     escolhidos_nodoOrigem = set()
 
     while no_origem is None:
-        # Escolher um nó inicial
+        
         
         nos_disponiveis = [no for no in grafo.m_nodes if no.getNome() != destino and no.getNome() not in escolhidos_nodoOrigem]
             
@@ -797,7 +797,7 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
             print("Nenhum nó inicial disponível.")
             return None
                 
-
+        # Escolher o nó origem
         no_origem = random.choice(nos_disponiveis)
         escolhidos_nodoOrigem.add(no_origem.getNome())
         print(f"Ponto inicial aleatório escolhido: {no_origem.getNome()}")
@@ -824,7 +824,7 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
     melhores_caminhos = []
 
     for veiculo in veiculos_disponiveis:
-        print(f"Testando Simulated Annealing com o veículo: {veiculo.get_tipo()}")
+        print(f"Testar o simulated annealing com o veículo: {veiculo.get_tipo()}")
 
         atual = no_origem
         caminho_atual = [no_origem.getNome()]
@@ -859,11 +859,11 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
                 )
             )
             candidato = grafo.get_node_by_name(candidato_nome)
-
+            
             custo_temporario, pessoas_socorridas_temp = grafo.calcula_custo(caminho_atual + [candidato.getNome()], veiculo)
-            # Calcular custo temporário
+            
             custo_acumulado = grafo.calcula_acumulado_arestas(caminho_atual + [candidato.getNome()], veiculo)
-            #destino_no = grafo.get_node_by_name(destino)
+
             # Verificar combustível e velocidade
             if custo_acumulado == float('inf') or custo_acumulado > veiculo.get_combustivel_disponivel():
                 print(f"[DEBUG] Veículo {veiculo.get_tipo()} não pode acessar {candidato.getNome()}.")
@@ -881,10 +881,10 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
             probabilidade_aceitacao = np.exp(-diferenca / temperatura) if temperatura > 0 else 0
 
             # Imprimir o nó visitado
-            print(f"Nó atual: {atual.getNome()}, Visitando nó candidato: {candidato.getNome()}")
+            print(f"Nó atual: {atual.getNome()}, A visitar o nó candidato: {candidato.getNome()}")
 
             if diferenca < 0 or random.random() < probabilidade_aceitacao:
-                print(f"[ACEITO] Movendo para {candidato.getNome()} com custo {custo_temporario}")
+                print(f"[ACEITO] A mover para {candidato.getNome()} com custo {custo_temporario}")
                 atual = candidato
                 caminho_atual.append(candidato.getNome())
                 custo_atual = custo_temporario
