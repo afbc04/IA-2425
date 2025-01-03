@@ -988,12 +988,12 @@ def hill_climbing(grafo, destino, max_restarts, max_iteracoes):
                     if custo_final < melhor_custo_global:
                         melhor_caminho_global = caminho_atual.copy()
                         melhor_custo_global = custo_final
-                        melhor_pessoas_socorridas = pessoas_socorridas
                         melhor_veiculo_global = veiculo
                         print(f"\nNovo melhor caminho encontrado!")
                         print(f"Caminho: {' -> '.join(caminho_atual)}")
                         print(f"Custo: {custo_final}")
-                            
+                        
+                        total_pessoas_socorridas = 0
                         # Distribuição de medicamentos por prioridade calculada
                         medicamentos_disponiveis = min(no_origem.get_medicamento(), veiculo.get_limite_carga())
                             
@@ -1013,7 +1013,10 @@ def hill_climbing(grafo, destino, max_restarts, max_iteracoes):
                                 qtd = min(no.populacao, medicamentos_disponiveis)
                                 if grafo.transferir_valores(qtd, no_origem.getNome(), no.getNome()):
                                     medicamentos_disponiveis -= qtd
+                                    total_pessoas_socorridas += qtd
                         grafo.desenha()
+
+                        melhor_pessoas_socorridas = total_pessoas_socorridas
                     break
                 
                 todos_vizinhos = []
