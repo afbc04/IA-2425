@@ -9,13 +9,13 @@
       { "nome": "G", "populacao": 50, "tempo": 10, "medicamento": 0, "x": 3, "y": 0, "meteorologia": { "chuva": 0, "tempestade": 0, "vento": 0, "nevoeiro": 0 }, "veiculos": ["carro", "barco", "aviao"] }
     ],
     "arestas": [
-      { "origem": "A", "destino": "G", "peso": 1, "bloqueada": false, "permitidos": ["carro", "barco", "aviao"] },
-      { "origem": "B", "destino": "C", "peso": 1, "bloqueada": false, "permitidos": ["carro", "barco", "aviao"] },
-      { "origem": "C", "destino": "D", "peso": 1, "bloqueada": false, "permitidos": ["carro", "barco", "aviao"] },
-      { "origem": "D", "destino": "E", "peso": 1, "bloqueada": false, "permitidos": ["carro", "barco", "aviao"] },
-      { "origem": "A", "destino": "B", "peso": 1, "bloqueada": false, "permitidos": ["carro", "barco", "aviao"] },
-      { "origem": "E", "destino": "F", "peso": 1, "bloqueada": false, "permitidos": ["carro", "barco", "aviao"] },
-      { "origem": "F", "destino": "G", "peso": 1, "bloqueada": false, "permitidos": ["carro", "barco", "aviao"] }
+      { "origem": "A", "destino": "G", "peso": 20, "bloqueada": false, "permitidos": ["carro", "barco", "aviao"] },
+      { "origem": "B", "destino": "C", "peso": 20, "bloqueada": false, "permitidos": ["carro", "barco", "aviao"] },
+      { "origem": "C", "destino": "D", "peso": 20, "bloqueada": false, "permitidos": ["carro", "barco", "aviao"] },
+      { "origem": "D", "destino": "E", "peso": 20, "bloqueada": false, "permitidos": ["carro", "barco", "aviao"] },
+      { "origem": "A", "destino": "B", "peso": 20, "bloqueada": false, "permitidos": ["carro", "barco", "aviao"] },
+      { "origem": "E", "destino": "F", "peso": 20, "bloqueada": false, "permitidos": ["carro", "barco", "aviao"] },
+      { "origem": "F", "destino": "G", "peso": 20, "bloqueada": false, "permitidos": ["carro", "barco", "aviao"] }
     ]
   }
   

@@ -536,6 +536,7 @@ def procura_aStar(grafo, inicio, fim):
 
     # Validações iniciais
     no_origem = grafo.get_node_by_name(inicio)
+    no_destino = grafo.get_node_by_name(fim)
     if no_origem.janela_tempo == 0:
         print(f"[ERRO] O nó de origem '{inicio}' não pode ser utilizado porque o tempo esgotou.")
         return None
@@ -552,10 +553,6 @@ def procura_aStar(grafo, inicio, fim):
     melhores_caminhos = []
 
     for veiculo in veiculos_disponiveis:
-        if veiculo.get_velocidade() == 0:
-            print(f"[AVISO] Veículo {veiculo.get_tipo()} ignorado devido à velocidade ser 0.")
-            continue
-
         print(f"Usando veículo: {veiculo.get_tipo()} (Velocidade: {veiculo.get_velocidade()}, Combustível: {veiculo.get_combustivel_disponivel()})")
 
         fronteira = []
@@ -586,7 +583,7 @@ def procura_aStar(grafo, inicio, fim):
                 novo_custo = custos_acumulados[atual] + peso  # g(n)
                 heuristica = grafo.calcula_heuristica(
                     grafo.get_node_by_name(vizinho),
-                    grafo.get_node_by_name(fim)
+                    no_destino
                 )
                 f_novo = novo_custo + heuristica  # f(n)
 
@@ -595,9 +592,9 @@ def procura_aStar(grafo, inicio, fim):
                     print(f"[DEBUG] Veículo: {veiculo.get_tipo()} NÃO PODE COMPLETAR o caminho devido a falta de combustível: {caminhos[atual] + [vizinho]}")
                     continue
 
-                # Validação de velocidade
-                tempo_estimado = peso / veiculo.get_velocidade()  # Tempo necessário para a aresta
-                if tempo_estimado > no_origem.janela_tempo:
+                # Validação de velocidade com base na janela de tempo do destino
+                tempo_estimado = novo_custo / no_destino.janela_tempo
+                if veiculo.get_velocidade() < tempo_estimado:
                     print(f"[DEBUG] Veículo: {veiculo.get_tipo()} NÃO PODE COMPLETAR o caminho devido à velocidade insuficiente: {caminhos[atual] + [vizinho]}")
                     continue
 
