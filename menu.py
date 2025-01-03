@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from veiculo import Veiculo
 from meteorologia import Meteorologia
 from condicoesDinamicas import executar_alteracoes_dinamicas
+from newCondDinamicas import CondicoesDinamicas
 from algoritmos_procura import procura_CustoUniforme, procura_DFS, procura_BFS, procura_Iterativa, procura_aStar, greedy, simulated_annealing, hill_climbing
 
 def carregar_caracteristicas_veiculos(ficheiro_caracteristicas="data/caracteristicas_dos_veiculos.json"):
@@ -127,16 +128,19 @@ def selecionar_tipo_experiencia():
     """
     while True:
         print("\nSelecione o tipo de experiência:")
-        print("1. Estática")
-        print("2. Dinâmica")
+        print("1. Ambiente Estático")
+        print("2. Ambiente Dinâmico Controlado")
+        print("3. Ambiente Dinâmico")
         opcao = input("Opção: ").strip()
 
         if opcao == "1":
             return "estatica"
         elif opcao == "2":
             return "dinamica"
+        elif opcao == "3":
+            return "real dinamica"
         else:
-            print("[ERRO] Opção inválida. Por favor, escolha 1 ou 2.")
+            print("[ERRO] Opção inválida. Por favor, escolha 1, 2 ou 3.")
 
 def mostrar_menu_estatico():
     """
@@ -183,6 +187,12 @@ def iniciar_menu():
     tipo_experiencia = selecionar_tipo_experiencia()
     grafo = carregar_grafo(ficheiro_grafo=ficheiro_mapa)
 
+    condicoes_dinamicas = None
+
+    if tipo_experiencia=="real dinamica":
+        condicoes_dinamicas = CondicoesDinamicas(grafo)
+        condicoes_dinamicas.iniciar_alteracoes()
+
     if not grafo.m_nodes:
         print("[ERRO] O grafo não possui nós. Verifique os ficheiros de entrada.")
         return
@@ -195,7 +205,10 @@ def iniciar_menu():
             print("[INFO] Nenhum nó de maior prioridade disponível no momento.")
 
         # Selecionar o menu correto
-        menu_func = mostrar_menu_estatico if tipo_experiencia == "estatica" else mostrar_menu_dinamico
+        if tipo_experiencia == "estatica" or "real dinamica":
+            menu_func = mostrar_menu_estatico
+        else:
+            menu_func = mostrar_menu_dinamico
         opcao = menu_func()
 
         # Processar opções do menu
@@ -316,6 +329,8 @@ def iniciar_menu():
                 print("[ERRO] Entrada inválida. Por favor, insira um número inteiro.")
 
         elif opcao == "0":
+            if tipo_experiencia== "real dinamica":
+                condicoes_dinamicas.parar_alteracoes()
             print("A sair...")
             break
 
