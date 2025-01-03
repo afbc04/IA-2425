@@ -104,7 +104,7 @@ def procura_DFS(grafo, inicio, fim):
                 break
 
             no_intermediario_obj = grafo.get_node_by_name(no_intermediario)
-            if no_intermediario_obj.populacao == 0:
+            if no_intermediario_obj.populacao == 0 or no_intermediario_obj.janela_tempo == 0:
                 continue
 
             medicamentos_para_transferir = min(
