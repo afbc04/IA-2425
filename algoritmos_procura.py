@@ -942,6 +942,7 @@ def hill_climbing(grafo, destino, max_restarts, max_iteracoes):
     melhor_distancia = 0
     
     destino_node = grafo.get_node_by_name(destino)
+    caminho_found = False
     
     for tentativa in range(max_restarts):
         print(f"\n{'=' * 30}")
@@ -998,6 +999,7 @@ def hill_climbing(grafo, destino, max_restarts, max_iteracoes):
                         print(f"\nNovo melhor caminho encontrado!")
                         print(f"Caminho: {' -> '.join(caminho_atual)}")
                         print(f"Custo: {custo_final}")
+                        caminho_found = True
                         
                         total_pessoas_socorridas = 0
                         # Distribuição de medicamentos por prioridade calculada
@@ -1046,7 +1048,9 @@ def hill_climbing(grafo, destino, max_restarts, max_iteracoes):
                     caminho_atual.append(melhor_vizinho)
                     distancia_atual = menor_distancia
                 else:
-                    break     
+                    break
+        if caminho_found:
+            break
     end_time = time.time()
     if melhor_caminho_global is None:
         return None
