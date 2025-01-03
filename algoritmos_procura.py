@@ -395,6 +395,43 @@ def procura_Iterativa_aux(grafo, inicio, fim, veiculoAtual, limite):
 
     return None
 
+def procura_CustoUniforme(grafo, inicio, fim):
+    # Fila simples para armazenar os nós a serem explorados (em formato de tupla: (custo, nó))
+    fila = [(0, inicio)]  # (custo, nó)
+    
+    # Dicionário para armazenar o custo mínimo para cada nó
+    custos = {inicio: 0}
+    
+    # Dicionário para armazenar os predecessores (opcional para reconstrução do caminho)
+    predecessores = {inicio: None}
+    
+    while fila:
+        # Ordena a fila pelo custo acumulado (menor custo primeiro)
+        fila.sort(key=lambda x: x[0])
+        
+        # Obtém o nó com o menor custo acumulado
+        custo_atual, no_atual = fila.pop(0)
+        
+        # Se chegamos ao destino, reconstrua o caminho (opcional)
+        if no_atual == fim:
+            caminho = []
+            while no_atual is not None:
+                caminho.append(no_atual)
+                no_atual = predecessores[no_atual]
+            return caminho[::-1], custo_atual
+        
+        # Expande o nó atual
+        for vizinho, peso in grafo.get(no_atual, []):
+            custo_total = custo_atual + peso
+            if vizinho not in custos or custo_total < custos[vizinho]:
+                # Atualiza o custo e o predecessor se encontramos um caminho mais barato
+                custos[vizinho] = custo_total
+                predecessores[vizinho] = no_atual
+                fila.append((custo_total, vizinho))
+    
+    # Se não for possível encontrar o caminho
+    return None, float('inf')
+
 def procura_aStar(grafo, inicio, fim):
     """
     Implementa o algoritmo A* para encontrar o melhor caminho entre os nós 'inicio' e 'fim' no grafo.
@@ -666,22 +703,35 @@ def simulated_annealing(grafo, destino, temperatura_inicial=10, numero_iteracoes
         print("Nenhum nó inicial disponível.")
         return None
 
-    # Escolher um nó inicial aleatório
-    no_origem = random.choice(nos_disponiveis)
-    print(f"Ponto inicial aleatório escolhido: {no_origem.getNome()}")
+    no_origem = None
+    origem_tentativas = numero_iteracoes
 
-    if no_origem.janela_tempo == 0:
-        print(f"[ERRO] O nó de origem '{no_origem.getNome()}' não pode ser utilizado porque o tempo esgotou.")
-        return None
+    while origem_tentativas > 0 and no_origem is None:
 
-    if no_origem.get_medicamento() == 0:
-        print(f"[ERRO] NINGUÉM FOI SOCORRIDO, NÓ ORIGEM SEM MEDICAMENTOS: '{no_origem.getNome()}'")
-        return None
+        origem_tentativas = origem_tentativas - 1
+        # Escolher um nó inicial aleatório
+        no_origem = random.choice(nos_disponiveis)
+        print(f"Ponto inicial aleatório escolhido: {no_origem.getNome()}")
 
-    veiculos_disponiveis = grafo.get_veiculos_no(no_origem.getNome())
-    if not veiculos_disponiveis:
-        print(f"Nó {no_origem.getNome()} não possui veículos disponíveis.")
+        if no_origem.janela_tempo == 0:
+            print(f"[ERRO] O nó de origem '{no_origem.getNome()}' não pode ser utilizado porque o tempo esgotou.")
+            no_origem = None
+            continue
+
+        if no_origem.get_medicamento() == 0:
+            print(f"[ERRO] NINGUÉM FOI SOCORRIDO, NÓ ORIGEM SEM MEDICAMENTOS: '{no_origem.getNome()}'")
+            no_origem = None
+            continue
+
+        veiculos_disponiveis = grafo.get_veiculos_no(no_origem.getNome())
+        if not veiculos_disponiveis:
+            print(f"Nó {no_origem.getNome()} não possui veículos disponíveis.")
+            no_origem = None
+            continue
+        
+    if no_origem is None:
         return None
+    
 
     melhores_caminhos = []
 
