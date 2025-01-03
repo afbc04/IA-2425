@@ -378,8 +378,9 @@ class Grafo:
 
         # Adicionar a lista de heurísticas no canto inferior esquerdo
         heuristicas_texto = "Heurísticas:\n"
-        for no, heuristica in self.m_h.items():
-            heuristicas_texto += f"{no}: {heuristica:.5f}\n"
+        if no_destino is not None:
+            for no, heuristica in self.m_h.items():
+                heuristicas_texto += f"{no}: {heuristica:.5f}\n"
 
         plt.text(
             0.01, 0.01,  # Coordenadas no canto inferior esquerdo
