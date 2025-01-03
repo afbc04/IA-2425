@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from veiculo import Veiculo
 from meteorologia import Meteorologia
 from condicoesDinamicas import executar_alteracoes_dinamicas
-from algoritmos_procura import procura_DFS, procura_BFS, procura_Iterativa, procura_aStar, greedy, simulated_annealing, hill_climbing
+from algoritmos_procura import procura_CustoUniforme, procura_DFS, procura_BFS, procura_Iterativa, procura_aStar, greedy, simulated_annealing, hill_climbing
 
 def carregar_caracteristicas_veiculos(ficheiro_caracteristicas="data/caracteristicas_dos_veiculos.json"):
     """
@@ -146,11 +146,12 @@ def mostrar_menu_estatico():
     print("1. DFS (Depth-First Search)")
     print("2. BFS (Breadth-First Search)")
     print("3. Iterativo")
-    print("4. A*")
-    print("5. Greedy")
-    print("6. Simulated Annealing")
-    print("7. Hill-Climbing")
-    print("8. Imprimir Grafo")
+    print("4. Custo-Uniforme")
+    print("5. A*")
+    print("6. Greedy")
+    print("7. Simulated Annealing")
+    print("8. Hill-Climbing")
+    print("9. Imprimir Grafo")
     print("0. Sair")
     return input("Opção: ").strip()
 
@@ -162,13 +163,14 @@ def mostrar_menu_dinamico():
     print("1. DFS (Depth-First Search)")
     print("2. BFS (Breadth-First Search)")
     print("3. Iterativo")
-    print("4. A*")
-    print("5. Greedy")
-    print("6. Simulated Annealing")
-    print("7. Hill-Climbing")
-    print("8. Imprimir Grafo")
-    print("9. Fabricar medicamentos")
-    print("10. Executar alterações dinâmicas")
+    print("4. Custo-Uniforme")
+    print("5. A*")
+    print("6. Greedy")
+    print("7. Simulated Annealing")
+    print("8. Hill-Climbing")
+    print("9. Imprimir Grafo")
+    print("10. Fabricar medicamentos")
+    print("11. Executar alterações dinâmicas")
     print("0. Sair")
     return input("Opção: ").strip()
 
@@ -235,8 +237,22 @@ def iniciar_menu():
                     print("Veículo:", veiculo, " -> ", path, " Custo:", custo)
             else:
                 print("Caminho não encontrado com Iterativo.")
-                
+
         elif opcao == "4":
+            inicio = input("Nó inicial: ")
+            veiculos_disponiveis = grafo.get_veiculos_no(inicio.upper())
+            if not veiculos_disponiveis:
+                print("O nó inicial não possui veículos disponíveis.")
+                continue
+            resultado = procura_CustoUniforme(grafo, inicio.upper(), destino.getNome().upper())
+            if resultado:
+                print("Caminhos Custo-Uniforme:")
+                for veiculo, (path, custo) in resultado.items():
+                    print("Veículo:", veiculo, " -> ", path, " Custo:", custo)
+            else:
+                print("Caminho não encontrado com Iterativo.")
+                
+        elif opcao == "5":
             inicio = input("Nó inicial: ")
             resultado = procura_aStar(grafo, inicio.upper(), destino.getNome().upper())
             if resultado:
@@ -245,7 +261,7 @@ def iniciar_menu():
             else:
                 print("Caminho não encontrado com A*.")
 
-        elif opcao == "5":
+        elif opcao == "6":
             inicio = input("Nó inicial: ")
             resultado = greedy(grafo, inicio.upper(), destino.getNome().upper())
             if resultado:
@@ -254,14 +270,14 @@ def iniciar_menu():
             else:
                 print("Caminho não encontrado com Greedy.")
 
-        elif opcao == "6":
+        elif opcao == "7":
             resultado = simulated_annealing(grafo, destino.getNome().upper(), temperatura_inicial=10, numero_iteracoes=10)
             if resultado:
                 print("Caminho:", resultado[0], "Custo:", resultado[1])
             else:
                 print("Caminho não encontrado com Simulated Annealing.")
 
-        elif opcao == "7":
+        elif opcao == "8":
             resultado = hill_climbing(grafo, destino.getNome().upper(), max_restarts=6, max_iteracoes=10)
             if resultado:
                 for veiculo, (path, custo) in resultado.items():
@@ -269,11 +285,11 @@ def iniciar_menu():
             else:
                 print("Caminho não encontrado com Hill-Climbing.")
 
-        elif opcao == "8":
+        elif opcao == "9":
             grafo.desenha()
             plt.pause(0.01)
 
-        elif opcao == "9" and tipo_experiencia == "dinamica":
+        elif opcao == "10" and tipo_experiencia == "dinamica":
             no = input("Indique o nó onde quer fabricar medicamentos: ").strip()
             quantidade = int(input("Indique a quantidade de medicamentos a fabricar: "))
             no_obj = grafo.get_node_by_name(no.upper())
@@ -284,7 +300,7 @@ def iniciar_menu():
             else:
                 print(f"Nó {no} não encontrado.")
 
-        elif opcao == "10":
+        elif opcao == "11":
             try:
                 vezes = int(input("Quantas alterações dinâmicas deseja realizar? "))
                 if vezes > 0:
