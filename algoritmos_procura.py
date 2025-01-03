@@ -33,6 +33,9 @@ def procura_DFS(grafo, inicio, fim):
     melhores_caminhos = []
 
     for veiculo in veiculos_disponiveis:
+        print(f"[AVISO] Veículo {veiculo.get_tipo()} ignorado devido à velocidade ser 0.")
+            continue
+
         print(f"Usando veículo: {veiculo.get_tipo()} (Velocidade: {veiculo.get_velocidade()})")
         stack = [(inicio, [inicio])]  # Pilha para DFS (nó atual, caminho até agora)
         visited = set()
@@ -152,6 +155,9 @@ def procura_BFS(grafo, inicio, fim):
     melhores_caminhos = []
 
     for veiculo in veiculos_disponiveis:
+        print(f"[AVISO] Veículo {veiculo.get_tipo()} ignorado devido à velocidade ser 0.")
+            continue
+
         print(f"Usando veículo: {veiculo.get_tipo()} (Velocidade: {veiculo.get_velocidade()})")
         queue = [(inicio, [inicio])]  # Fila para BFS (nó atual, caminho até agora)
         visited = set()
@@ -544,6 +550,9 @@ def procura_aStar(grafo, inicio, fim):
     melhores_caminhos = []
 
     for veiculo in veiculos_disponiveis:
+        print(f"[AVISO] Veículo {veiculo.get_tipo()} ignorado devido à velocidade ser 0.")
+            continue
+
         print(f"Usando veículo: {veiculo.get_tipo()} (Velocidade: {veiculo.get_velocidade()}, Combustível: {veiculo.get_combustivel_disponivel()})")
 
         fronteira = []
@@ -668,6 +677,9 @@ def greedy(grafo, inicio, destino):
     melhores_caminhos = []
 
     for veiculo in veiculos_disponiveis:
+        print(f"[AVISO] Veículo {veiculo.get_tipo()} ignorado devido à velocidade ser 0.")
+            continue
+
         print(f"Usando veículo: {veiculo.get_tipo()} (Velocidade: {veiculo.get_velocidade()})")
 
         # Inicializa o caminho atual e o nó de partida
