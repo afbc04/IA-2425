@@ -11,7 +11,7 @@
         {"nome": "I", "populacao": 1000, "tempo": 2, "x": 3, "y": -2.5, "medicamento": 0, "meteorologia": {"chuva": 0, "tempestade": 0, "vento": 0, "nevoeiro": 0}, "veiculos": ["carro", "barco"]}
     ],
     "arestas": [
-        {"origem": "A", "destino": "B", "peso": 20, "bloqueada": false, "permitidos": ["carro", "barco", "aviao"]},
+        {"origem": "A", "destino": "B", "peso": 20, "bloqueada": true, "permitidos": ["carro", "barco", "aviao"]},
         {"origem": "B", "destino": "C", "peso": 20, "bloqueada": false, "permitidos": ["carro", "barco", "aviao"]},
         {"origem": "C", "destino": "D", "peso": 20, "bloqueada": false, "permitidos": ["carro", "barco", "aviao"]},
         {"origem": "A", "destino": "E", "peso": 20, "bloqueada": false, "permitidos": ["carro", "barco", "aviao"]},
