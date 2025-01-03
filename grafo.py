@@ -275,7 +275,7 @@ class Grafo:
         
         return True
 
-    def desenha(self, destaque_azul=False):
+    def desenha(self):
         """
         Atualiza a visualização do grafo, incluindo informações adicionais como janela de tempo,
         com retângulos maiores para os nós.
@@ -297,6 +297,8 @@ class Grafo:
         # Adicionar nós ao grafo NetworkX com coordenadas e informações
         pos = {}
         node_labels = {}
+        todos_nos_vazios = all(no.populacao == 0 and no.janela_tempo == 24 for no in self.m_nodes)
+
         for node in self.m_nodes:
             g.add_node(node.getNome())
             pos[node.getNome()] = node.get_coordenadas()  # Usa as coordenadas do JSON
@@ -311,9 +313,6 @@ class Grafo:
                 f"Janela: {janela}\n"
                 f"Veículos: {vehicles}"
             )
-
-        # Identificar o nó de maior prioridade
-        no_destacado = no_destino.getNome() if no_destino else None
 
         # Adicionar arestas ao grafo NetworkX
         edge_colors = []
@@ -349,9 +348,9 @@ class Grafo:
         rect_width = 1.2  # Aumentar largura do retângulo
         rect_height = 1  # Aumentar altura do retângulo
         for node, (x, y) in pos.items():
-            if destaque_azul:
-                cor = "blue"
-            elif node == no_destacado:
+            if todos_nos_vazios:
+                cor = "yellow"
+            elif node == no_destino.getNome():
                 cor = "red"
             elif self.get_node_by_name(node).janela_tempo == 0:  # Nó com tempo 0 fica preto
                 cor = "black"
@@ -372,39 +371,6 @@ class Grafo:
                 verticalalignment="center", horizontalalignment="center",
                 fontsize=6.5, zorder=3, color="white" if cor == "black" else "black",
             )
-
-        # Adicionar a lista de heurísticas no canto inferior esquerdo
-        heuristicas_texto = "Heurísticas:\n"
-        for no, heuristica in self.m_h.items():
-            heuristicas_texto += f"{no}: {heuristica:.5f}\n"
-
-        plt.text(
-            0.01, 0.01,  # Coordenadas no canto inferior esquerdo
-            heuristicas_texto,
-            fontsize=10,
-            color="black",
-            ha="left",
-            va="bottom",
-            transform=plt.gcf().transFigure,
-            bbox=dict(facecolor="white", alpha=0.7, edgecolor="black"),
-        )
-
-        # Adicionar a lista de prioridades no canto superior esquerdo
-        prioridades_texto = "Prioridades:\n"
-        for no in sorted(self.m_nodes, key=lambda n: n.calcula_prioridade()):
-            prioridade = no.calcula_prioridade()
-            prioridades_texto += f"{no.getNome()}: {prioridade:.5f}\n"
-
-        plt.text(
-            0.01, 0.99,  # Coordenadas no canto superior esquerdo
-            prioridades_texto,
-            fontsize=10,
-            color="black",
-            ha="left",
-            va="top",
-            transform=plt.gcf().transFigure,
-            bbox=dict(facecolor="white", alpha=0.7, edgecolor="black"),
-        )
 
         # Ajustar os limites do gráfico
         plt.title("Mapa de Zonas e Conexões", fontsize=16)
