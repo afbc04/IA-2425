@@ -347,7 +347,7 @@ class Grafo:
         # Adicionar retângulos como nós
         ax = plt.gca()
         rect_width = 1.2  # Aumentar largura do retângulo
-        rect_height = 1.1  # Aumentar altura do retângulo
+        rect_height = 1  # Aumentar altura do retângulo
         for node, (x, y) in pos.items():
             if destaque_azul:
                 cor = "blue"
@@ -370,7 +370,7 @@ class Grafo:
             ax.text(
                 x, y, node_labels[node],
                 verticalalignment="center", horizontalalignment="center",
-                fontsize=9, zorder=3, color="white" if cor == "black" else "black",
+                fontsize=6.5, zorder=3, color="white" if cor == "black" else "black",
             )
 
         # Adicionar a lista de heurísticas no canto inferior esquerdo

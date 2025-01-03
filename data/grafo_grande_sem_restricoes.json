@@ -1,0 +1,35 @@
+{
+    "nos": [
+      { "nome": "A", "populacao": 0, "tempo": 10, "medicamento": 600, "x": 1.5, "y": 3, "meteorologia": { "chuva": 0, "tempestade": 0, "vento": 0, "nevoeiro": 0 }, "veiculos": ["carro", "barco"] },
+      { "nome": "B", "populacao": 80, "tempo": 10, "medicamento": 0, "x": 0, "y": 0, "meteorologia": { "chuva": 0, "tempestade": 0, "vento": 0, "nevoeiro": 0 }, "veiculos": ["carro", "barco"] },
+      { "nome": "C", "populacao": 200, "tempo": 10, "medicamento": 0, "x": 0, "y": -3, "meteorologia": { "chuva": 0, "tempestade": 0, "vento": 0, "nevoeiro": 0 }, "veiculos": ["carro", "barco"] },
+      { "nome": "D", "populacao": 300, "tempo": 10, "medicamento": 0, "x": 0, "y": -6, "meteorologia": { "chuva": 0, "tempestade": 0, "vento": 0, "nevoeiro": 0 }, "veiculos": ["carro", "barco"] },
+      { "nome": "E", "populacao": 350, "tempo": 10, "medicamento": 0, "x": 3, "y": -6, "meteorologia": { "chuva": 0, "tempestade": 0, "vento": 0, "nevoeiro": 0 }, "veiculos": ["carro", "barco"] },
+      { "nome": "F", "populacao": 400, "tempo": 10, "medicamento": 0, "x": 3, "y": -3, "meteorologia": { "chuva": 0, "tempestade": 0, "vento": 0, "nevoeiro": 0 }, "veiculos": ["carro", "barco"] },
+      { "nome": "G", "populacao": 350, "tempo": 10, "medicamento": 0, "x": 3, "y": 0, "meteorologia": { "chuva": 0, "tempestade": 0, "vento": 0, "nevoeiro": 0 }, "veiculos": ["carro", "barco"] },
+      { "nome": "H", "populacao": 10, "tempo": 10, "medicamento": 0, "x": 1.5, "y": 0, "meteorologia": { "chuva": 0, "tempestade": 0, "vento": 0, "nevoeiro": 0 }, "veiculos": ["carro", "barco"] },
+      { "nome": "I", "populacao": 4, "tempo": 10, "medicamento": 0, "x": 1.5, "y": -3, "meteorologia": { "chuva": 0, "tempestade": 0, "vento": 0, "nevoeiro": 0 }, "veiculos": ["carro", "barco"] },
+      { "nome": "J", "populacao": 5, "tempo": 10, "medicamento": 0, "x": 1.5, "y": -6, "meteorologia": { "chuva": 0, "tempestade": 0, "vento": 0, "nevoeiro": 0 }, "veiculos": ["carro", "barco"] },
+      { "nome": "K", "populacao": 1, "tempo": 10, "medicamento": 0, "x": 0, "y": -9, "meteorologia": { "chuva": 0, "tempestade": 0, "vento": 0, "nevoeiro": 0 }, "veiculos": ["carro", "barco"] },
+      { "nome": "L", "populacao": 70, "tempo": 10, "medicamento": 0, "x": 3, "y": -9, "meteorologia": { "chuva": 0, "tempestade": 0, "vento": 0, "nevoeiro": 0 }, "veiculos": ["carro", "barco"] },
+      { "nome": "M", "populacao": 10, "tempo": 10, "medicamento": 0, "x": 1.5, "y": -9, "meteorologia": { "chuva": 0, "tempestade": 0, "vento": 0, "nevoeiro": 0 }, "veiculos": ["carro", "barco"] }
+    ],
+    "arestas": [
+      { "origem": "A", "destino": "G", "peso": 1, "bloqueada": false, "permitidos": ["carro", "barco"] },
+      { "origem": "B", "destino": "C", "peso": 1, "bloqueada": false, "permitidos": ["carro", "barco"] },
+      { "origem": "C", "destino": "D", "peso": 1, "bloqueada": false, "permitidos": ["carro", "barco"] },
+      { "origem": "A", "destino": "B", "peso": 1, "bloqueada": false, "permitidos": ["carro", "barco"] },
+      { "origem": "E", "destino": "F", "peso": 1, "bloqueada": false, "permitidos": ["carro", "barco"] },
+      { "origem": "F", "destino": "G", "peso": 1, "bloqueada": false, "permitidos": ["carro", "barco"] },
+      { "origem": "H", "destino": "A", "peso": 1, "bloqueada": false, "permitidos": ["carro", "barco"] },
+      { "origem": "H", "destino": "I", "peso": 1, "bloqueada": false, "permitidos": ["carro", "barco"] },
+      { "origem": "J", "destino": "I", "peso": 1, "bloqueada": false, "permitidos": ["carro", "barco"] },
+      { "origem": "J", "destino": "D", "peso": 1, "bloqueada": false, "permitidos": ["carro", "barco"] },
+      { "origem": "J", "destino": "K", "peso": 1, "bloqueada": false, "permitidos": ["carro", "barco"] },
+      { "origem": "J", "destino": "L", "peso": 1, "bloqueada": false, "permitidos": ["carro", "barco"] },
+      { "origem": "J", "destino": "M", "peso": 1, "bloqueada": false, "permitidos": ["carro", "barco"] },
+      { "origem": "E", "destino": "L", "peso": 1, "bloqueada": false, "permitidos": ["carro", "barco"] },
+      { "origem": "I", "destino": "F", "peso": 1, "bloqueada": false, "permitidos": ["carro", "barco"] }
+    ]
+  }
+  
