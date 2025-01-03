@@ -524,6 +524,8 @@ def procura_aStar(grafo, inicio, fim):
     import heapq
     import time
 
+    start_time = time.time()
+
     # Validações iniciais
     no_origem = grafo.get_node_by_name(inicio)
     if no_origem.janela_tempo == 0:
@@ -596,6 +598,9 @@ def procura_aStar(grafo, inicio, fim):
     if melhores_caminhos:
         melhor_caminho = min(melhores_caminhos, key=lambda x: x[2])  # Selecionar caminho de menor custo
         veiculo, caminho, custo, pessoas_socorridas = melhor_caminho
+
+        end_time = time.time()
+        print(f"Tempo total de execução: {end_time - start_time:.6f} segundos")
 
         # Transferir valores e ajustar o estado
         grafo.transferir_valores(pessoas_socorridas, caminho[0], fim)
