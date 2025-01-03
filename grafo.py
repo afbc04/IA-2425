@@ -372,6 +372,39 @@ class Grafo:
                 fontsize=6.5, zorder=3, color="white" if cor == "black" else "black",
             )
 
+        # Adicionar a lista de heurísticas no canto inferior esquerdo
+        heuristicas_texto = "Heurísticas:\n"
+        for no, heuristica in self.m_h.items():
+            heuristicas_texto += f"{no}: {heuristica:.5f}\n"
+
+        plt.text(
+            0.01, 0.01,  # Coordenadas no canto inferior esquerdo
+            heuristicas_texto,
+            fontsize=10,
+            color="black",
+            ha="left",
+            va="bottom",
+            transform=plt.gcf().transFigure,
+            bbox=dict(facecolor="white", alpha=0.7, edgecolor="black"),
+        )
+
+        # Adicionar a lista de prioridades no canto superior esquerdo
+        prioridades_texto = "Prioridades:\n"
+        for no in sorted(self.m_nodes, key=lambda n: n.calcula_prioridade()):
+            prioridade = no.calcula_prioridade()
+            prioridades_texto += f"{no.getNome()}: {prioridade:.5f}\n"
+
+        plt.text(
+            0.01, 0.99,  # Coordenadas no canto superior esquerdo
+            prioridades_texto,
+            fontsize=10,
+            color="black",
+            ha="left",
+            va="top",
+            transform=plt.gcf().transFigure,
+            bbox=dict(facecolor="white", alpha=0.7, edgecolor="black"),
+        )
+
         # Ajustar os limites do gráfico
         plt.title("Mapa de Zonas e Conexões", fontsize=16)
         plt.axis("off")
