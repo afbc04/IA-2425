@@ -662,6 +662,8 @@ def greedy(grafo, inicio, destino):
     Realiza a busca gulosa para encontrar o melhor caminho considerando todos os veículos disponíveis no nó inicial.
     Prioriza o nó com menor heurística em cada iteração.
     """
+    start_time = time.time()
+    
     no_origem = grafo.get_node_by_name(inicio)
     no_destino = grafo.get_node_by_name(destino)
 
@@ -736,7 +738,9 @@ def greedy(grafo, inicio, destino):
         melhor_caminho = min(melhores_caminhos, key=lambda x: x[2])
         veiculo, caminho, custo, pessoas_socorridas = melhor_caminho
 
+        end_time = time.time()
         print(f"Melhor caminho: {caminho} com veículo {veiculo.get_tipo()} e custo {custo}")
+        print(f"Tempo total de execução: {end_time - start_time:.6f} segundos")
 
         capacidade_restante = veiculo.get_limite_carga()
         medicamentos_disponiveis = no_origem.get_medicamento()
