@@ -62,7 +62,7 @@ class CondicoesDinamicas:
         #escolhe a condição a alterar e o seu novo valor
         lista_cond_meteo = ["chuva", "tempestade", "vento", "nevoeiro"]
         cond_a_alterar = random.choices(lista_cond_meteo, [0.3, 0.1, 0.3, 0.3], k=1)[0]
-        novo_valor_cond = random.randint(1-10)
+        novo_valor_cond = random.randint(0,20)
 
         setattr(no_a_alterar.meteorologia, cond_a_alterar, novo_valor_cond)
         self.grafo.ajustar_janelas_de_tempo()
