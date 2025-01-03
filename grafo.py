@@ -268,6 +268,8 @@ class Grafo:
         # Realizar a transferência
         origem.set_medicamento(origem.get_medicamento() - quantidade_transferir)
         destino.populacao -= quantidade_transferir
+        if destino.populacao == 0:
+            destino.janela_tempo = 24
 
         print(f"Transferidos {quantidade_transferir} medicamentos de '{no_origem}' para '{no_destino}'.")
         print(f"Medicamentos restantes no nó de origem '{no_origem}': {origem.get_medicamento()}.")
