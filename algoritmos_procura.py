@@ -1002,10 +1002,10 @@ def hill_climbing(grafo, destino, max_restarts, max_iteracoes):
                         caminho_found = True
                         
                         total_pessoas_socorridas = 0
-                        # Distribuição de medicamentos por prioridade calculada
+                        #Distribuição de medicamentos por prioridade
                         medicamentos_disponiveis = min(no_origem.get_medicamento(), veiculo.get_limite_carga())
                             
-                        # Cria lista de nós que estão no caminho
+                        #Cria lista de nós que estão no caminho
                         nos_caminho = []
                         for no_nome in caminho_atual[1:]:
                             no = grafo.get_node_by_name(no_nome)
@@ -1015,7 +1015,7 @@ def hill_climbing(grafo, destino, max_restarts, max_iteracoes):
                         # Ordena os nós por prioridade
                         nos_caminho.sort(key=lambda x: x.calcula_prioridade())
                             
-                        #Distribui, se possível, medicamentos pelos nos
+                        #Distribui, se possível, medicamentos pelos nós
                         for no in nos_caminho:
                             if medicamentos_disponiveis > 0:
                                 qtd = min(no.populacao, medicamentos_disponiveis)
@@ -1056,7 +1056,7 @@ def hill_climbing(grafo, destino, max_restarts, max_iteracoes):
         return None
     else:
         melhor_distancia = grafo.calcula_acumulado_arestas(melhor_caminho_global, melhor_veiculo_global)
-        print(f"Melhor caminho: {melhor_caminho_global}")
+        print(f"\nMelhor caminho: {melhor_caminho_global}")
         print(f"Veículo: {melhor_veiculo_global.get_tipo()}")
         print(f"Custo total: {melhor_custo_global}")
         print(f"Pessoas socorridas: {melhor_pessoas_socorridas}")
