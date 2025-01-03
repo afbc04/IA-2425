@@ -929,6 +929,7 @@ def simulated_annealing(grafo, inicio, destino, temperatura_inicial=10, numero_i
     return None
 
 def hill_climbing(grafo, destino, max_restarts, max_iteracoes):
+
     start_time = time.time()
     melhor_caminho_global = None
     melhor_custo_global = float('inf')
@@ -963,7 +964,7 @@ def hill_climbing(grafo, destino, max_restarts, max_iteracoes):
             
             caminho_atual = [no_origem.getNome()]
             ultimo_no = no_origem
-            distancia_atual = grafo.calcula_heuristica(no_origem, destino_node)
+            distancia_atual = 5 if (no_origem.populacao == 0 or no_origem.janela_tempo == 0) else grafo.calcula_heuristica(no_origem, destino_node)
             
             for iteracao in range(max_iteracoes):
                 ultimo_no = caminho_atual[-1]
@@ -1032,7 +1033,7 @@ def hill_climbing(grafo, destino, max_restarts, max_iteracoes):
                 
                 for vizinho, _ in todos_vizinhos:
                     vizinho_obj = grafo.get_node_by_name(vizinho)
-                    dist = grafo.calcula_heuristica(vizinho_obj, destino_node)
+                    dist = 5 if (vizinho_obj.populacao == 0 or vizinho_obj.janela_tempo == 0) else grafo.calcula_heuristica(vizinho_obj, destino_node)
                     if dist < menor_distancia or (menor_distancia==dist):
                         melhor_vizinho = vizinho
                         menor_distancia = dist
