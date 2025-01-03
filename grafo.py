@@ -185,7 +185,7 @@ class Grafo:
         prioridade_no_origem = no_origem.calcula_prioridade()
 
         if prioridade_no_origem == float('inf'):
-            return float('inf')
+            return 5
 
         # Heurística final
         return distancia_euclidiana * prioridade_no_origem
