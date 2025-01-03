@@ -366,9 +366,8 @@ def procura_Iterativa_aux(grafo, inicio, fim, veiculoAtual, limite):
         stack = [(inicio, [inicio])]  # Pilha para DFS (nó atual, caminho até agora)
         visited = set()
 
-        while stack and limite > 0:
+        while stack:
             nodo_atual, caminho = stack.pop()
-            limite = limite - 1
             if nodo_atual in visited:
                 continue
 
@@ -399,9 +398,11 @@ def procura_Iterativa_aux(grafo, inicio, fim, veiculoAtual, limite):
                 for adjacente, peso, bloqueada, permitidos in grafo.m_graph[nodo_atual]
                 if adjacente not in visited and veiculo.get_tipo() in permitidos and not bloqueada
             ]
-            for adjacente, novo_caminho in reversed(vizinhos):
-                stack.append((adjacente, novo_caminho))
-                print(f"Vizinho {adjacente} adicionado à pilha com caminho: {novo_caminho}")
+            if limite > 0:
+                limite = limite - 1
+                for adjacente, novo_caminho in reversed(vizinhos):
+                    stack.append((adjacente, novo_caminho))
+                    print(f"Vizinho {adjacente} adicionado à pilha com caminho: {novo_caminho}")
 
     end_time = time.time()
     if melhores_caminhos:
